@@ -1,26 +1,99 @@
 @import "tailwindcss";
 
+/*
+ * Palette sampled directly from the design's vector fills, not eyeballed.
+ * The page is a dark olive ground with parchment plates laid on it.
+ */
+@theme {
+  --color-ground: #544835;
+  --color-ground-deep: #3c3123;
+  --color-ink: #241e16;
+  --color-ink-deep: #14110b;
+
+  --color-parchment: #e7dabc;
+  --color-parchment-bright: #f2e7cc;
+  --color-parchment-dim: #dccba6;
+  --color-parchment-shade: #d3c39b;
+  --color-parchment-edge: #c7b58d;
+
+  --color-accent: #ee9878;
+  --color-rust: #9a3b22;
+  /* Rust is only legible on parchment (9.0:1). On the olive ground it drops to
+     1.3:1, so small "pending" labels use this lighter tone (3.4:1) instead. */
+  --color-rust-bright: #ef8354;
+  --color-gold: #d9af55;
+  --color-bark: #8b6f47;
+  --color-sage: #a9c0ac;
+
+  --font-serif: var(--font-tiro-deva), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-kannada: var(--font-tiro-kannada), var(--font-inter), sans-serif;
+
+  --spacing-gutter: 9.5rem;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/*
+ * The ground carries a faint woven tint so the parchment plates read as
+ * objects resting on a surface rather than boxes on a flat fill. Kept in CSS
+ * (no image request) and deliberately low-contrast.
+ */
+body {
+  background-color: var(--color-ground);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(233, 216, 180, 0.07), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(20, 17, 11, 0.035) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(0deg, rgba(20, 17, 11, 0.03) 0 2px, transparent 2px 7px);
+  color: var(--color-parchment);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+::selection {
+  background: var(--color-accent);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility font-kannada {
+  font-family: var(--font-kannada);
+}
+
+/*
+ * A "plate": a photograph mounted on a parchment mat with the mat's own
+ * shadow falling down-right, as in the design.
+ */
+@utility plate {
+  background: linear-gradient(160deg, var(--color-parchment-bright), var(--color-parchment-shade));
+  padding: 0.55rem;
+  box-shadow:
+    0.5rem 0.5rem 0 rgba(20, 17, 11, 0.22),
+    0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+
+/* The dashed rule that stands in for a number the Foundation has not supplied. */
+@utility pending-rule {
+  display: inline-block;
+  height: 0;
+  border-top: 2px dashed color-mix(in oklab, var(--color-parchment) 55%, transparent);
+  vertical-align: middle;
 }

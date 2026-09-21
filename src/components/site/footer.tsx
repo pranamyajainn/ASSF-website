@@ -1,0 +1,66 @@
+import { Container } from "./primitives";
+import { Seal } from "./seal";
+import { org } from "@/content/home";
+
+export function Footer() {
+  return (
+    <footer className="bg-ink pb-16 pt-14">
+      <Container>
+        <div className="grid gap-x-12 gap-y-10 lg:grid-cols-2">
+          <div>
+            <div className="flex items-center gap-4">
+              <Seal className="size-12 shrink-0 text-gold" />
+              <p className="text-3xl text-gold">
+                {org.sealDeva} <span className="text-gold/80">॥</span>
+              </p>
+            </div>
+            <p className="mt-5 text-lg text-parchment/90">{org.nameDeva}</p>
+            <p className="mt-1 text-lg text-parchment/70">{org.tagline}</p>
+            <p className="mt-5 font-sans text-sm text-parchment/70">
+              NGO registration {org.registration}
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-sans text-sm tracking-wide text-parchment/65">
+              Registered office
+            </h2>
+            <address className="mt-3 max-w-[38ch] text-lg not-italic leading-relaxed text-parchment/90">
+              {org.office}
+            </address>
+          </div>
+
+          <div>
+            <h2 className="font-sans text-sm tracking-wide text-parchment/65">
+              Contact
+            </h2>
+            <p className="mt-3 text-lg text-parchment/90">
+              <a href={`tel:${org.phone.replace(/\s/g, "")}`} className="hover:text-parchment-bright">
+                {org.phone}
+              </a>
+            </p>
+            <p className="mt-1">
+              <a
+                href={`mailto:${org.email}`}
+                className="text-lg text-accent underline decoration-accent/40 underline-offset-[5px] hover:decoration-accent"
+              >
+                {org.email}
+              </a>
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-sans text-sm tracking-wide text-parchment/65">
+              Banking
+            </h2>
+            <p className="mt-3 text-lg text-parchment/90">{org.bank.branch}</p>
+            <p className="mt-1 text-lg text-parchment/90">
+              {org.bank.account} <span className="text-parchment/45">|</span>{" "}
+              {org.bank.ifsc}
+            </p>
+          </div>
+        </div>
+      </Container>
+    </footer>
+  );
+}
