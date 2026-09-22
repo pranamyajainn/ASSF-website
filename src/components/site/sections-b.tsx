@@ -21,33 +21,33 @@ export function Adopt() {
 
       <div className="mt-9 flex flex-wrap gap-4">
         <Button href={adopt.primary.href}>{adopt.primary.label}</Button>
-        <Button href={adopt.secondary.href} variant="outline-dark">
+        <Button href={adopt.secondary.href} variant="outline">
           {adopt.secondary.label}
         </Button>
       </div>
 
-      <div className="mt-12 border-t border-parchment/20 pt-6">
-        <p className="font-sans text-base text-parchment/70">{adopt.ranksLabel}</p>
+      <div className="mt-12 border-t border-ink/20 pt-6">
+        <p className="font-sans text-base text-ink/70">{adopt.ranksLabel}</p>
         <dl className="mt-5 max-w-3xl space-y-3.5">
           {adopt.ranks.map((rank) => (
             <div key={rank.latin} className="flex flex-wrap items-baseline gap-x-4">
               <dt
-                className={`text-2xl ${rank.highest ? "text-gold" : "text-parchment"}`}
+                className={`text-2xl ${rank.highest ? "text-rust" : "text-ink"}`}
               >
                 {rank.deva} <span className="ml-1">{rank.latin}</span>
               </dt>
               <span
                 aria-hidden="true"
-                className="hidden min-w-12 flex-1 translate-y-[-0.35rem] border-t border-dashed border-parchment/30 sm:block"
+                className="hidden min-w-12 flex-1 translate-y-[-0.35rem] border-t border-dashed border-ink/30 sm:block"
               />
-              <dd className="font-sans text-sm text-accent">{adopt.thresholdNote}</dd>
+              <dd className="font-sans text-sm text-rust">{adopt.thresholdNote}</dd>
             </div>
           ))}
         </dl>
       </div>
 
       <FolioWall total={adopt.wall.total} filled={adopt.wall.filled} />
-      <p className="mt-5 max-w-[46ch] text-lg leading-snug text-parchment/80">
+      <p className="mt-5 max-w-[46ch] text-lg leading-snug text-ink/80">
         {adopt.wall.note}
       </p>
     </Section>
@@ -103,19 +103,19 @@ export function Field() {
         {field.items.map((item) => (
           <li key={item.title} className="flex flex-col">
             <Plate src={item.image} alt="" ratio="16 / 9" />
-            <p className="mt-5 font-sans text-sm text-parchment/70">{item.meta}</p>
+            <p className="mt-5 font-sans text-sm text-ink/70">{item.meta}</p>
             <h3
               lang="hi"
-              className="mt-3 text-pretty text-2xl leading-snug text-parchment-bright"
+              className="mt-3 text-pretty text-2xl leading-snug text-ink"
             >
               {item.title}
             </h3>
-            <p className="mt-4 max-w-[36ch] text-lg leading-relaxed text-parchment/85">
+            <p className="mt-4 max-w-[36ch] text-lg leading-relaxed text-ink/85">
               {item.body}
             </p>
             <a
               href={item.href}
-              className="mt-5 self-start border-b border-accent/40 pb-1 font-sans text-base text-accent transition-colors hover:border-accent"
+              className="mt-5 self-start border-b border-rust/40 pb-1 font-sans text-base text-rust transition-colors hover:border-rust"
             >
               {field.linkLabel}
             </a>
@@ -151,9 +151,9 @@ export function Survey() {
 
 export function Standing() {
   const stateStyles = {
-    recognised: "border-sage/70 text-parchment",
-    verify: "border-accent/60 text-parchment",
-    pending: "border-parchment/30 text-parchment/90",
+    recognised: "border-sage/70 text-ink",
+    verify: "border-rust/60 text-ink",
+    pending: "border-ink/30 text-ink/90",
   } as const;
   const stateLabels = {
     recognised: "recognised",
@@ -163,7 +163,7 @@ export function Standing() {
 
   return (
     <Section id="standing" gutter={standing.gutter}>
-      <p className="max-w-[54ch] text-lg leading-relaxed text-parchment/90 sm:text-xl">
+      <p className="max-w-[54ch] text-lg leading-relaxed text-ink/90 sm:text-xl">
         {standing.body}
       </p>
 
@@ -174,18 +174,14 @@ export function Standing() {
             className={`flex items-baseline gap-3 border px-4 py-3 ${stateStyles[badge.state]}`}
           >
             <span className="font-sans text-base">{badge.label}</span>
-            <span
-              className={`font-sans text-sm ${
-                badge.state === "pending" ? "text-rust-bright" : "text-accent"
-              }`}
-            >
+            <span className="font-sans text-sm text-rust">
               {badge.note ?? stateLabels[badge.state]}
             </span>
           </li>
         ))}
       </ul>
 
-      <p className="mt-8 max-w-[58ch] text-lg leading-relaxed text-parchment/80">
+      <p className="mt-8 max-w-[58ch] text-lg leading-relaxed text-ink/80">
         {standing.note}
       </p>
     </Section>

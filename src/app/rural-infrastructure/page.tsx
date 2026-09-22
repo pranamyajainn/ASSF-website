@@ -29,8 +29,8 @@ export default function RuralInfrastructurePage() {
             {projects.items.map((project) => (
               <li key={project.name}>
                 <Plate src={project.image} alt={project.name} ratio="4 / 3" />
-                <h3 className="mt-4 text-2xl text-parchment-bright">{project.name}</h3>
-                <p className="mt-2 text-lg leading-relaxed text-parchment/85">{project.body}</p>
+                <h3 className="mt-4 text-2xl text-ink">{project.name}</h3>
+                <p className="mt-2 text-lg leading-relaxed text-ink/85">{project.body}</p>
               </li>
             ))}
           </ul>

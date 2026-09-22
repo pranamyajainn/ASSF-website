@@ -6,7 +6,7 @@ import { useLayoutEffect, useRef, useState } from "react";
  * The folio wall: one cell per conserved folio. Cells materialise
  * left-to-right, top-to-bottom, the first time the wall scrolls into view —
  * the ledger filling in one leaf at a time, not appearing all at once as a
- * finished grid. Filled cells (gold) and empty ones (bark outline) both take
+ * finished grid. Filled cells (rust) and empty ones (bark outline) both take
  * part; today `filled` is 0, so the whole wall arrives empty and waiting.
  *
  * Same safety rule as `Reveal`: if the wall is already on screen when this
@@ -59,7 +59,7 @@ export function FolioWall({
           aria-hidden="true"
           style={animate ? { transitionDelay: `${Math.min(i * 8, 650)}ms` } : undefined}
           className={`aspect-[2/3] border ${
-            i < filled ? "border-gold bg-gold/30" : "border-bark/55 bg-transparent"
+            i < filled ? "border-rust bg-rust/20" : "border-bark/55 bg-transparent"
           } ${
             animate
               ? `transition-[opacity,transform] duration-500 ease-out ${

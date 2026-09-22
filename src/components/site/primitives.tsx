@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import type { Pending as PendingValue } from "@/content/shared";
+import { PersonCard } from "./person-card";
 import { Reveal } from "./reveal";
 
 /** Page gutter + max width, shared by every band so the columns line up. */
@@ -42,14 +43,14 @@ export function Section({
         <div className="grid gap-6 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-10">
           <div className="lg:pt-1">
             {folio ? (
-              <p className="font-sans text-sm text-parchment/70">
-                <span className="inline-block border-b border-parchment/30 pb-1">
+              <p className="font-sans text-sm text-ink/70">
+                <span className="inline-block border-b border-ink/30 pb-1">
                   {folio}
                 </span>
               </p>
             ) : null}
             {gutter ? (
-              <p className="mt-3 font-sans text-sm tracking-wide text-parchment/55">
+              <p className="mt-3 font-sans text-sm tracking-wide text-ink/55">
                 {gutter}
               </p>
             ) : null}
@@ -63,7 +64,7 @@ export function Section({
   );
 }
 
-/** Section heading, closed by a danda in gold as in the design. */
+/** Section heading, closed by a danda as in the design. */
 export function Heading({
   children,
   as: Tag = "h2",
@@ -75,16 +76,16 @@ export function Heading({
 }) {
   return (
     <Tag
-      className={`text-balance text-3xl leading-tight text-accent sm:text-4xl ${className}`}
+      className={`text-balance text-3xl leading-tight text-rust sm:text-4xl ${className}`}
     >
-      {children} <span className="text-gold">॥</span>
+      {children} <span className="text-bark">॥</span>
     </Tag>
   );
 }
 
 export function Lede({ children }: { children: ReactNode }) {
   return (
-    <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-parchment/90 sm:text-xl">
+    <p className="mt-6 max-w-[54ch] text-lg leading-relaxed text-ink/90 sm:text-xl">
       {children}
     </p>
   );
@@ -113,17 +114,17 @@ export function Pending({
         aria-label={label ? `Not yet published — ${label}` : "Not yet published"}
       />
       {label ? (
-        <span className="font-sans text-sm text-accent">{label}</span>
+        <span className="font-sans text-sm text-rust">{label}</span>
       ) : null}
     </span>
   );
 }
 
-/** Salmon-ruled note recording a discrepancy rather than papering over it. */
+/** Rust-ruled note recording a discrepancy rather than papering over it. */
 export function EditorialNote({ children }: { children: ReactNode }) {
   return (
-    <div className="mt-8 border-l-2 border-accent pl-5">
-      <p className="max-w-[58ch] font-sans text-[0.95rem] leading-relaxed text-accent">
+    <div className="mt-8 border-l-2 border-rust pl-5">
+      <p className="max-w-[58ch] font-sans text-[0.95rem] leading-relaxed text-rust">
         {children}
       </p>
     </div>
@@ -170,13 +171,13 @@ export function PageHero({
   body: string;
 }) {
   return (
-    <section id="top" className="border-b border-parchment/10 py-14 sm:py-20">
+    <section id="top" className="border-b border-ink/10 py-14 sm:py-20">
       <Container>
-        <p className="font-sans text-sm tracking-wide text-parchment/55">{eyebrow}</p>
-        <h1 className="mt-4 max-w-[26ch] text-balance text-5xl leading-[1.08] text-parchment-bright sm:text-6xl">
+        <p className="font-sans text-sm tracking-wide text-ink/55">{eyebrow}</p>
+        <h1 className="mt-4 max-w-[26ch] text-balance text-5xl leading-[1.08] text-ink sm:text-6xl">
           {title}
         </h1>
-        <p className="mt-7 max-w-[54ch] text-lg leading-relaxed text-parchment/90 sm:text-xl">
+        <p className="mt-7 max-w-[54ch] text-lg leading-relaxed text-ink/90 sm:text-xl">
           {body}
         </p>
       </Container>
@@ -184,12 +185,12 @@ export function PageHero({
   );
 }
 
-/** An inline text link in the accent colour, underlined — used for in-page "explore X" links. */
+/** An inline text link in the rust colour, underlined — used for in-page "explore X" links. */
 export function InlineLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <a
       href={href}
-      className="mt-6 inline-block border-b border-accent/40 pb-1 font-sans text-base text-accent transition-colors hover:border-accent"
+      className="mt-6 inline-block border-b border-rust/40 pb-1 font-sans text-base text-rust transition-colors hover:border-rust"
     >
       {children}
     </a>
@@ -212,16 +213,16 @@ export function StatGrid({
   return (
     <dl className={`mt-10 grid gap-x-10 gap-y-10 ${cols}`}>
       {metrics.map((metric) => (
-        <div key={metric.label} className="border-t border-parchment/25 pt-4">
-          <dt className="font-sans text-base text-parchment/90">{metric.label}</dt>
+        <div key={metric.label} className="border-t border-ink/25 pt-4">
+          <dt className="font-sans text-base text-ink/90">{metric.label}</dt>
           <dd className="mt-4">
             {metric.value ? (
-              <span className="text-3xl text-gold">{metric.value}</span>
+              <span className="text-3xl text-rust">{metric.value}</span>
             ) : (
               <Pending label="awaiting Foundation" width="7rem" />
             )}
             {metric.note ? (
-              <p className="mt-3 max-w-[28ch] text-lg leading-snug text-parchment/80">{metric.note}</p>
+              <p className="mt-3 max-w-[28ch] text-lg leading-snug text-ink/80">{metric.note}</p>
             ) : null}
           </dd>
         </div>
@@ -239,10 +240,10 @@ export function StepList({ steps }: { steps: readonly { title: string; body: str
   return (
     <ol className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
       {steps.map((step, i) => (
-        <li key={step.title} className="border-t border-parchment/25 pt-4">
-          <span className="font-sans text-sm text-accent">{String(i + 1).padStart(2, "0")}</span>
-          <h3 className="mt-2 text-xl text-parchment-bright">{step.title}</h3>
-          <p className="mt-2 max-w-[32ch] text-lg leading-snug text-parchment/80">{step.body}</p>
+        <li key={step.title} className="border-t border-ink/25 pt-4">
+          <span className="font-sans text-sm text-rust">{String(i + 1).padStart(2, "0")}</span>
+          <h3 className="mt-2 text-xl text-ink">{step.title}</h3>
+          <p className="mt-2 max-w-[32ch] text-lg leading-snug text-ink/80">{step.body}</p>
         </li>
       ))}
     </ol>
@@ -253,15 +254,11 @@ type Person = { name: string; rank: string; body?: string; image: string };
 
 /**
  * A wall of people: trustees, advisors, anyone the site introduces by
- * portrait. Every source photo arrives in a different light, crop and
- * background — a scanned headshot next to a studio portrait next to a
- * phone photo. A single treatment (desaturated toward sepia, full colour
- * only on interaction) makes them read as one considered set instead of a
- * patchwork, the way a printed annual report unifies submitted photos with
- * one duotone rather than reproducing each as shot.
- *
- * Name and rank sit in the type, not as text laid over the photo — so
- * nothing here depends on hover to be legible, only to feel alive.
+ * portrait. Photos stay full colour — the person is the point. What unifies
+ * a grid of photos pulled from wildly different sources (a scanned
+ * headshot next to a studio portrait next to a phone photo) is the frame
+ * and the interaction, not a filter over the image: see `PersonCard` for
+ * the cursor-tilt.
  */
 export function PersonGrid({
   people,
@@ -275,28 +272,7 @@ export function PersonGrid({
   return (
     <ul className={`mt-10 grid gap-x-8 gap-y-14 ${cols}`}>
       {people.map((person) => (
-        <li key={person.name} className="group">
-          <div className="plate">
-            <div className="relative aspect-[4/5] w-full overflow-hidden">
-              <Image
-                src={person.image}
-                alt={person.name}
-                fill
-                sizes="(min-width: 1024px) 24vw, 45vw"
-                className="object-cover [filter:grayscale(0.85)_sepia(0.18)_contrast(1.05)] transition-[filter,transform] duration-500 ease-out group-hover:scale-[1.035] group-hover:[filter:grayscale(0)_sepia(0)_contrast(1)]"
-              />
-            </div>
-          </div>
-          <div className="mt-5 border-t border-parchment/20 pt-3 transition-colors duration-300 group-hover:border-gold/70">
-            <h3 className="text-xl text-parchment-bright">{person.name}</h3>
-            <p className="mt-1 font-sans text-sm tracking-wide text-accent">{person.rank}</p>
-          </div>
-          {person.body ? (
-            <p className="mt-3 line-clamp-3 text-base leading-snug text-parchment/75">
-              {person.body}
-            </p>
-          ) : null}
-        </li>
+        <PersonCard key={person.name} person={person} />
       ))}
     </ul>
   );
@@ -336,7 +312,7 @@ export function Plate({
         </div>
       </div>
       {caption ? (
-        <figcaption className="mt-3 max-w-[46ch] text-[0.95rem] leading-relaxed text-parchment/70">
+        <figcaption className="mt-3 max-w-[46ch] text-[0.95rem] leading-relaxed text-ink/70">
           {caption}
         </figcaption>
       ) : null}

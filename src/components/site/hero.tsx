@@ -74,11 +74,11 @@ export function Hero() {
           </div>
         </div>
 
-        <dl className="grid gap-x-10 gap-y-7 border-b border-parchment/15 py-10 sm:grid-cols-2 lg:grid-cols-3">
+        <dl className="grid gap-x-10 gap-y-7 border-b border-ink/15 py-10 sm:grid-cols-2 lg:grid-cols-3">
           {heroStats.map((stat) => (
             <div key={stat.figure} className="flex items-baseline gap-4">
-              <dt className="shrink-0 text-4xl text-gold">{stat.figure}</dt>
-              <dd className="max-w-[24ch] text-lg leading-snug text-parchment/85">
+              <dt className="shrink-0 text-4xl text-rust">{stat.figure}</dt>
+              <dd className="max-w-[24ch] text-lg leading-snug text-ink/85">
                 {stat.note}
               </dd>
             </div>

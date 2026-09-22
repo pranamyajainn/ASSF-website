@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { signIn } from "@/auth";
 import { authorizedMembers } from "@/lib/trustee-directory";
 import { org } from "@/content/shared";
@@ -74,9 +75,9 @@ export default async function TrusteePortalLoginPage({
         </div>
 
         <p className="mt-6 text-center font-sans text-sm text-parchment/45">
-          <a href="/" className="underline decoration-parchment/30 underline-offset-4 hover:text-parchment/70">
+          <Link href="/" className="underline decoration-parchment/30 underline-offset-4 hover:text-parchment/70">
             Back to the public site
-          </a>
+          </Link>
         </p>
       </div>
     </main>

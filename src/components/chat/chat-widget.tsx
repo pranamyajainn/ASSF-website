@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { org } from "@/content/shared";
 
 type Role = "user" | "assistant";
@@ -37,6 +38,7 @@ function loadMessages(): Msg[] {
 }
 
 export function ChatWidget() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
   const [input, setInput] = useState("");
@@ -197,6 +199,10 @@ export function ChatWidget() {
   }
 
   const hasConversation = messages.length > 1 || messages[0]?.content !== GREETING.content;
+
+  // The trustee portal is its own secure area, not part of the public site
+  // this assistant is grounded in — keep it off those routes entirely.
+  if (pathname?.startsWith("/trustee-portal")) return null;
 
   return (
     <>

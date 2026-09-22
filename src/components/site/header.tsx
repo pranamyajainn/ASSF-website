@@ -73,7 +73,7 @@ export function Header() {
         </Container>
       </div>
 
-      <header className="border-b border-parchment/10">
+      <header className="border-b border-ink/10">
         <Container>
           <div className="flex flex-wrap items-center gap-x-8 gap-y-5 py-6">
             <Link href="/" className="flex min-w-0 shrink-0 items-center">
@@ -83,7 +83,7 @@ export function Header() {
                 width={502}
                 height={236}
                 priority
-                className="h-12 w-auto bg-parchment-bright/95 px-2 py-1.5 sm:h-14"
+                className="h-12 w-auto border border-ink/10 bg-parchment-bright/95 px-2 py-1.5 sm:h-14"
               />
             </Link>
 
@@ -93,7 +93,7 @@ export function Header() {
                   <li key={item.label}>
                     <Link
                       href={item.href}
-                      className="text-base text-parchment/85 transition-colors hover:text-parchment-bright"
+                      className="text-base text-ink/85 transition-colors hover:text-ink"
                     >
                       {item.label}
                     </Link>

@@ -20,10 +20,10 @@ export function PillarsIntro() {
 
       <ul className="mt-10 grid gap-x-10 gap-y-10 sm:grid-cols-3">
         {pillars.map((pillar) => (
-          <li key={pillar.slug} className="border-t border-parchment/25 pt-5">
-            <h3 className="text-2xl text-parchment-bright">{pillar.label}</h3>
-            <p className="mt-1 font-sans text-sm text-accent">{pillar.tagline}</p>
-            <p className="mt-3 text-lg leading-snug text-parchment/80">{pillar.body}</p>
+          <li key={pillar.slug} className="border-t border-ink/25 pt-5">
+            <h3 className="text-2xl text-ink">{pillar.label}</h3>
+            <p className="mt-1 font-sans text-sm text-rust">{pillar.tagline}</p>
+            <p className="mt-3 text-lg leading-snug text-ink/80">{pillar.body}</p>
             <InlineLink href={`/${pillar.slug}`}>Explore {pillar.label}</InlineLink>
           </li>
         ))}
@@ -136,8 +136,8 @@ export function RuralTeaser() {
         {ruralTeaser.highlights.map((item) => (
           <li key={item.name}>
             <Plate src={item.image} alt={item.name} ratio="4 / 3" />
-            <h3 className="mt-4 text-xl text-parchment-bright">{item.name}</h3>
-            <p className="mt-2 text-lg leading-snug text-parchment/80">{item.detail}</p>
+            <h3 className="mt-4 text-xl text-ink">{item.name}</h3>
+            <p className="mt-2 text-lg leading-snug text-ink/80">{item.detail}</p>
           </li>
         ))}
       </ul>
@@ -154,11 +154,11 @@ export function CommunityTeaser() {
 
       <dl className="mt-10 grid gap-x-10 gap-y-10 sm:grid-cols-3">
         {communityTeaser.highlights.map((item) => (
-          <div key={item.label} className="border-t border-parchment/25 pt-4">
-            <dt className="font-sans text-base text-parchment/90">{item.label}</dt>
+          <div key={item.label} className="border-t border-ink/25 pt-4">
+            <dt className="font-sans text-base text-ink/90">{item.label}</dt>
             <dd className="mt-4">
-              <span className="text-3xl text-gold">{item.stat}</span>
-              <p className="mt-3 max-w-[30ch] text-lg leading-snug text-parchment/80">{item.note}</p>
+              <span className="text-3xl text-rust">{item.stat}</span>
+              <p className="mt-3 max-w-[30ch] text-lg leading-snug text-ink/80">{item.note}</p>
             </dd>
           </div>
         ))}

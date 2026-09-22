@@ -29,16 +29,16 @@ export default function CommunityServicesPage() {
           <Lede>{healthcare.body}</Lede>
           <StatGrid metrics={healthcare.totals} />
 
-          <ul className="mt-12 grid gap-x-10 gap-y-8 border-t border-parchment/25 pt-8 sm:grid-cols-3">
+          <ul className="mt-12 grid gap-x-10 gap-y-8 border-t border-ink/25 pt-8 sm:grid-cols-3">
             {healthcare.camps.map((camp) => (
               <li key={camp.place}>
-                <h3 className="text-xl text-parchment-bright">{camp.place}</h3>
-                <p className="mt-1 font-sans text-sm text-accent">{camp.beneficiaries} beneficiaries</p>
-                <p className="mt-2 text-lg leading-snug text-parchment/80">{camp.detail}</p>
+                <h3 className="text-xl text-ink">{camp.place}</h3>
+                <p className="mt-1 font-sans text-sm text-rust">{camp.beneficiaries} beneficiaries</p>
+                <p className="mt-2 text-lg leading-snug text-ink/80">{camp.detail}</p>
               </li>
             ))}
           </ul>
-          <p className="mt-8 max-w-[62ch] text-lg leading-relaxed text-parchment/80">{healthcare.note}</p>
+          <p className="mt-8 max-w-[62ch] text-lg leading-relaxed text-ink/80">{healthcare.note}</p>
         </Section>
 
         <Section id="education" gutter={education.gutter}>
@@ -53,8 +53,8 @@ export default function CommunityServicesPage() {
             {relief.items.map((item) => (
               <li key={item.name}>
                 <Plate src={item.image} alt={item.name} ratio="4 / 3" />
-                <h3 className="mt-4 text-2xl text-parchment-bright">{item.name}</h3>
-                <p className="mt-2 text-lg leading-relaxed text-parchment/85">{item.body}</p>
+                <h3 className="mt-4 text-2xl text-ink">{item.name}</h3>
+                <p className="mt-2 text-lg leading-relaxed text-ink/85">{item.body}</p>
               </li>
             ))}
           </ul>

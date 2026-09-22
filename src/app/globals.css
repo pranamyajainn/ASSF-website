@@ -2,7 +2,9 @@
 
 /*
  * Palette sampled directly from the design's vector fills, not eyeballed.
- * The page is a dark olive ground with parchment plates laid on it.
+ * The page is a parchment ground now, ink for running text — a handful of
+ * ink-deep bands (header utility bar, footer, key CTAs, the mobile panel)
+ * stay dark, anchoring the light field rather than sitting inside it.
  */
 @theme {
   --color-ground: #544835;
@@ -33,21 +35,21 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 /*
- * The ground carries a faint woven tint so the parchment plates read as
- * objects resting on a surface rather than boxes on a flat fill. Kept in CSS
- * (no image request) and deliberately low-contrast.
+ * The ground carries a faint woven tint so the page reads as a leaf lying on
+ * a surface rather than a flat fill. Kept in CSS (no image request) and
+ * deliberately low-contrast.
  */
 body {
-  background-color: var(--color-ground);
+  background-color: var(--color-parchment-dim);
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(233, 216, 180, 0.07), transparent 70%),
-    repeating-linear-gradient(90deg, rgba(20, 17, 11, 0.035) 0 2px, transparent 2px 7px),
-    repeating-linear-gradient(0deg, rgba(20, 17, 11, 0.03) 0 2px, transparent 2px 7px);
-  color: var(--color-parchment);
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 255, 255, 0.3), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(36, 30, 22, 0.025) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(0deg, rgba(36, 30, 22, 0.02) 0 2px, transparent 2px 7px);
+  color: var(--color-ink);
   font-family: var(--font-serif);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -59,7 +61,7 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-rust);
   outline-offset: 3px;
   border-radius: 1px;
 }
@@ -98,7 +100,7 @@ body {
 @utility pending-rule {
   display: inline-block;
   height: 0;
-  border-top: 2px dashed color-mix(in oklab, var(--color-parchment) 55%, transparent);
+  border-top: 2px dashed color-mix(in oklab, var(--color-ink) 45%, transparent);
   vertical-align: middle;
   animation: pending-pulse 2.6s ease-in-out infinite;
 }
@@ -123,4 +125,33 @@ body {
 @keyframes teaser-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/*
+ * A trustee/advisor portrait: tilts gently toward the cursor and carries a
+ * soft light across its surface as the pointer moves, the way light shifts
+ * across a photograph under glass. `--tilt-x`/`--tilt-y`/`--glow-*` are
+ * written directly by PersonCard's mousemove handler; the transition here
+ * is what turns those raw, un-eased writes into motion that catches up
+ * rather than snapping — a small lag, deliberately.
+ */
+.person-tilt {
+  transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
+    translateY(calc(var(--lift, 0) * -0.25rem));
+  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.person-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--glow-o, 0);
+  transition: opacity 350ms ease;
+  background: radial-gradient(
+    circle 45% at var(--glow-x, 50%) var(--glow-y, 50%),
+    color-mix(in oklab, var(--color-gold) 55%, white) 0%,
+    transparent 70%
+  );
+  mix-blend-mode: soft-light;
 }

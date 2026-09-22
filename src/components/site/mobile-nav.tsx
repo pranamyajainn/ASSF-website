@@ -20,7 +20,7 @@ export function MobileNav() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open menu"
-        className="ml-auto flex size-11 shrink-0 items-center justify-center border border-parchment/25 text-parchment lg:hidden"
+        className="ml-auto flex size-11 shrink-0 items-center justify-center border border-ink/25 text-ink lg:hidden"
       >
         <svg
           viewBox="0 0 24 24"
