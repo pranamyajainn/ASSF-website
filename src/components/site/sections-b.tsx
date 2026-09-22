@@ -5,6 +5,7 @@ import {
   Heading,
   InlineLink,
   Lede,
+  PersonGrid,
   Plate,
   Section,
 } from "./primitives";
@@ -78,26 +79,15 @@ export function Board() {
       <Heading>{board.heading}</Heading>
       <Lede>{board.intro}</Lede>
 
-      <ul className="mt-10 grid gap-x-10 gap-y-12 sm:grid-cols-2">
-        {board.members.map((member) => (
-          <li key={member.name}>
-            <div className="plate">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={member.image}
-                alt={member.name}
-                loading="lazy"
-                className="aspect-[4/5] w-full object-cover"
-              />
-            </div>
-            <h3 className="mt-5 text-2xl text-parchment-bright">{member.name}</h3>
-            <p className="mt-1.5 font-sans text-base text-accent">{member.rank}</p>
-            <p className="mt-3 max-w-[34ch] text-lg leading-snug text-parchment/80">
-              {member.affiliation}
-            </p>
-          </li>
-        ))}
-      </ul>
+      <PersonGrid
+        people={board.members.map((m) => ({
+          name: m.name,
+          rank: m.rank,
+          body: m.affiliation,
+          image: m.image,
+        }))}
+        columns={3}
+      />
 
       <InlineLink href={board.link.href}>{board.link.label}</InlineLink>
     </Section>

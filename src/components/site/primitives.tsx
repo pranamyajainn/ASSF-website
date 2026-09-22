@@ -249,6 +249,59 @@ export function StepList({ steps }: { steps: readonly { title: string; body: str
   );
 }
 
+type Person = { name: string; rank: string; body?: string; image: string };
+
+/**
+ * A wall of people: trustees, advisors, anyone the site introduces by
+ * portrait. Every source photo arrives in a different light, crop and
+ * background — a scanned headshot next to a studio portrait next to a
+ * phone photo. A single treatment (desaturated toward sepia, full colour
+ * only on interaction) makes them read as one considered set instead of a
+ * patchwork, the way a printed annual report unifies submitted photos with
+ * one duotone rather than reproducing each as shot.
+ *
+ * Name and rank sit in the type, not as text laid over the photo — so
+ * nothing here depends on hover to be legible, only to feel alive.
+ */
+export function PersonGrid({
+  people,
+  columns = 3,
+}: {
+  people: readonly Person[];
+  columns?: 3 | 4;
+}) {
+  const cols =
+    columns === 4 ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-2 lg:grid-cols-3";
+  return (
+    <ul className={`mt-10 grid gap-x-8 gap-y-14 ${cols}`}>
+      {people.map((person) => (
+        <li key={person.name} className="group">
+          <div className="plate">
+            <div className="relative aspect-[4/5] w-full overflow-hidden">
+              <Image
+                src={person.image}
+                alt={person.name}
+                fill
+                sizes="(min-width: 1024px) 24vw, 45vw"
+                className="object-cover [filter:grayscale(0.85)_sepia(0.18)_contrast(1.05)] transition-[filter,transform] duration-500 ease-out group-hover:scale-[1.035] group-hover:[filter:grayscale(0)_sepia(0)_contrast(1)]"
+              />
+            </div>
+          </div>
+          <div className="mt-5 border-t border-parchment/20 pt-3 transition-colors duration-300 group-hover:border-gold/70">
+            <h3 className="text-xl text-parchment-bright">{person.name}</h3>
+            <p className="mt-1 font-sans text-sm tracking-wide text-accent">{person.rank}</p>
+          </div>
+          {person.body ? (
+            <p className="mt-3 line-clamp-3 text-base leading-snug text-parchment/75">
+              {person.body}
+            </p>
+          ) : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /**
  * A photograph mounted on a parchment mat. Every image in the design is
  * presented this way — as a plate, with the mat's shadow falling down-right.
