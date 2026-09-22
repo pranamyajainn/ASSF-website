@@ -11,8 +11,9 @@ import {
   StatGrid,
   StepList,
 } from "@/components/site/primitives";
+import { VideoLoop } from "@/components/site/video-loop";
 import { ledger } from "@/content/home";
-import { capacity, pageHero, process, whatWeConserve } from "@/content/manuscript-conservation";
+import { capacity, film, pageHero, process, whatWeConserve } from "@/content/manuscript-conservation";
 
 export const metadata: Metadata = {
   title: "Manuscript Conservation — Acharya Shanti Sagar Foundation",
@@ -51,6 +52,16 @@ export default function ManuscriptConservationPage() {
           <Heading>{process.heading}</Heading>
           <Lede>{process.intro}</Lede>
           <StepList steps={process.steps} />
+        </Section>
+
+        <Section id="film" gutter={film.gutter}>
+          <Heading>{film.heading}</Heading>
+          <Lede>{film.body}</Lede>
+          <VideoLoop
+            className="mt-10 max-w-3xl"
+            youtubeId={film.youtubeId}
+            title={film.heading}
+          />
         </Section>
 
         <Sites />

@@ -3,101 +3,60 @@
  * never say anything the Foundation hasn't actually stated. Built from the
  * same `content/*` modules the pages render, rather than a separately
  * maintained copy, so it can't drift from what's on the site.
+ *
+ * Kept deliberately terse: this whole block is resent as the system prompt
+ * on every request, and the Groq key in use has an 8,000 token-per-minute
+ * cap, so every avoidable word here is a word that isn't a reply.
  */
 import { org, pillars, folioPrice, tributePrice } from "@/content/shared";
 import * as home from "@/content/home";
-import * as about from "@/content/about";
 import * as manuscript from "@/content/manuscript-conservation";
 import * as rural from "@/content/rural-infrastructure";
 import * as community from "@/content/community-services";
 import * as trusteesContent from "@/content/trustees";
 
-const orDefault = (value: string | null | undefined, fallback: string) =>
-  value ?? fallback;
-
 function buildKnowledgeBase(): string {
   const sections: string[] = [];
 
   sections.push(`ORGANISATION
-${org.nameLatin} (${org.nameDeva}), tagline "${org.tagline}" — ${org.brandLine}.
-A charitable trust established in ${org.founded}, registration ${org.registration}.
-Registered office: ${org.office}.
-Contact: ${org.phone}, ${org.email}.
-Banking: ${org.bank.branch}, ${org.bank.account}, ${org.bank.ifsc}.
-Three pillars: ${pillars.map((p) => p.label).join(", ")}.`);
+${org.nameLatin} (${org.nameDeva}) — "${org.tagline}", ${org.brandLine}. Charitable trust, est. ${org.founded}, reg. ${org.registration}. Office: ${org.office}. Contact: ${org.phone}, ${org.email}. Pillars: ${pillars.map((p) => p.label).join(", ")}.`);
 
   sections.push(`ACHARYA SHRI 108 SHANTI SAGAR JI MAHARAJ
 ${home.lineage.paragraphs.join(" ")}
-Well-documented historical facts about him: born 1872 in Yelgula village, Belgaum
-district, Karnataka; the first Acharya of the twentieth-century Digambara
-revival; from 1920 until his death he was the first monk in centuries to
-revive the tradition of wandering all over India completely naked, without
-even a begging bowl; he took Sallekhana (the vow of fasting unto death) at
-Kunthalgiri, and died there on 18 September 1955, aged 82–83. India Post
-issued a ₹5 commemorative stamp and first-day cover in his honour (exact
-release date not yet confirmed by the Foundation — do not state one).
-The Foundation carries his name and was founded to uphold his teachings and
-tradition.`);
+Historical facts: born 1872, Yelgula village, Belgaum district, Karnataka. First Acharya of the 20th-century Digambara revival. From 1920, first monk in centuries to revive wandering all over India completely naked, without even a begging bowl. Took Sallekhana at Kunthalgiri; died there 18 Sept 1955, aged 82-83. India Post issued a ₹5 commemorative stamp in his honour (release date unconfirmed — don't state one).`);
 
-  sections.push(`MISSION
-${home.mission.paragraphs.join(" ")}
-${about.philosophy.paragraphs.join(" ")}
-Guiding quote: "${about.philosophy.quote.deva}" — ${about.philosophy.quote.translation}
-Mission: ${about.mvv.mission.body}
-Vision: ${about.mvv.vision.body}
-Values: ${about.mvv.values.map((v) => `${v.name} (${v.meaning}) — ${v.body}`).join(" ")}`);
+  sections.push(`MISSION & VALUES
+${home.mission.paragraphs[0]}
+Mission: ${home.mission.paragraphs[1]}
+Values: Ahimsa (non-violence), Satya (truth — figures published only once audited), Aparigraha (funds flow directly to conservation and community work), Anekantavada (many-sided truth, engaging across sects), Karuna & Seva (compassion and service).`);
 
   sections.push(`MANUSCRIPT CONSERVATION
 ${manuscript.pageHero.body}
-What is conserved: ${manuscript.whatWeConserve.items.map((i) => `${i.name} — ${i.body}`).join(" ")}
-Process, folio by folio: ${manuscript.process.steps.map((s) => s.title).join(" -> ")}.
-${manuscript.capacity.body} ${manuscript.capacity.recognition}
-Ledger (audited figures only): ${home.ledger.metrics
-    .map((m) => `${m.label}: ${orDefault(m.value, "not yet published")} (${m.note})`)
-    .join(" | ")}
-Survey scale across Karnataka, Maharashtra and Tamil Nadu: ${about.scale.table.rows
-    .map((r) => `${r.label} — ${about.scale.table.columns.map((c, i) => `${c}: ${r.values[i]}`).join(", ")}`)
-    .join(" | ")}
-Sites: ${home.sites.items
-    .map(
-      (s) =>
-        `${s.name} (${s.institution}, ${s.place}) — ${s.status}. ${
-          s.figures.manuscripts ? `${s.figures.manuscripts} manuscripts, ${s.figures.folios} folios. ` : ""
-        }${s.footnote}`,
-    )
-    .join(" | ")}
-Adopting a folio: ₹${folioPrice} conserves one folio; the donor receives the folio's image, its archive record, and an optional permanent credit. A tribute gift is ₹${tributePrice.toLocaleString("en-IN")}. Giving ranks (lowest to highest): ${home.adopt.ranks.map((r) => `${r.latin} (${r.deva})`).join(", ")}.
-Have manuscripts to be conserved? A survey is free to the custodian and the manuscripts never leave their premises — contact the Foundation to arrange one.`);
+Conserves: palm-leaf manuscripts and handwritten-paper manuscripts. Process: ${manuscript.process.steps.map((s) => s.title).join(" -> ")}.
+${manuscript.capacity.recognition}
+Audited ledger: ${home.ledger.metrics.map((m) => `${m.label} ${m.value ?? "not yet published"}`).join("; ")}.
+Survey scale (repositories / manuscripts / folios documented): Karnataka 3/7,118/10,75,520; Maharashtra 6/4,591/4,59,708; Tamil Nadu 9/972/1,79,700; All states 18/12,681/17,14,928 — this is what remains, not what's conserved.
+Completed sites: Kumbhoj (Bahubali Siddhopeth Granthalaya, Kolhapur) 1,399 manuscripts/1,06,277 folios, Feb 2022-Sep 2024; Karanja Lad (Mahaveer Gurukul Ashram, Washim) 221 manuscripts/28,268 folios, Oct 2024-Aug 2025. Ongoing: Shravanabelagola (Bahubali Prakrit Bhawan) 2,695 granthas/3,65,520 folios, begun 11 Jul 2025.
+Adopt a folio: ₹${folioPrice} conserves one folio (donor gets its image, archive record, optional permanent credit). Tribute gift ₹${tributePrice.toLocaleString("en-IN")}. Giving ranks low-to-high: Udbhav, Udiyman, Vaibhav, Param Sanrakshak, Param Shiromani.
+Custodians with tadpatras: survey is free, manuscripts never leave the premises — contact the Foundation to arrange one.`);
 
   sections.push(`RURAL INFRASTRUCTURE
 ${rural.pageHero.body}
-Projects: ${rural.projects.items.map((p) => `${p.name} — ${p.body}`).join(" | ")}
-Shanti Stambh: ${rural.shantiStambh.paragraphs.join(" ")}
-How the Foundation works here: ${rural.method.steps.map((s) => s.title).join(" -> ")}.`);
+Projects: ${rural.projects.items.map((p) => p.name).join("; ")}. Staff quarters, Hosur: 14 rooms converted for commuting teaching staff.
+Shanti Stambh, Yarnal: 6-foot statue and memorial to Acharya Shri Shantisagarji Maharaj, inaugurated 8 Feb 2020.`);
 
   sections.push(`COMMUNITY SERVICES
 ${community.pageHero.body}
-Healthcare: ${community.healthcare.body} Totals — ${community.healthcare.totals
-    .map((t) => `${t.label}: ${t.value}`)
-    .join(", ")}. Camps: ${community.healthcare.camps
-    .map((c) => `${c.place} (${c.beneficiaries} beneficiaries) — ${c.detail}`)
-    .join(" | ")}. ${community.healthcare.note}
+Healthcare totals: ${community.healthcare.totals.map((t) => `${t.label} ${t.value}`).join("; ")}, across free medical camps at Irkal (Raichur), Dadagadapura (Mandya) and Yarnal (Belagavi).
 Education: ${community.education.body}
-Emergency relief: ${community.relief.items.map((r) => `${r.name} — ${r.body}`).join(" | ")}
-Note: the Foundation's planned "Community Empowerment Scheme" (education and micro-business loans) has not launched yet — do not describe it as available.`);
+Relief: ${community.relief.items.map((r) => `${r.name} — ${r.body}`).join(" ")}
+Not yet launched: the "Community Empowerment Scheme" (education/micro-business loans) — don't describe it as available.`);
 
-  sections.push(`LEADERSHIP
-Founder trustees and advisors (${trusteesContent.trustees.length} trustees, ${trusteesContent.advisors.length} advisors): ${[
-    ...trusteesContent.trustees,
-    ...trusteesContent.advisors,
-  ]
-    .map((t) => `${t.name} — ${t.rank}`)
-    .join(" | ")}`);
+  sections.push(`LEADERSHIP (${trusteesContent.trustees.length} founder trustees, ${trusteesContent.advisors.length} advisors)
+${[...trusteesContent.trustees, ...trusteesContent.advisors].map((t) => `${t.name} (${t.rank})`).join("; ")}`);
 
-  sections.push(`STANDING & RECOGNITION
-${home.standing.body}
-Status: ${home.standing.badges.map((b) => `${b.label} (${b.state})`).join(", ")}.
-${home.standing.note}`);
+  sections.push(`STANDING
+Recognised as a Manuscript Conservation Centre under Gyan Bharatam (2nd such centre certified in Karnataka). Still pending: 12A/80G, CSR-1, NGO Darpan, FCRA, audited financials — say these are in progress, not yet available, if asked.`);
 
   return sections.join("\n\n");
 }
@@ -106,11 +65,11 @@ export const knowledgeBase = buildKnowledgeBase();
 
 export const systemPrompt = `You are the assistant on the website of ${org.nameLatin} (ASSF), a Jain charitable trust that conserves palm-leaf and handwritten manuscripts, builds rural infrastructure, and runs community services, carrying forward the tradition of Acharya Shri 108 Shanti Sagar Ji Maharaj.
 
-Speak in a warm, precise, unhurried register that matches a foundation devoted to conservation — never salesy, never chatty filler. Keep replies short: two to five sentences, or a brief list when a process or set of figures is being described. Use plain text only — no markdown headings, no emoji.
+Speak in a warm, precise, unhurried register — never salesy, never chatty filler. Keep replies short: two to five sentences, or a brief list for a process or set of figures. Plain text only, no markdown headings, no emoji.
 
-Answer only from the knowledge base below. Never invent a figure, date, name or policy that isn't in it — this Foundation publishes an audited number or nothing at all, and you must follow the same rule. If something isn't covered, say plainly that you don't have that detail and point the visitor to ${org.email} or ${org.phone}. You may draw on well-established general knowledge about Jainism or Acharya Shantisagar's life when it's genuinely common historical knowledge, but never about the Foundation's own operations, finances or programmes.
+Answer only from the knowledge base below. Never invent a figure, date, name or policy — this Foundation publishes an audited number or nothing at all, and you must follow the same rule. If something isn't covered, say so plainly and point to ${org.email} or ${org.phone}. General, well-established knowledge about Jainism or Acharya Shantisagar's life is fine to use; never guess about the Foundation's own operations or finances.
 
-If asked who you are, say you're ASSF's website assistant, not Acharya Shantisagar Ji and not a Foundation staff member. If asked something unrelated to the Foundation, its work, Jainism or Acharya Shantisagar, redirect politely to what you can help with.
+If asked who you are: ASSF's website assistant — not Acharya Shantisagar Ji, not Foundation staff. If asked something unrelated to the Foundation, Jainism or Acharya Shantisagar, redirect politely.
 
 KNOWLEDGE BASE:
 

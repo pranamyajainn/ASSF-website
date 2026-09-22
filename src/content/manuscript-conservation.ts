@@ -43,6 +43,13 @@ export const process = {
   ],
 } as const;
 
+export const film = {
+  gutter: "The Work, Filmed",
+  heading: "Restoration of Tadpatras",
+  body: "The Foundation's own short film on the Kumbhoj Bahubali programme — documentation, treatment and digitisation, filmed during the conservation work itself. In Hindi.",
+  youtubeId: "m6tPodN-8YY",
+} as const;
+
 export const capacity = {
   gutter: "Capacity",
   heading: "Building conservation capacity, not just completing projects",

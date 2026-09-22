@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Tiro_Devanagari_Hindi, Tiro_Kannada } from "next/font/google";
 import { org } from "@/content/shared";
+import { ChatWidget } from "@/components/chat/chat-widget";
 import "./globals.css";
 
 /**
@@ -49,7 +50,10 @@ export default function RootLayout({
       lang="en"
       className={`${tiroDeva.variable} ${tiroKannada.variable} ${inter.variable}`}
     >
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <ChatWidget />
+      </body>
     </html>
   );
 }
