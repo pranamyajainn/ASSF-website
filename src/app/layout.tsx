@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Tiro_Devanagari_Hindi, Tiro_Kannada } from "next/font/google";
-import { org } from "@/content/home";
+import { org } from "@/content/shared";
 import "./globals.css";
 
 /**

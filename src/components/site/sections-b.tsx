@@ -3,10 +3,13 @@ import {
   Container,
   EditorialNote,
   Heading,
+  InlineLink,
   Lede,
   Plate,
   Section,
 } from "./primitives";
+import { Reveal } from "./reveal";
+import { FolioWall } from "./folio-wall";
 import { adopt, board, field, lineage, standing, survey } from "@/content/home";
 
 export function Adopt() {
@@ -42,23 +45,7 @@ export function Adopt() {
         </dl>
       </div>
 
-      {/* The folio wall: one cell per conserved folio, empty until records exist. */}
-      <div
-        className="mt-12 grid grid-cols-[repeat(auto-fill,minmax(1.5rem,1fr))] gap-1.5 sm:grid-cols-[repeat(20,minmax(0,1fr))]"
-        role="img"
-        aria-label={`Folio wall: ${adopt.wall.filled} of ${adopt.wall.total} cells filled. It stays empty until real folio records exist.`}
-      >
-        {Array.from({ length: adopt.wall.total }, (_, i) => (
-          <span
-            key={i}
-            className={`aspect-[2/3] border ${
-              i < adopt.wall.filled
-                ? "border-gold bg-gold/30"
-                : "border-bark/55 bg-transparent"
-            }`}
-          />
-        ))}
-      </div>
+      <FolioWall total={adopt.wall.total} filled={adopt.wall.filled} />
       <p className="mt-5 max-w-[46ch] text-lg leading-snug text-parchment/80">
         {adopt.wall.note}
       </p>
@@ -112,7 +99,7 @@ export function Board() {
         ))}
       </ul>
 
-      <EditorialNote>{board.note}</EditorialNote>
+      <InlineLink href={board.link.href}>{board.link.label}</InlineLink>
     </Section>
   );
 }
@@ -153,18 +140,20 @@ export function Survey() {
   return (
     <section id="survey" className="scroll-mt-24 py-14 sm:py-20">
       <Container>
-        <div className="border-t-2 border-rust bg-ink px-6 py-12 sm:px-14 sm:py-14">
-          <Heading>{survey.heading}</Heading>
-          <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-parchment/90 sm:text-xl">
-            {survey.body}
-          </p>
-          <div className="mt-9 flex flex-wrap gap-4">
-            <Button href={survey.primary.href}>{survey.primary.label}</Button>
-            <Button href="tel:+918095588411" variant="outline-dark">
-              +91 8095588411
-            </Button>
+        <Reveal>
+          <div className="border-t-2 border-rust bg-ink px-6 py-12 sm:px-14 sm:py-14">
+            <Heading>{survey.heading}</Heading>
+            <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-parchment/90 sm:text-xl">
+              {survey.body}
+            </p>
+            <div className="mt-9 flex flex-wrap gap-4">
+              <Button href={survey.primary.href}>{survey.primary.label}</Button>
+              <Button href="tel:+918095588411" variant="outline-dark">
+                +91 8095588411
+              </Button>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </Container>
     </section>
   );

@@ -1,62 +1,36 @@
 /**
- * All homepage copy and data.
+ * Homepage copy and data.
  *
- * The design's governing rule: the Foundation has not yet supplied audited
- * counts, so nothing numeric is invented here. Every unknown is `null` and
- * renders as a dashed placeholder with an "awaiting Foundation" note. The site
- * this replaces displayed zeroes; that is precisely what these placeholders
- * exist to avoid.
+ * Sourced from the Foundation's own "About Us", "Final Homepage Content" and
+ * impact documents (Sept 2026) — see docs/ASSF Website context/. Figures are
+ * the ones those documents state as final; anything they don't supply stays
+ * `Pending` rather than guessed. Two known source discrepancies are flagged
+ * in place with `EditorialNote` rather than silently resolved — see the
+ * `altName` field on `sites` and the note on `board`.
  */
-
-export type Pending<T> = T | null;
-
-export const org = {
-  nameDeva: "आचार्य शांति सागर फाउंडेशन",
-  nameLatin: "Acharya Shanti Sagar Foundation",
-  tagline: "जीवन धरोहर संरक्षण",
-  sealDeva: "शांति सागरम्",
-  registration: "GAN-4-00431-2018-19",
-  phone: "+91 8095588411",
-  email: "info@shantisagarfoundation.org",
-  office:
-    "A1, Office Building, 2nd Floor, Epsilon Residential Villas, Yamlur Main Road, next to CGI, Bengaluru 560037, Karnataka",
-  bank: {
-    branch: "IndusInd Bank, M G Road, Bengaluru 560001",
-    account: "SB A/c 100118813667",
-    ifsc: "IFSC INDB0000008",
-  },
-} as const;
-
-export const folioPrice = 414;
-export const tributePrice = 9938;
-
-export const nav = [
-  { label: "Archive", href: "#plates" },
-  { label: "Conserve", href: "#sites" },
-  { label: "Projects", href: "#sites" },
-  { label: "Foundation", href: "#board" },
-] as const;
-
-export const languages = [
-  { code: "en", label: "English" },
-  { code: "hi", label: "हिन्दी" },
-  { code: "kn", label: "ಕನ್ನಡ" },
-] as const;
+import { folioPrice, org, tributePrice, type Pending } from "./shared";
 
 export const hero = {
-  eyebrow: org.tagline,
-  title: ["Palm leaf does", "not wait."],
-  body: "The Foundation conserves tadpatra — palm-leaf folios carrying Jain scripture, Ayurvedic texts, grammars and commentaries. Some are the only surviving copy of what they contain.",
+  eyebrow: org.brandLine,
+  title: ["Heritage preserved.", "Communities strengthened."],
+  body: `Acharya Shanti Sagar Foundation is a charitable trust, established in ${org.founded}, working to conserve India's manuscript heritage, build essential rural infrastructure and respond to communities in need.`,
   watermark: "क्रिया करनी चाहिए तब अपना कार्य सिद्ध होता है।",
   primary: { label: `Conserve one folio — ₹${folioPrice}`, href: "#adopt" },
   secondary: { label: "Ask us to survey your collection", href: "#survey" },
 } as const;
 
 export const heroStats = [
-  { figure: `₹${folioPrice}`, note: "conserves one folio, end to end" },
-  { figure: "NMM", note: "recognised by the National Mission for Manuscripts" },
-  { figure: "2018", note: `registered trust, Bengaluru — ${org.registration}` },
+  { figure: String(org.founded), note: `registered trust, Bengaluru — ${org.registration}` },
+  { figure: "1,620+", note: "manuscripts conserved across two completed projects" },
+  { figure: "1,34,545+", note: "folios preserved and digitised" },
 ] as const;
+
+/** Condensed intro to the three pillars — full detail lives on their own pages. */
+export const pillarsIntro = {
+  gutter: "What We Do",
+  heading: "Three pillars, one purpose",
+  body: "Heritage and humanity are bound together: preserving a manuscript protects knowledge carried across generations; strengthening a village helps people live, learn and grow with dignity.",
+} as const;
 
 export const mission = {
   marker: "1r",
@@ -64,26 +38,27 @@ export const mission = {
   heading: "What we treat, and why it cannot wait",
   paragraphs: [
     "A tadpatra is a palm leaf, incised with a stylus and inked with lampblack. It is organic: it embrittles, darkens, grows fungus, and is eaten. A folio left untreated this decade may not exist in the next.",
-    "The Foundation surveys collections held by bhandars, mandirs, mathas and families, treats folio by folio at the custodian's own site, and digitises what it treats. Conservation is free to the custodian. The manuscripts never change hands.",
+    "The Foundation surveys collections held by bhandars, mandirs, mathas and traditional institutions, treats folio by folio at the custodian's own site, and digitises what it treats. Conservation is free to the custodian, and the manuscripts never change hands.",
   ],
   plate: {
-    src: "/images/survey-in-progress.jpeg",
-    caption:
-      "Survey in progress. Photograph held by the Foundation — collection, date and photographer to be confirmed before publication.",
+    src: "/images/community/health-consultation.jpeg",
+    caption: "Field survey and assessment work, part of the Foundation's manuscript conservation programme.",
   },
+  link: { label: "Explore Manuscript Conservation", href: "/manuscript-conservation" },
 } as const;
 
 export const ledger = {
   gutter: "Ledger",
-  heading: "Conservation ledger",
+  heading: "Our work so far",
   intro:
-    "Every figure here carries an audited number and the period it covers, or it does not appear. The site this replaces displayed zeroes; nothing ships until the Foundation supplies the counts.",
+    "Every figure here is an audited count, or it carries the period it covers. Nothing here is estimated.",
   metrics: [
-    { label: "Folios conserved", value: null, note: "Audited count with the period it covers." },
-    { label: "Collections surveyed", value: null, note: "Custodian institutions, by state." },
-    { label: "Sites active", value: null, note: "Projects with work recorded this quarter." },
-    { label: "Folios digitised", value: null, note: "Masters captured and checksummed." },
+    { label: "Manuscripts conserved", value: "1,620+", note: "Across two completed projects, Kumbhoj and Karanja Lad." },
+    { label: "Folios preserved", value: "1,34,545+", note: "Assessed, treated and rehoused folio by folio." },
+    { label: "Repositories surveyed", value: "18", note: "Across Karnataka, Maharashtra and Tamil Nadu." },
+    { label: "Folios documented by survey", value: "17,14,928", note: "The scale of what remains to be conserved." },
   ] as { label: string; value: Pending<string>; note: string }[],
+  link: { label: "See the full scale of the work", href: "/manuscript-conservation#scale" },
 } as const;
 
 export const conservationStages = [
@@ -100,56 +75,80 @@ export const conservationStages = [
 
 export const sites = {
   gutter: "Sites",
-  heading: "Sites under conservation",
+  heading: "From completed work to ongoing work",
   items: [
     {
       name: "Kumbhoj",
+      institution: "Bahubali Siddhopeth Granthalaya",
       place: "Kolhapur district, Maharashtra",
       status: "Completed",
       image: "/images/sites/kumbhoj.png",
-      /** Stage counts stay null until the project manager enters them. */
-      stages: {} as Record<string, Pending<number>>,
-      footnote: "Closing report to be republished as a web document.",
+      figures: { manuscripts: "1,399", folios: "1,06,277" },
+      footnote: "Conserved and fully digitised, February 2022 – September 2024.",
+      altName: "Also recorded elsewhere as Anekant Shodh Peeth Granthalaya — flagged for the Foundation to confirm.",
     },
     {
-      name: "Karanja",
+      name: "Karanja Lad",
+      institution: "Mahaveer Gurukul Ashram",
       place: "Washim district, Maharashtra",
-      status: "Ongoing",
+      status: "Completed",
       image: "/images/sites/karanja.png",
-      stages: {} as Record<string, Pending<number>>,
-      footnote: "Stage counts to be entered by the project manager.",
+      figures: { manuscripts: "221", folios: "28,268" },
+      footnote: "Conserved October 2024 – August 2025. A further 866 folios have since been entrusted to the Foundation for the next phase.",
+      altName: "Also recorded elsewhere as Shri Mahaveer Brahmacharyashram — flagged for the Foundation to confirm.",
     },
     {
       name: "Shravanabelagola",
+      institution: "Bahubali Prakrit Bhawan, NIPSAR",
       place: "Hassan district, Karnataka",
-      status: "Commenced July 2025",
+      status: "Ongoing",
       image: "/images/sites/shravanabelagola.jpeg",
-      stages: {} as Record<string, Pending<number>>,
-      footnote: "Survey underway; first dispatch published 28 July 2025.",
+      figures: { manuscripts: "2,695 granthas", folios: "3,65,520" },
+      footnote: "Conservation began 11 July 2025 — one of the Foundation's largest continuing efforts.",
     },
-  ],
+    {
+      name: "Karanja Lad — continuing work",
+      institution: "Shri Mulsang Balatkar Gan Mandir",
+      place: "Washim district, Maharashtra",
+      status: "Ongoing",
+      image: "/images/sites/karanja.png",
+      figures: { manuscripts: null, folios: null },
+      footnote: "Building on the completed Karanja Lad project, extending conservation to further repositories in the area.",
+    },
+  ] as {
+    name: string;
+    institution: string;
+    place: string;
+    status: string;
+    image: string;
+    figures: { manuscripts: Pending<string>; folios: Pending<string> };
+    footnote: string;
+    altName?: string;
+  }[],
 } as const;
 
-export const film = {
-  gutter: "Film",
-  heading: "The work, filmed",
-  body: "The Foundation's own film on the tadpatra mission. It plays from the Foundation's channel; a captioned Hindi and Kannada cut belongs in the library alongside it.",
-  note: "Source: the Foundation's existing film — to be re-uploaded under the Foundation's own channel and licence.",
-  /** No embed until the Foundation supplies a URL on its own channel. */
-  embedUrl: null as Pending<string>,
+export const ruralTeaser = {
+  gutter: "Rural Infrastructure",
+  heading: "Building for community life",
+  body: "A missing community hall limits gatherings. Distant staff housing keeps teachers from their schools. Poor sanitation affects public health. ASSF's rural infrastructure work starts with what a space needs to enable, not with the structure itself.",
+  highlights: [
+    { name: "Samudaya Bhavan, Yarnal", detail: "A multi-purpose community hall — gatherings, cultural programmes and guest accommodation — built on donated land.", image: "/images/rural/samudaya-bhavan-complete.jpeg" },
+    { name: "Staff quarters, Hosur", detail: "14 rooms created for school and institutional staff who previously commuted from distant towns.", image: "/images/rural/staff-quarters-1.jpeg" },
+    { name: "Public sanitation, Yarnal", detail: "Toilet blocks facilitated with the Zilla Panchayat, on land provided by the local Jain Mandir committee.", image: "/images/rural/sanitation-block-1.jpeg" },
+  ],
+  link: { label: "See Rural Infrastructure", href: "/rural-infrastructure" },
 } as const;
 
-export const plates = {
-  gutter: "Plates",
-  heading: "Plates from the programme",
-  intro:
-    "These are the Foundation's own images, carried over from the current site at web resolution. Archival masters must replace them: originals at full resolution, with photographer credit, date and custodian permission recorded.",
-  caption: "Programme plate — subject, site and date to be recorded.",
-  items: [
-    { src: "/images/plates/plate-01.png" },
-    { src: "/images/plates/plate-02.png" },
-    { src: "/images/plates/plate-03.png" },
+export const communityTeaser = {
+  gutter: "Community Services",
+  heading: "Service where it is needed",
+  body: "Alongside heritage work, ASSF responds to healthcare, education and emergency needs — understanding what a community requires, then responding directly.",
+  highlights: [
+    { label: "Healthcare", stat: "3,500+", note: "beneficiaries screened across free medical camps, including 251+ cataract surgeries and 5 heart bypasses" },
+    { label: "Education support", stat: "500", note: "students given books and stationery across three schools near Yarnal" },
+    { label: "Emergency relief", stat: "7,77,534", note: "meals distributed in Bengaluru's 2020 COVID-19 response, plus flood relief for 262 families" },
   ],
+  link: { label: "See Community Services", href: "/community-services" },
 } as const;
 
 export const adopt = {
@@ -179,80 +178,33 @@ export const lineage = {
   gutter: "Lineage",
   heading: "Charitra Chakravarti Acharya Shri 108 Shanti Sagar Ji Maharaj",
   paragraphs: [
-    "The Foundation upholds the tradition re-established by Acharya Shri 108 Shanti Sagar Ji Maharaj, the first Acharya of the twentieth-century Digambar revival. It carries the vision of Swasti Shri Charukirti Bhattarak Swamiji and the blessings of Acharya Shri 108 Vardhman Sagar Ji Maharaj.",
-    "India Post issued a ₹5 commemorative stamp and first-day cover in his honour. The centenaries of his Muni Deeksha and of his Acharya Pad Pratishthapana are the occasion for the current programme.",
+    "The Foundation carries the name and upholds the tradition of Acharya Shri 108 Shanti Sagar Ji Maharaj, the first Acharya of the twentieth-century Digambar revival — the figure whose teachings shaped ASSF's founding philosophy.",
+    "India Post issued a ₹5 commemorative stamp and first-day cover in his honour. The centenaries of his Muni Deeksha and of his Acharya Pad Pratishthapana are the occasion for the current conservation programme.",
   ],
   note: "The current site carries two conflicting dates for the stamp release. The date is left out here until the Foundation confirms it.",
   plate: {
     src: "/images/stamp-first-day-cover.jpeg",
-    caption:
-      "Release of the India Post ₹5 commemorative stamp and first-day cover. Date to be confirmed.",
+    caption: "Release of the India Post ₹5 commemorative stamp and first-day cover. Date to be confirmed.",
   },
 } as const;
 
 export const board = {
   gutter: "Board",
-  heading: "The board, and the ranks it carries",
+  heading: "Guided by trustees and advisors",
   intro:
-    "The trustees hold Sanskrit honorific ranks — Param Shiromani, Param Sanrakshak, Vaibhav, Udiyman, Udbhav. The same ladder is reused as the giving ranks above; it is the Foundation's own language, not a bronze-silver-gold invention.",
+    "Eight founder trustees and three advisors guide the Foundation's work. A separate honorific ladder — Param Shiromani, Param Sanrakshak, Vaibhav, Udiyman, Udbhav — is used above for giving tiers, in the Foundation's own vocabulary.",
   members: [
-    {
-      name: "Shri Ashok Patni",
-      rank: "Settlor · Param Shiromani",
-      affiliation: "Chairman Emeritus, R.K. Group; R.K. Marble; Wonder Cement",
-      image: "/images/board/ashok-patni.jpeg",
-    },
-    {
-      name: "Dr. D. Veerendra Heggade",
-      rank: "Param Sanrakshak Margadarshak",
-      affiliation:
-        "Dharmadhikari of Dharmasthala; Member of Parliament, Rajya Sabha; Karnataka Ratna",
-      image: "/images/board/veerendra-heggade.jpeg",
-    },
-    {
-      name: "Shri Rajendra Kumar Kataria",
-      rank: "Param Shiromani",
-      affiliation: "Kataria Automobiles, Gujarat",
-      image: "/images/board/rajendra-kumar-kataria.png",
-    },
-    {
-      name: "Shri Anil Kumar Sethi",
-      rank: "President · Param Sanrakshak",
-      affiliation: "Chairman, ADD Group; SPML Infra; Pump Academy",
-      image: "/images/board/anil-kumar-sethi.jpeg",
-    },
-    {
-      name: "Shri Suresh Sablawat",
-      rank: "Param Sanrakshak",
-      affiliation: "Readiprint International; Shri Mahaveerji; Shantiveer Digambar Jain Sansthan",
-      image: "/images/board/suresh-sablawat.png",
-    },
-    {
-      name: "Shri Vinod Surendra Doddanavar",
-      rank: "Udiyman",
-      affiliation: "Secretary, Bharatesh Education Trust; Convener, INTACH Belagavi",
-      image: "/images/board/vinod-surendra-doddanavar.jpeg",
-    },
-    {
-      name: "Shri Rakesh Kumar Jain",
-      rank: "Vaibhav",
-      affiliation: "General Secretary, ASF; FCA, FCS, Insolvency Professional",
-      image: "/images/board/rakesh-kumar-jain.jpeg",
-    },
-    {
-      name: "Shri Ashok Kumar Jain",
-      rank: "Udbhav",
-      affiliation: "Shri Bharatvarshiya Digambar Jain (T.S.) Mahasabha, Delhi",
-      image: "/images/board/ashok-kumar-jain.png",
-    },
-    {
-      name: "Prof. Devagonda Appa Patil",
-      rank: "Udbhav",
-      affiliation: "Maharashtra Jain Sahitya Parishad; Dakshin Bharat Jain Sabha",
-      image: "/images/board/devagonda-appa-patil.png",
-    },
+    { name: "Dr. D. Veerendra Heggade", rank: "Param Samrakshak Margadarshak & Founder Trustee", affiliation: "Hereditary Dharmadhikari, Shri Kshetra Dharmasthala; Padma Vibhushan (2015); Member of Parliament, Rajya Sabha", image: "/images/trustees/veerendra-heggade.jpeg" },
+    { name: "Shri Ashok Patni", rank: "Settlor, Visionary & Founder Trustee", affiliation: "Chairman Emeritus, R.K. Group; R.K. Marble; Wonder Cement", image: "/images/trustees/ashok-patni.jpeg" },
+    { name: "Shri Anil Kumar Sethi", rank: "President & Founder Trustee", affiliation: "Chairman, ADD Group; founder, Pump Academy and iPUMPNET", image: "/images/trustees/anil-kumar-sethi.png" },
+    { name: "Shri Rajendra Kumar Kataria", rank: "Working President & Founder Trustee", affiliation: "Kataria Automobiles, India's leading Maruti-Suzuki dealership", image: "/images/trustees/rajendra-kumar-kataria.jpeg" },
+    { name: "Shri Rakesh Kumar Jain", rank: "Secretary & Founder Trustee", affiliation: "FCA, FCS; National Secretary, Bahubali Mahamastakabhisheka 2018", image: "/images/trustees/rakesh-kumar-jain.jpeg" },
+    { name: "Shri Suresh Sablawat", rank: "Founder Trustee", affiliation: "Readiprint International", image: "/images/trustees/suresh-sablawat.jpeg" },
+    { name: "Shri Vinod Doddanavar", rank: "Founder Trustee", affiliation: "Secretary, Bharatesh Education Trust", image: "/images/trustees/vinod-doddanavar.jpeg" },
+    { name: "Shri Ashok Kumar Jain", rank: "Founder Trustee", affiliation: "Community and cultural-institution leadership", image: "/images/trustees/ashok-kumar-jain.jpeg" },
+    { name: "Prof. Devagonda Appa Patil", rank: "Trustee", affiliation: "Maharashtra Jain Sahitya Parishad; Dakshin Bharat Jain Sabha", image: "/images/board/devagonda-appa-patil.png" },
   ],
-  note: "The current site publishes this trustee's biography under the name Shri Ashok Kumar Sethi while the card reads Shri Ashok Kumar Jain. Flagged for the Foundation to resolve; not silently guessed.",
+  link: { label: "Meet all our trustees and advisors", href: "/trustees" },
 } as const;
 
 export const field = {
@@ -260,10 +212,9 @@ export const field = {
   heading: "From the field",
   items: [
     {
-      meta: "28 July 2025 · Shravanabelagola",
-      title:
-        "श्रवणबेलगोला में अति प्राचीन ताड़ पत्र व हस्त लिखित शास्त्रों के संरक्षण एवं संवर्धन का कार्य प्रारंभ।",
-      body: "Conservation and digitisation of ancient tadpatra and handwritten scriptures begins at Shravanabelagola, under the Acharya Pad Pratishthapana centenary programme.",
+      meta: "11 July 2025 · Shravanabelagola",
+      title: "श्रवणबेलगोला में अति प्राचीन ताड़ पत्र व हस्त लिखित शास्त्रों के संरक्षण एवं संवर्धन का कार्य प्रारंभ।",
+      body: "Conservation begins at Bahubali Prakrit Bhawan, Shravanabelagola — 2,695 granthas and 3,65,520 folios, one of the Foundation's largest continuing programmes.",
       image: "/images/sites/shravanabelagola.jpeg",
       href: "#dispatch-shravanabelagola",
     },
@@ -277,7 +228,7 @@ export const field = {
     {
       meta: "India Post · date to verify",
       title: "आचार्य श्री शांति सागर जी पर विशेष ₹5 डाक टिकट का शुभ विमोचन",
-      body: "Release of the ₹5 commemorative stamp and first-day cover for Acharya Shri Shanti Sagar Ji. The current site carries two conflicting dates.",
+      body: "Release of the ₹5 commemorative stamp and first-day cover for Acharya Shri Shanti Sagar Ji. Two conflicting dates exist for this release.",
       image: "/images/stamp-first-day-cover.jpeg",
       href: "#dispatch-stamp",
     },
@@ -293,15 +244,14 @@ export const survey = {
 
 export const standing = {
   gutter: "Standing",
-  body: "Recognised by the National Mission for Manuscripts for folio conservation. Monthly and annual reporting; audited financials.",
+  body: "Recognised as a Manuscript Conservation Centre under Gyan Bharatam (formerly the National Mission for Manuscripts) — the second such centre certified in Karnataka. Monthly and annual reporting; audited financials.",
   badges: [
-    { label: "National Mission for Manuscripts", state: "recognised" as const },
-    { label: "NMM sanction ₹12 lakh", state: "verify" as const, note: "sanction year to verify" },
+    { label: "Manuscript Conservation Centre, Gyan Bharatam", state: "recognised" as const },
     { label: "12A / 80G", state: "pending" as const },
     { label: "CSR-1", state: "pending" as const },
     { label: "NGO Darpan", state: "pending" as const },
     { label: "FCRA", state: "pending" as const },
     { label: "Audited financials", state: "pending" as const },
   ] as { label: string; state: "recognised" | "verify" | "pending"; note?: string }[],
-  note: "The pending items are what a serious donor and a CSR officer check before giving. They are blockers, not decoration: each is a document the Foundation holds and must supply before launch. The NMM figure of ₹12 lakh appears on the current site without a sanction year and is not published here until it is sourced.",
+  note: "The pending items are what a serious donor and a CSR officer check before giving. They are blockers, not decoration: each is a document the Foundation holds and must supply before launch.",
 } as const;

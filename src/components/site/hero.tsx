@@ -23,7 +23,13 @@ export function Hero() {
           />
 
           <div className="relative ml-8 bg-gradient-to-br from-parchment-bright via-parchment-dim to-parchment-shade sm:ml-[4.5rem] lg:ml-[6rem]">
-            {/* Binding holes. */}
+            {/* Binding holes, drawn together by a single thread on load — the
+                page's opening idea: fragile leaves, bound. */}
+            <span
+              data-ornament
+              aria-hidden="true"
+              className="absolute right-[6%] top-1/2 hidden h-px w-[18%] origin-right -translate-y-1/2 scale-x-0 bg-ink/60 [animation:thread-draw_1.1s_ease-out_0.4s_forwards] lg:block"
+            />
             <span
               data-ornament
               aria-hidden="true"

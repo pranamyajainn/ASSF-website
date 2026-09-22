@@ -1,5 +1,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
+import type { Pending as PendingValue } from "@/content/shared";
+import { Reveal } from "./reveal";
 
 /** Page gutter + max width, shared by every band so the columns line up. */
 export function Container({
@@ -52,7 +54,9 @@ export function Section({
               </p>
             ) : null}
           </div>
-          <div className="min-w-0">{children}</div>
+          <div className="min-w-0">
+            <Reveal>{children}</Reveal>
+          </div>
         </div>
       </Container>
     </section>
@@ -148,6 +152,100 @@ export function Button({
     <a href={href} className={`${base} ${styles[variant]}`}>
       {children}
     </a>
+  );
+}
+
+/**
+ * The header band for every inner page: eyebrow, title and a short intro on
+ * the parchment ground, echoing the homepage hero without repeating its
+ * folio-panel photo treatment.
+ */
+export function PageHero({
+  eyebrow,
+  title,
+  body,
+}: {
+  eyebrow: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <section id="top" className="border-b border-parchment/10 py-14 sm:py-20">
+      <Container>
+        <p className="font-sans text-sm tracking-wide text-parchment/55">{eyebrow}</p>
+        <h1 className="mt-4 max-w-[26ch] text-balance text-5xl leading-[1.08] text-parchment-bright sm:text-6xl">
+          {title}
+        </h1>
+        <p className="mt-7 max-w-[54ch] text-lg leading-relaxed text-parchment/90 sm:text-xl">
+          {body}
+        </p>
+      </Container>
+    </section>
+  );
+}
+
+/** An inline text link in the accent colour, underlined — used for in-page "explore X" links. */
+export function InlineLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <a
+      href={href}
+      className="mt-6 inline-block border-b border-accent/40 pb-1 font-sans text-base text-accent transition-colors hover:border-accent"
+    >
+      {children}
+    </a>
+  );
+}
+
+/**
+ * A grid of labelled figures with a supporting note — the shape every
+ * "our work so far" style stat block takes across the site. A `null` value
+ * renders as the `Pending` placeholder rather than a guess.
+ */
+export function StatGrid({
+  metrics,
+  columns = 4,
+}: {
+  metrics: readonly { label: string; value: PendingValue<string>; note?: string }[];
+  columns?: 2 | 3 | 4;
+}) {
+  const cols = { 2: "sm:grid-cols-2", 3: "sm:grid-cols-2 lg:grid-cols-3", 4: "sm:grid-cols-2 lg:grid-cols-4" }[columns];
+  return (
+    <dl className={`mt-10 grid gap-x-10 gap-y-10 ${cols}`}>
+      {metrics.map((metric) => (
+        <div key={metric.label} className="border-t border-parchment/25 pt-4">
+          <dt className="font-sans text-base text-parchment/90">{metric.label}</dt>
+          <dd className="mt-4">
+            {metric.value ? (
+              <span className="text-3xl text-gold">{metric.value}</span>
+            ) : (
+              <Pending label="awaiting Foundation" width="7rem" />
+            )}
+            {metric.note ? (
+              <p className="mt-3 max-w-[28ch] text-lg leading-snug text-parchment/80">{metric.note}</p>
+            ) : null}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/**
+ * A numbered method — the "how we work" pattern every pillar page uses
+ * (Understand → Respond → Collaborate…, or Listen & Assess → Define the
+ * Purpose…). Keeps that recurring shape in one place.
+ */
+export function StepList({ steps }: { steps: readonly { title: string; body: string }[] }) {
+  return (
+    <ol className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+      {steps.map((step, i) => (
+        <li key={step.title} className="border-t border-parchment/25 pt-4">
+          <span className="font-sans text-sm text-accent">{String(i + 1).padStart(2, "0")}</span>
+          <h3 className="mt-2 text-xl text-parchment-bright">{step.title}</h3>
+          <p className="mt-2 max-w-[32ch] text-lg leading-snug text-parchment/80">{step.body}</p>
+        </li>
+      ))}
+    </ol>
   );
 }
 

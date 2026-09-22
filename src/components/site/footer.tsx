@@ -1,6 +1,7 @@
+import Image from "next/image";
+import Link from "next/link";
 import { Container } from "./primitives";
-import { Seal } from "./seal";
-import { org } from "@/content/home";
+import { nav, org } from "@/content/shared";
 
 export function Footer() {
   return (
@@ -9,7 +10,13 @@ export function Footer() {
         <div className="grid gap-x-12 gap-y-10 lg:grid-cols-2">
           <div>
             <div className="flex items-center gap-4">
-              <Seal className="size-12 shrink-0 text-gold" />
+              <Image
+                src="/images/logo/assf-logo-footer.png"
+                alt={org.nameLatin}
+                width={2485}
+                height={3794}
+                className="h-16 w-auto bg-parchment-bright/95 p-1.5"
+              />
               <p className="text-3xl text-gold">
                 {org.sealDeva} <span className="text-gold/80">॥</span>
               </p>
@@ -60,6 +67,26 @@ export function Footer() {
             </p>
           </div>
         </div>
+
+        <nav aria-label="Footer" className="mt-12 border-t border-parchment/15 pt-8">
+          <ul className="flex flex-wrap gap-x-8 gap-y-3">
+            <li>
+              <Link href="/" className="text-base text-parchment/75 hover:text-parchment-bright">
+                Home
+              </Link>
+            </li>
+            {nav.map((item) => (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  className="text-base text-parchment/75 hover:text-parchment-bright"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </Container>
     </footer>
   );

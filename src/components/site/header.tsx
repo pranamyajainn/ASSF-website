@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { Container } from "./primitives";
-import { Seal } from "./seal";
-import { folioPrice, languages, nav, org } from "@/content/home";
+import { MobileNav } from "./mobile-nav";
+import { folioPrice, languages, nav, org } from "@/content/shared";
 
 /**
  * Masthead, with the design's two utility controls made real rather than
@@ -74,39 +76,40 @@ export function Header() {
       <header className="border-b border-parchment/10">
         <Container>
           <div className="flex flex-wrap items-center gap-x-8 gap-y-5 py-6">
-            <a href="#top" className="flex min-w-0 items-center gap-3 sm:gap-4">
-              <Seal className="size-10 shrink-0 text-gold sm:size-12" />
-              <span className="min-w-0">
-                <span className="block text-xl leading-tight text-parchment-bright sm:text-2xl">
-                  {org.nameDeva}
-                </span>
-                <span className="mt-0.5 block font-sans text-[0.6rem] tracking-[0.12em] text-parchment/65 sm:text-xs sm:tracking-[0.18em]">
-                  {org.nameLatin.toUpperCase()}
-                </span>
-              </span>
-            </a>
+            <Link href="/" className="flex min-w-0 shrink-0 items-center">
+              <Image
+                src="/images/logo/assf-logo.png"
+                alt={org.nameLatin}
+                width={502}
+                height={236}
+                priority
+                className="h-12 w-auto bg-parchment-bright/95 px-2 py-1.5 sm:h-14"
+              />
+            </Link>
 
             <nav aria-label="Primary" className="ml-auto hidden lg:block">
-              <ul className="flex items-center gap-9">
+              <ul className="flex items-center gap-8">
                 {nav.map((item) => (
                   <li key={item.label}>
-                    <a
+                    <Link
                       href={item.href}
-                      className="text-lg text-parchment/85 transition-colors hover:text-parchment-bright"
+                      className="text-base text-parchment/85 transition-colors hover:text-parchment-bright"
                     >
                       {item.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
             </nav>
 
-            <a
-              href="#adopt"
-              className="ml-auto shrink-0 bg-rust px-5 py-3 font-sans text-base text-parchment-bright transition-colors hover:bg-rust/85 sm:px-6 lg:ml-0"
+            <MobileNav />
+
+            <Link
+              href="/#adopt"
+              className="ml-auto hidden shrink-0 bg-rust px-5 py-3 font-sans text-base text-parchment-bright transition-colors hover:bg-rust/85 sm:px-6 lg:ml-0 lg:block"
             >
               Give — ₹{folioPrice}
-            </a>
+            </Link>
           </div>
         </Container>
       </header>

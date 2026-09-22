@@ -90,10 +90,26 @@ body {
     0 1px 0 rgba(255, 255, 255, 0.35) inset;
 }
 
-/* The dashed rule that stands in for a number the Foundation has not supplied. */
+/*
+ * The dashed rule that stands in for a number the Foundation has not
+ * supplied. It breathes slowly rather than sitting dead on the page, so an
+ * absent figure still reads as "awaited", not as inert empty space.
+ */
 @utility pending-rule {
   display: inline-block;
   height: 0;
   border-top: 2px dashed color-mix(in oklab, var(--color-parchment) 55%, transparent);
   vertical-align: middle;
+  animation: pending-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes pending-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* The thread drawn between the hero folio's binding holes, once, on load. */
+@keyframes thread-draw {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }

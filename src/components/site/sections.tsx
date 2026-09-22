@@ -3,12 +3,34 @@ import {
   Container,
   EditorialNote,
   Heading,
+  InlineLink,
   Lede,
-  Pending,
   Plate,
   Section,
+  StatGrid,
 } from "./primitives";
-import { conservationStages, film, ledger, mission, plates, sites } from "@/content/home";
+import { ledger, mission, pillarsIntro, ruralTeaser, communityTeaser, sites } from "@/content/home";
+import { pillars } from "@/content/shared";
+
+export function PillarsIntro() {
+  return (
+    <Section id="pillars" gutter={pillarsIntro.gutter}>
+      <Heading>{pillarsIntro.heading}</Heading>
+      <Lede>{pillarsIntro.body}</Lede>
+
+      <ul className="mt-10 grid gap-x-10 gap-y-10 sm:grid-cols-3">
+        {pillars.map((pillar) => (
+          <li key={pillar.slug} className="border-t border-parchment/25 pt-5">
+            <h3 className="text-2xl text-parchment-bright">{pillar.label}</h3>
+            <p className="mt-1 font-sans text-sm text-accent">{pillar.tagline}</p>
+            <p className="mt-3 text-lg leading-snug text-parchment/80">{pillar.body}</p>
+            <InlineLink href={`/${pillar.slug}`}>Explore {pillar.label}</InlineLink>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
 
 export function Mission() {
   return (
@@ -20,10 +42,11 @@ export function Mission() {
       <Plate
         className="mt-12 max-w-xl"
         src={mission.plate.src}
-        alt="A palm-leaf folio laid out for survey beside a colour reference strip."
+        alt="Foundation staff assessing a manuscript collection in the field."
         caption={mission.plate.caption}
         ratio="4 / 3"
       />
+      <InlineLink href={mission.link.href}>{mission.link.label}</InlineLink>
     </Section>
   );
 }
@@ -33,24 +56,8 @@ export function Ledger() {
     <Section id="ledger" gutter={ledger.gutter}>
       <Heading>{ledger.heading}</Heading>
       <Lede>{ledger.intro}</Lede>
-
-      <dl className="mt-12 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-        {ledger.metrics.map((metric) => (
-          <div key={metric.label} className="border-t border-parchment/25 pt-4">
-            <dt className="font-sans text-base text-parchment/90">{metric.label}</dt>
-            <dd className="mt-5">
-              {metric.value ? (
-                <span className="text-3xl text-gold">{metric.value}</span>
-              ) : (
-                <Pending label="awaiting Foundation" width="7rem" />
-              )}
-              <p className="mt-4 max-w-[26ch] text-lg leading-snug text-parchment/80">
-                {metric.note}
-              </p>
-            </dd>
-          </div>
-        ))}
-      </dl>
+      <StatGrid metrics={ledger.metrics} />
+      <InlineLink href={ledger.link.href}>{ledger.link.label}</InlineLink>
     </Section>
   );
 }
@@ -92,40 +99,25 @@ export function Sites() {
                   <StatusBadge>{site.status}</StatusBadge>
                 </div>
               </div>
+              <p className="mt-1 font-sans text-base text-ink/60">{site.institution}</p>
 
-              <div className="mt-6 border-t border-ink/20 pt-6">
-                <dl className="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3 lg:grid-cols-5">
-                  {conservationStages.map((stage) => {
-                    const count = site.stages[stage];
-                    return (
-                      <div key={stage}>
-                        <dt className="font-sans text-sm text-ink/75">{stage}</dt>
-                        <dd className="mt-2.5">
-                          {count == null ? (
-                            <span
-                              className="block h-0 w-20 border-t-2 border-dashed border-ink/40"
-                              role="img"
-                              aria-label={`${stage}: count not yet published`}
-                            />
-                          ) : (
-                            <span className="text-xl text-ink">{count}</span>
-                          )}
-                        </dd>
-                      </div>
-                    );
-                  })}
-                </dl>
+              <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-ink/20 pt-6 sm:w-1/2">
+                <div>
+                  <dt className="font-sans text-sm text-ink/75">Manuscripts</dt>
+                  <dd className="mt-1 text-xl text-ink">{site.figures.manuscripts ?? "—"}</dd>
+                </div>
+                <div>
+                  <dt className="font-sans text-sm text-ink/75">Folios</dt>
+                  <dd className="mt-1 text-xl text-ink">{site.figures.folios ?? "—"}</dd>
+                </div>
               </div>
 
-              <div className="mt-7 flex flex-wrap items-center gap-x-8 gap-y-3">
-                <p className="text-lg text-ink/80">{site.footnote}</p>
-                <a
-                  href={`#project-${site.name.toLowerCase()}`}
-                  className="font-sans text-base text-rust underline decoration-rust/40 underline-offset-[6px] hover:decoration-rust"
-                >
-                  Project record
-                </a>
-              </div>
+              <p className="mt-6 text-lg text-ink/80">{site.footnote}</p>
+              {site.altName ? (
+                <p className="mt-3 max-w-[52ch] font-sans text-sm leading-relaxed text-rust">
+                  {site.altName}
+                </p>
+              ) : null}
             </div>
           </article>
         ))}
@@ -134,53 +126,44 @@ export function Sites() {
   );
 }
 
-export function Film() {
+export function RuralTeaser() {
   return (
-    <Section id="film" gutter={film.gutter}>
-      <div className="plate">
-        <div className="flex aspect-video w-full items-center justify-center bg-ink">
-          {film.embedUrl ? (
-            <iframe
-              src={film.embedUrl}
-              title={film.heading}
-              allowFullScreen
-              className="size-full"
-            />
-          ) : (
-            <p className="max-w-[32ch] px-6 text-center font-sans text-sm text-parchment/45">
-              The film is not embedded until it is hosted on the Foundation&rsquo;s
-              own channel.
-            </p>
-          )}
-        </div>
-      </div>
+    <Section id="rural" gutter={ruralTeaser.gutter}>
+      <Heading>{ruralTeaser.heading}</Heading>
+      <Lede>{ruralTeaser.body}</Lede>
 
-      <Heading className="mt-10">{film.heading}</Heading>
-      <Lede>{film.body}</Lede>
-      <p className="mt-6 max-w-[54ch] font-sans text-[0.95rem] leading-relaxed text-accent">
-        {film.note}
-      </p>
+      <ul className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-3">
+        {ruralTeaser.highlights.map((item) => (
+          <li key={item.name}>
+            <Plate src={item.image} alt={item.name} ratio="4 / 3" />
+            <h3 className="mt-4 text-xl text-parchment-bright">{item.name}</h3>
+            <p className="mt-2 text-lg leading-snug text-parchment/80">{item.detail}</p>
+          </li>
+        ))}
+      </ul>
+      <InlineLink href={ruralTeaser.link.href}>{ruralTeaser.link.label}</InlineLink>
     </Section>
   );
 }
 
-export function Plates() {
+export function CommunityTeaser() {
   return (
-    <Section id="plates" gutter={plates.gutter}>
-      <Heading>{plates.heading}</Heading>
-      <Lede>{plates.intro}</Lede>
+    <Section id="community" gutter={communityTeaser.gutter}>
+      <Heading>{communityTeaser.heading}</Heading>
+      <Lede>{communityTeaser.body}</Lede>
 
-      <div className="mt-10 grid gap-x-10 gap-y-10 sm:grid-cols-2">
-        {plates.items.map((plate, i) => (
-          <Plate
-            key={plate.src}
-            src={plate.src}
-            alt={`Programme plate ${i + 1}`}
-            caption={plates.caption}
-            ratio="8 / 5"
-          />
+      <dl className="mt-10 grid gap-x-10 gap-y-10 sm:grid-cols-3">
+        {communityTeaser.highlights.map((item) => (
+          <div key={item.label} className="border-t border-parchment/25 pt-4">
+            <dt className="font-sans text-base text-parchment/90">{item.label}</dt>
+            <dd className="mt-4">
+              <span className="text-3xl text-gold">{item.stat}</span>
+              <p className="mt-3 max-w-[30ch] text-lg leading-snug text-parchment/80">{item.note}</p>
+            </dd>
+          </div>
         ))}
-      </div>
+      </dl>
+      <InlineLink href={communityTeaser.link.href}>{communityTeaser.link.label}</InlineLink>
     </Section>
   );
 }
