@@ -56,7 +56,7 @@ export async function POST(req: Request) {
         model: MODEL,
         stream: true,
         temperature: 0.4,
-        max_tokens: 1024,
+        max_tokens: 500,
         reasoning_effort: "low",
         messages: [{ role: "system", content: systemPrompt }, ...messages],
       }),
@@ -66,9 +66,17 @@ export async function POST(req: Request) {
   }
 
   if (!upstream.ok || !upstream.body) {
+    if (upstream.status === 429) {
+      return new Response(
+        "I'm getting a lot of questions right now — please wait a few seconds and try again.",
+        { status: 429 },
+      );
+    }
     const detail = await upstream.text().catch(() => "");
     console.error("Groq upstream error", upstream.status, detail);
-    return new Response(`DEBUG ${upstream.status}: ${detail}`, { status: 502 });
+    return new Response("The assistant is temporarily unavailable. Please try again shortly.", {
+      status: 502,
+    });
   }
 
   const reader = upstream.body.getReader();

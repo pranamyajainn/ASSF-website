@@ -202,7 +202,6 @@ export const board = {
     { name: "Shri Suresh Sablawat", rank: "Founder Trustee", affiliation: "Readiprint International", image: "/images/trustees/suresh-sablawat.jpeg" },
     { name: "Shri Vinod Doddanavar", rank: "Founder Trustee", affiliation: "Secretary, Bharatesh Education Trust", image: "/images/trustees/vinod-doddanavar.jpeg" },
     { name: "Shri Ashok Kumar Jain", rank: "Founder Trustee", affiliation: "Community and cultural-institution leadership", image: "/images/trustees/ashok-kumar-jain.jpeg" },
-    { name: "Prof. Devagonda Appa Patil", rank: "Trustee", affiliation: "Maharashtra Jain Sahitya Parishad; Dakshin Bharat Jain Sabha", image: "/images/board/devagonda-appa-patil.png" },
   ],
   link: { label: "Meet all our trustees and advisors", href: "/trustees" },
 } as const;

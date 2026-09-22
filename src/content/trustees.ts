@@ -1,11 +1,6 @@
 /**
  * Full trustee and advisor bios — Foundation's "Trustee Intro" document
  * (Aug 2026), rewritten and condensed.
- *
- * Prof. Devagonda Appa Patil appears on the Foundation's current live site
- * as a trustee but is absent from this document. Per the Foundation's
- * instruction, he stays listed — with the neutral title "Trustee" rather
- * than an invented founding-trustee status the source doesn't support.
  */
 export const pageHero = {
   eyebrow: "Leadership & Governance",
@@ -61,12 +56,6 @@ export const trustees = [
     rank: "Founder Trustee",
     body: "Holds senior positions across community organisations, with long-standing responsibility for heritage conservation and community cohesion.",
     image: "/images/trustees/ashok-kumar-jain.jpeg",
-  },
-  {
-    name: "Prof. Devagonda Appa Patil",
-    rank: "Trustee",
-    body: "Affiliated with the Maharashtra Jain Sahitya Parishad and the Dakshin Bharat Jain Sabha.",
-    image: "/images/board/devagonda-appa-patil.png",
   },
 ] as const;
 

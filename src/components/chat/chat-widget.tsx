@@ -149,7 +149,8 @@ export function ChatWidget() {
       });
 
       if (!res.ok || !res.body) {
-        throw new Error("The assistant is temporarily unavailable. Please try again shortly.");
+        const detail = await res.text().catch(() => "");
+        throw new Error(detail || "The assistant is temporarily unavailable. Please try again shortly.");
       }
 
       const reader = res.body.getReader();
@@ -161,7 +162,8 @@ export function ChatWidget() {
       }
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
-        setError(`Something went wrong. Please try again, or reach us at ${org.email}.`);
+        const message = (err as Error).message;
+        setError(message || `Something went wrong. Please try again, or reach us at ${org.email}.`);
         setMessages((prev) => prev.slice(0, -1));
       }
     } finally {
