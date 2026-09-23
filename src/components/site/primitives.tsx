@@ -2,21 +2,10 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import type { Pending as PendingValue } from "@/content/shared";
 import { PersonCard } from "./person-card";
+import { Container } from "./container";
+import { getContent } from "@/i18n/content";
 
-/** Page gutter + max width, shared by every band so the margins line up. */
-export function Container({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`mx-auto w-full max-w-[86rem] px-5 sm:px-8 lg:px-12 ${className}`}>
-      {children}
-    </div>
-  );
-}
+export { Container };
 
 /**
  * The folio number and short title a scribe writes in the margin. The
@@ -155,20 +144,21 @@ export function Gloss({ label, children }: { label?: string; children: ReactNode
  * arrive — so an absent figure is drawn as a lacuna, a scribe's row of dots
  * over a gap in the text, and labelled. Never rendered as 0.
  */
-export function Pending({
+export async function Pending({
   width = "5rem",
   label,
 }: {
   width?: string;
   label?: string;
 }) {
+  const { ui } = await getContent();
   return (
     <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
       <span
         className="lacuna"
         style={{ width }}
         role="img"
-        aria-label={label ? `Not yet published — ${label}` : "Not yet published"}
+        aria-label={label ? `${ui.common.notPublished} — ${label}` : ui.common.notPublished}
       />
       {label ? (
         <span className="font-mono text-register text-cinnabar" aria-hidden="true">
@@ -184,20 +174,21 @@ export function Pending({
  * where the Foundation's sources disagree, both are shown. The caret is the
  * kākapada, the mark a scribe uses to point at a marginal correction.
  */
-export function EditorialNote({
+export async function EditorialNote({
   children,
-  label = "Editorial note",
+  label,
   className = "mt-8",
 }: {
   children: ReactNode;
   label?: string;
   className?: string;
 }) {
+  const { ui } = await getContent();
   return (
     <aside className={`max-w-[60ch] border-l border-cinnabar/50 pl-4 ${className}`}>
       <p className="font-mono text-register text-cinnabar">
         <span aria-hidden="true">‸ </span>
-        {label}
+        {label ?? ui.common.editorialNote}
       </p>
       <p className="mt-1 text-[0.98rem] leading-relaxed text-ink-soft">{children}</p>
     </aside>
@@ -251,13 +242,14 @@ export function InlineLink({
  * A register: figures set out as in a ledger — label, dotted leader, figure
  * — with the breakdown typed beneath. A `null` figure is a lacuna.
  */
-export function Register({
+export async function Register({
   entries,
   className = "mt-10",
 }: {
   entries: readonly { label: string; value: PendingValue<string>; note?: string }[];
   className?: string;
 }) {
+  const { ui } = await getContent();
   return (
     <dl className={`max-w-[46rem] border-t border-ink/20 ${className}`}>
       {entries.map((entry) => (
@@ -266,7 +258,7 @@ export function Register({
             <dt className="text-[1.125rem] text-ink">{entry.label}</dt>
             <span aria-hidden="true" className="leader hidden sm:block" />
             <dd className="ml-auto font-display text-[clamp(1.7rem,1.3rem+1.4vw,2.5rem)] font-medium leading-none tabular-nums text-ink">
-              {entry.value ?? <Pending label="awaiting Foundation" width="6rem" />}
+              {entry.value ?? <Pending label={ui.common.awaiting} width="6rem" />}
             </dd>
           </div>
           {entry.note ? (

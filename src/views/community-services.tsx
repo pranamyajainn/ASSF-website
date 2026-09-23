@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import {
@@ -11,24 +10,28 @@ import {
   Register,
   Verses,
 } from "@/components/site/primitives";
-import { education, healthcare, method, pageHero, relief } from "@/content/community-services";
+import { getContent } from "@/i18n/content";
+import { pageMetadata } from "@/i18n/metadata";
 
-export const metadata: Metadata = {
-  title: "Community Services — Acharya Shanti Sagar Foundation",
-  description: pageHero.body,
-};
+export async function generateMetadata() {
+  const { community } = await getContent();
+  return pageMetadata("community", "/community-services", community.pageHero.body);
+}
 
-export default function CommunityServicesPage() {
+export default async function CommunityServicesPage() {
+  const { community, ui } = await getContent();
+  const { education, healthcare, method, pageHero, relief } = community;
+  const t = ui.community;
   return (
     <>
       <Header />
       <main>
-        <PageHero label="Community services" {...pageHero} />
+        <PageHero label={t.heroLabel} {...pageHero} />
 
         <Leaf id="healthcare" label={healthcare.label}>
           <Heading>{healthcare.heading}</Heading>
           <Prose>
-            <Gloss label="Also">{healthcare.note}</Gloss>
+            <Gloss label={t.also}>{healthcare.note}</Gloss>
             <p>{healthcare.body}</p>
           </Prose>
           <Register entries={healthcare.totals} />
@@ -36,12 +39,12 @@ export default function CommunityServicesPage() {
           {/* The camps, as a register: place, reach, what was done. */}
           <div className="bleed-margin mt-14 overflow-x-auto">
             <table className="w-full min-w-[36rem] border-collapse">
-              <caption className="sr-only">Free medical camps</caption>
+              <caption className="sr-only">{t.campsCaption}</caption>
               <thead>
                 <tr className="border-y border-ink/25">
-                  <th scope="col" className="py-3 pr-4 text-left font-mono text-register font-normal text-ink-faint">Camp</th>
-                  <th scope="col" className="px-4 py-3 text-right font-mono text-register font-normal text-ink-faint">Beneficiaries</th>
-                  <th scope="col" className="py-3 pl-6 text-left font-mono text-register font-normal text-ink-faint">Specialties and outcomes</th>
+                  <th scope="col" className="py-3 pr-4 text-left font-mono text-register font-normal text-ink-faint">{t.camp}</th>
+                  <th scope="col" className="px-4 py-3 text-right font-mono text-register font-normal text-ink-faint">{t.beneficiaries}</th>
+                  <th scope="col" className="py-3 pl-6 text-left font-mono text-register font-normal text-ink-faint">{t.specialties}</th>
                 </tr>
               </thead>
               <tbody>
@@ -87,7 +90,7 @@ export default function CommunityServicesPage() {
             <Plate
               src={education.image}
               alt={education.imageAlt}
-              caption="Education support near Yarnal."
+              caption={t.educationCaption}
               ratio="16 / 9"
               sizes="(min-width: 1024px) 45vw, 100vw"
             />

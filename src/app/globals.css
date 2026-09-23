@@ -49,7 +49,9 @@
   --font-display: var(--font-eczar), "Iowan Old Style", Georgia, serif;
   --font-serif: var(--font-tiro-deva), "Iowan Old Style", Georgia, serif;
   --font-sans: var(--font-tiro-deva), "Iowan Old Style", Georgia, serif;
-  --font-mono: var(--font-courier), "Courier New", ui-monospace, monospace;
+  /* Courier has no Indic glyphs; the Tiro faces take over, glyph by glyph,
+     when a register line is written in Devanagari or Kannada. */
+  --font-mono: var(--font-courier), var(--font-tiro-deva), var(--font-tiro-kannada), "Courier New", ui-monospace, monospace;
   --font-kannada: var(--font-tiro-kannada), var(--font-tiro-deva), serif;
 
   --text-display: clamp(2.55rem, 1.35rem + 4.1vw, 5.1rem);
@@ -175,8 +177,11 @@ body {
   }
 }
 
-/* Break out of the text column, over the right margin, to the viewport. */
+/* Break out of the text column, over the right margin, to the viewport.
+   Anything that enters the margin clears a gloss floating there first —
+   otherwise a long gloss beside a short paragraph runs through it. */
 @utility bleed-right {
+  clear: right;
   margin-right: -1.25rem;
   @media (width >= 40rem) {
     margin-right: -2rem;
@@ -191,6 +196,7 @@ body {
 
 /* Span the text column plus the right margin, but stop at the container. */
 @utility bleed-margin {
+  clear: right;
   @media (width >= 64rem) {
     margin-right: -16rem;
   }
@@ -426,4 +432,61 @@ html[data-clean] body {
 
 html[data-clean] [data-ornament] {
   visibility: hidden;
+}
+
+/* ------------------------------------------------------------- editions */
+
+/*
+ * The Hindi and Kannada editions. Each edition is written in its own hand:
+ * the Kannada edition sets its display in Noto Serif Kannada and its text in
+ * Tiro Kannada, and every edition numbers its leaves, plates and verses in
+ * its own numerals — while figures stay in international digits.
+ */
+html[lang="kn"] {
+  --font-display: var(--font-noto-kannada), var(--font-eczar), serif;
+  --font-serif: var(--font-tiro-kannada), var(--font-tiro-deva), serif;
+}
+
+html:is([lang="hi"], [lang="kn"]) {
+  /* Indic scripts carry marks above and below the line: open the leading,
+     and never tighten the tracking that joins conjuncts. */
+  --text-display--line-height: 1.22;
+  --text-title--line-height: 1.28;
+  --text-register: 0.875rem;
+  --text-register--line-height: 1.6;
+}
+
+html:is([lang="hi"], [lang="kn"]) :is(h1, h2, h3, blockquote p) {
+  line-height: 1.32;
+  letter-spacing: normal;
+}
+
+html:is([lang="hi"], [lang="kn"]) .inked {
+  /* The ink is clipped to the glyphs' box; give the upper marks room. */
+  padding-block: 0.06em;
+}
+
+html[lang="kn"] [data-leaf-no]::before {
+  content: counter(leaf, kannada);
+}
+
+html[lang="hi"] figure[data-plate] figcaption::before {
+  content: "चित्र " counter(plate, devanagari) "\2002";
+  content: "चित्र " counter(plate, devanagari) "\2002" / "";
+}
+
+html[lang="kn"] figure[data-plate] figcaption::before {
+  content: "ಚಿತ್ರ " counter(plate, kannada) "\2002";
+  content: "ಚಿತ್ರ " counter(plate, kannada) "\2002" / "";
+}
+
+html[lang="kn"] ol[data-verses] [data-verse-end]::after {
+  content: "\00a0॥" counter(verse, kannada) "॥";
+  content: "\00a0॥" counter(verse, kannada) "॥" / "";
+}
+
+/* Courier's monospaced space is twice a Devanagari or Kannada word gap;
+   pull it in so typed register lines in the Indic editions read as words. */
+html:is([lang="hi"], [lang="kn"]) .font-mono {
+  word-spacing: -0.28em;
 }

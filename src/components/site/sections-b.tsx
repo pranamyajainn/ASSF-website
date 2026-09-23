@@ -12,8 +12,9 @@ import {
   Prose,
 } from "./primitives";
 import { FolioWall } from "./folio-wall";
-import { adopt, board, field, join, lineage, standing, survey } from "@/content/home";
-import { org } from "@/content/shared";
+import { getContent } from "@/i18n/content";
+import { fill } from "@/i18n/ui";
+import { scriptLang } from "@/lib/deva";
 
 /**
  * Join the work. Giving is one way in among several, never the loudest thing
@@ -21,7 +22,9 @@ import { org } from "@/content/shared";
  * first. Folio adoption follows as a quieter sub-section — its price stated
  * once, in a sentence, and the giving ranks and folio bundle set small.
  */
-export function Join() {
+export async function Join() {
+  const { home, ui } = await getContent();
+  const { join, adopt } = home;
   return (
     <Leaf id="join" label={join.label}>
       <Heading>{join.heading}</Heading>
@@ -89,9 +92,13 @@ export function Join() {
 
         <div className="lg:pt-2">
           <p className="font-mono text-register text-ink-faint">
-            Folio bundle — {adopt.wall.filled} of {adopt.wall.total} leaves adopted
+            {fill(ui.home.bundleLabel, { filled: adopt.wall.filled, total: adopt.wall.total })}
           </p>
-          <FolioWall total={adopt.wall.total} filled={adopt.wall.filled} />
+          <FolioWall
+            total={adopt.wall.total}
+            filled={adopt.wall.filled}
+            label={fill(ui.home.bundleAria, { filled: adopt.wall.filled, total: adopt.wall.total })}
+          />
           <p className="mt-6 max-w-[44ch] text-[1rem] leading-relaxed text-ink-soft">
             {adopt.wall.note}
           </p>
@@ -106,7 +113,9 @@ export function Join() {
  * photograph of that age should be shown, not blown up to fill a banner —
  * beside his full name in Devanagari, the script it is written in.
  */
-export function Lineage() {
+export async function Lineage() {
+  const { home } = await getContent();
+  const { lineage } = home;
   return (
     <Leaf id="lineage" label={lineage.label}>
       <div className="bleed-margin grid gap-x-14 gap-y-10 lg:grid-cols-[15rem_minmax(0,1fr)]">
@@ -124,7 +133,7 @@ export function Lineage() {
 
         <div className="min-w-0">
           <p
-            lang="hi"
+            lang={scriptLang(lineage.nameDeva)}
             className="max-w-[20ch] font-display text-[clamp(1.6rem,1.2rem+1.5vw,2.4rem)] leading-[1.25] text-cinnabar"
           >
             {lineage.nameDeva}
@@ -162,7 +171,9 @@ export function Lineage() {
   );
 }
 
-export function Board() {
+export async function Board() {
+  const { home } = await getContent();
+  const { board } = home;
   return (
     <Leaf id="board" label={board.label}>
       <Heading>{board.heading}</Heading>
@@ -191,7 +202,9 @@ export function Board() {
  * set large, the English summary beneath. An undated dispatch shows its
  * date as a lacuna rather than picking one of two conflicting dates.
  */
-export function Field() {
+export async function Field() {
+  const { home, ui } = await getContent();
+  const { field } = home;
   return (
     <Leaf id="field" label={field.label}>
       <Heading>{field.heading}</Heading>
@@ -205,7 +218,7 @@ export function Field() {
             className="grid gap-x-10 gap-y-3 border-b border-ink/20 py-7 md:grid-cols-[11rem_minmax(0,1fr)]"
           >
             <p className="font-mono text-register text-ink-faint">
-              {item.date ?? <Pending width="3rem" label="date to verify" />}
+              {item.date ?? <Pending width="3rem" label={ui.common.dateToVerify} />}
               <span className="block">{item.place}</span>
             </p>
             <div>
@@ -226,16 +239,13 @@ export function Field() {
   );
 }
 
-const standingState = {
-  recognised: { label: "recognised" },
-  verify: { label: "to verify" },
-  pending: { label: "pending" },
-} as const;
-
-export function Standing() {
+export async function Standing() {
+  const { home, ui } = await getContent();
+  const { standing } = home;
+  const states = ui.home.standingStates;
   return (
     <Leaf id="standing" label={standing.label}>
-      <Heading>Standing</Heading>
+      <Heading>{ui.home.standingHeading}</Heading>
       <Prose>
         <p>{standing.body}</p>
       </Prose>
@@ -253,11 +263,11 @@ export function Standing() {
                   aria-hidden="true"
                   className="size-2.5 rounded-full bg-cinnabar"
                 />
-                {badge.note ?? standingState.recognised.label}
+                {badge.note ?? states.recognised}
               </span>
             ) : (
               <span className="ml-auto">
-                <Pending width="3rem" label={badge.note ?? standingState[badge.state].label} />
+                <Pending width="3rem" label={badge.note ?? states[badge.state]} />
               </span>
             )}
           </li>
@@ -274,7 +284,10 @@ export function Standing() {
  * in, and the phone number is the largest thing in it: for this reader, a
  * call is the likeliest way in.
  */
-export function Survey() {
+export async function Survey() {
+  const { home, shared } = await getContent();
+  const { survey } = home;
+  const { org } = shared;
   const tel = `tel:${org.phone.replace(/\s/g, "")}`;
   return (
     <section

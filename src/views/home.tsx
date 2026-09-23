@@ -5,10 +5,15 @@ import { Sites } from "@/components/site/sites";
 import { Board, Field, Join, Lineage, Standing, Survey } from "@/components/site/sections-b";
 import { Voices } from "@/components/site/voices";
 import { Footer } from "@/components/site/footer";
+import { pageMetadata } from "@/i18n/metadata";
+
+export function generateMetadata() {
+  return pageMetadata("home", "/");
+}
 
 /**
  * The homepage is read as one bundle, leaf by leaf; the margin numbers them
- * in order (१, २, ३…) on their own.
+ * in order (१, २, ३… — or ೧, ೨, ೩… in the Kannada edition) on their own.
  */
 export default function Home() {
   return (

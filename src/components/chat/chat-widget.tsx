@@ -3,19 +3,12 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { org } from "@/content/shared";
+import type { UI } from "@/i18n/ui";
 
 type Role = "user" | "assistant";
 type Msg = { role: Role; content: string };
 
-const STORAGE_KEY = "assf-chat-v1";
 const TEASER_KEY = "assf-chat-teaser-seen";
-
-const GREETING: Msg = {
-  role: "assistant",
-  content:
-    "I'm the Foundation's AI assistant. I answer from its published pages — on manuscript conservation, rural infrastructure and community services, or about Acharya Shri Shantisagar Ji himself. What would you like to know?",
-};
 
 /** Any part of the site can open the assistant by dispatching this event. */
 export const OPEN_CHAT_EVENT = "assf:open-chat";
@@ -35,27 +28,40 @@ export function AiStamp({ className = "" }: { className?: string }) {
   );
 }
 
-const STARTERS = [
-  "What does ASSF do?",
-  "How can I support the work?",
-  "Tell me about Acharya Shantisagar Ji",
-  "How do I get manuscripts surveyed?",
-];
+/** One saved conversation per edition: switching language starts afresh. */
+function storageKey(lang: string) {
+  return `assf-chat-v1-${lang}`;
+}
 
-function loadMessages(): Msg[] {
-  if (typeof window === "undefined") return [GREETING];
+function loadMessages(lang: string, greeting: Msg): Msg[] {
+  if (typeof window === "undefined") return [greeting];
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    if (!raw) return [GREETING];
+    const raw = sessionStorage.getItem(storageKey(lang));
+    if (!raw) return [greeting];
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) return parsed as Msg[];
   } catch {
     // fall through to default
   }
-  return [GREETING];
+  return [greeting];
 }
 
-export function ChatWidget() {
+/**
+ * The Foundation's AI assistant. It speaks the edition's language: its
+ * chrome and greeting come from the edition's strings, and the language is
+ * sent with every question so the answer comes back in the same script.
+ */
+export function ChatWidget({
+  lang,
+  strings,
+  email,
+}: {
+  lang: string;
+  strings: UI["chat"];
+  email: string;
+}) {
+  const GREETING: Msg = { role: "assistant", content: strings.greeting };
+  const STARTERS = strings.starters;
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
@@ -76,18 +82,18 @@ export function ChatWidget() {
   // greeting and this hydrates it in after mount rather than up front.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMessages(loadMessages());
+    setMessages(loadMessages(lang, { role: "assistant", content: strings.greeting }));
     setHydrated(true);
-  }, []);
+  }, [lang, strings.greeting]);
 
   useEffect(() => {
     if (!hydrated) return;
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+      sessionStorage.setItem(storageKey(lang), JSON.stringify(messages));
     } catch {
       // sessionStorage unavailable — conversation just won't persist
     }
-  }, [messages, hydrated]);
+  }, [messages, hydrated, lang]);
 
   // A single, quiet invitation — once per session, only if the visitor hasn't engaged yet.
   useEffect(() => {
@@ -179,13 +185,13 @@ export function ChatWidget() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: payload }),
+        body: JSON.stringify({ messages: payload, lang }),
         signal: controller.signal,
       });
 
       if (!res.ok || !res.body) {
         const detail = await res.text().catch(() => "");
-        throw new Error(detail || "The assistant is temporarily unavailable. Please try again shortly.");
+        throw new Error(detail || strings.unavailable);
       }
 
       const reader = res.body.getReader();
@@ -198,7 +204,7 @@ export function ChatWidget() {
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
         const message = (err as Error).message;
-        setError(message || `Something went wrong. Please try again, or reach us at ${org.email}.`);
+        setError(message || `${strings.failed} ${email}.`);
         setMessages((prev) => prev.slice(0, -1));
       }
     } finally {
@@ -248,15 +254,15 @@ export function ChatWidget() {
           <button
             type="button"
             onClick={dismissTeaser}
-            aria-label="Dismiss"
+            aria-label={strings.dismiss}
             className="absolute right-1.5 top-1.5 p-1.5 text-board-soft transition-colors hover:text-board-ink"
           >
             <CloseIcon className="size-3.5" />
           </button>
           <p className="text-[0.98rem] leading-snug">
-            A question about the Foundation&apos;s work? Ask our{" "}
+            {strings.teaser}{" "}
             <span className="whitespace-nowrap">
-              AI assistant <AiStamp className="ml-0.5 text-orpiment" />
+              {strings.teaserAssistant} <AiStamp className="ml-0.5 text-orpiment" />
             </span>
           </p>
           <button
@@ -267,7 +273,7 @@ export function ChatWidget() {
             }}
             className="mt-2 font-mono text-register text-orpiment underline decoration-orpiment/40 underline-offset-4 hover:decoration-orpiment"
           >
-            Start a conversation
+            {strings.teaserStart}
           </button>
         </div>
       ) : null}
@@ -278,7 +284,7 @@ export function ChatWidget() {
           ref={panelRef}
           role="dialog"
           aria-modal="true"
-          aria-label={`${org.nameLatin} assistant`}
+          aria-label={strings.title}
           className="fixed inset-0 z-50 flex flex-col bg-leaf sm:inset-auto sm:bottom-[5.25rem] sm:right-6 sm:h-[38rem] sm:max-h-[80vh] sm:w-[24rem] sm:animate-[panel-in_0.22s_cubic-bezier(0.16,1,0.3,1)] sm:border sm:border-ink/25 sm:shadow-[0_24px_60px_rgb(23_17_12/0.3)]"
           style={{ backgroundImage: "var(--fibre)" }}
         >
@@ -287,19 +293,19 @@ export function ChatWidget() {
             <Image src="/icon.png" alt="" width={32} height={32} className="size-8" />
             <div className="min-w-0 flex-1">
               <p className="flex items-center gap-2 font-display text-[1.1rem] font-medium leading-tight">
-                Ask the Foundation
+                {strings.title}
                 <AiStamp className="text-orpiment" />
               </p>
               <p className="truncate font-mono text-[0.72rem] text-board-soft">
-                AI assistant · answers from its published pages
+                {strings.subtitle}
               </p>
             </div>
             {hasConversation ? (
               <button
                 type="button"
                 onClick={resetConversation}
-                title="Start a new conversation"
-                aria-label="Start a new conversation"
+                title={strings.reset}
+                aria-label={strings.reset}
                 className="shrink-0 p-2 text-board-soft transition-colors hover:text-board-ink"
               >
                 <ResetIcon className="size-4" />
@@ -308,7 +314,7 @@ export function ChatWidget() {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              aria-label="Close chat"
+              aria-label={strings.closeChat}
               className="shrink-0 p-2 text-board-soft transition-colors hover:text-board-ink"
             >
               <CloseIcon className="size-4.5" />
@@ -327,6 +333,7 @@ export function ChatWidget() {
                 message={m}
                 isLast={i === messages.length - 1}
                 isStreaming={isStreaming}
+                typingLabel={strings.typing}
               />
             ))}
 
@@ -365,21 +372,21 @@ export function ChatWidget() {
                   autoResize(e.target);
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask about the Foundation's work…"
-                aria-label="Message"
+                placeholder={strings.placeholder}
+                aria-label={strings.message}
                 className="max-h-[7.5rem] flex-1 resize-none bg-transparent text-[1rem] leading-relaxed text-ink placeholder:text-ink-faint focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isStreaming}
-                aria-label="Send message"
+                aria-label={strings.send}
                 className="mb-0.5 shrink-0 bg-cinnabar p-2 text-leaf transition-colors hover:bg-cinnabar-deep disabled:cursor-not-allowed disabled:opacity-35"
               >
                 <SendIcon className="size-4" />
               </button>
             </div>
             <p className="mt-2 text-center font-mono text-[0.7rem] text-ink-faint">
-              Drawn from the Foundation&apos;s published work; may be incomplete.
+              {strings.disclaimer}
             </p>
           </form>
         </div>
@@ -394,7 +401,7 @@ export function ChatWidget() {
           setOpen(next);
           if (next) dismissTeaser();
         }}
-        aria-label={open ? "Close the AI assistant" : "Ask the Foundation's AI assistant"}
+        aria-label={open ? strings.closeChat : strings.openChat}
         aria-expanded={open}
         className="on-dark fixed bottom-5 right-5 z-50 flex h-12 items-center gap-2.5 bg-board pl-3 pr-4 text-board-ink shadow-[0_10px_24px_rgb(23_17_12/0.3)] transition-colors hover:bg-board-deep sm:bottom-6 sm:right-6"
       >
@@ -404,10 +411,10 @@ export function ChatWidget() {
           <Image src="/icon.png" alt="" width={24} height={24} className="size-6" />
         )}
         {open ? (
-          <span className="font-display text-[1.05rem] font-medium">Close</span>
+          <span className="font-display text-[1.05rem] font-medium">{strings.close}</span>
         ) : (
           <span className="flex items-center gap-2 font-display text-[1.05rem] font-medium">
-            Ask <AiStamp className="text-orpiment" />
+            {strings.ask} <AiStamp className="text-orpiment" />
           </span>
         )}
       </button>
@@ -419,10 +426,12 @@ function MessageBubble({
   message,
   isLast,
   isStreaming,
+  typingLabel,
 }: {
   message: Msg;
   isLast: boolean;
   isStreaming: boolean;
+  typingLabel: string;
 }) {
   const isUser = message.role === "user";
   const pending = isLast && isStreaming && message.content === "";
@@ -439,15 +448,15 @@ function MessageBubble({
             : "border-l border-cinnabar/60 pl-3.5 text-ink",
         ].join(" ")}
       >
-        {pending ? <TypingDots /> : message.content}
+        {pending ? <TypingDots label={typingLabel} /> : message.content}
       </div>
     </div>
   );
 }
 
-function TypingDots() {
+function TypingDots({ label }: { label: string }) {
   return (
-    <span className="flex items-center gap-1 py-1.5" aria-label="Assistant is typing">
+    <span className="flex items-center gap-1 py-1.5" aria-label={label}>
       <span className="size-1.5 animate-pulse rounded-full bg-cinnabar [animation-delay:0ms]" />
       <span className="size-1.5 animate-pulse rounded-full bg-cinnabar [animation-delay:200ms]" />
       <span className="size-1.5 animate-pulse rounded-full bg-cinnabar [animation-delay:400ms]" />

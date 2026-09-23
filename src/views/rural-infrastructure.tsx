@@ -1,16 +1,19 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { Heading, Leaf, PageHero, Plate, Prose, Verses } from "@/components/site/primitives";
-import { method, pageHero, projects, shantiStambh } from "@/content/rural-infrastructure";
+import { getContent } from "@/i18n/content";
+import { pageMetadata } from "@/i18n/metadata";
 
-export const metadata: Metadata = {
-  title: "Rural Infrastructure — Acharya Shanti Sagar Foundation",
-  description: pageHero.body,
-};
+export async function generateMetadata() {
+  const { rural } = await getContent();
+  return pageMetadata("rural", "/rural-infrastructure", rural.pageHero.body);
+}
 
-export default function RuralInfrastructurePage() {
+export default async function RuralInfrastructurePage() {
+  const { rural, ui } = await getContent();
+  const { method, pageHero, projects, shantiStambh } = rural;
+  const t = ui.rural;
   const [lead, ...rest] = projects.items;
 
   return (
@@ -18,12 +21,12 @@ export default function RuralInfrastructurePage() {
       <Header />
       <main>
         <PageHero
-          label="Rural infrastructure"
+          label={t.heroLabel}
           {...pageHero}
           plate={{
             src: "/images/rural/samudaya-bhavan-3-completed.jpeg",
-            alt: "The completed Samudaya Bhavan at Yarnal: long, whitewashed wings with blue railings around a paved courtyard.",
-            caption: "The completed Samudaya Bhavan, Yarnal.",
+            alt: t.heroAlt,
+            caption: t.heroCaption,
             position: "40% 50%",
           }}
         />
@@ -89,7 +92,7 @@ export default function RuralInfrastructurePage() {
             <figure data-plate className="float-right mb-4 ml-6 w-[6.5rem] lg:-mr-[16rem] lg:ml-0 lg:w-[13rem]">
               <Image
                 src={shantiStambh.image}
-                alt="Drawing of the Shanti Stambh: a pillar on a stepped base, a standing figure within its upper frame, a wheel at the top."
+                alt={t.stambhAlt}
                 width={134}
                 height={411}
                 className="h-auto w-[6.5rem] mix-blend-multiply lg:w-[8.4rem]"

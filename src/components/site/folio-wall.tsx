@@ -16,9 +16,12 @@ import { useLayoutEffect, useRef, useState } from "react";
 export function FolioWall({
   total,
   filled,
+  label,
 }: {
   total: number;
   filled: number;
+  /** The bundle's accessible description, in the page's language. */
+  label: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [animate, setAnimate] = useState(false);
@@ -50,7 +53,7 @@ export function FolioWall({
     <div
       ref={ref}
       role="img"
-      aria-label={`Folio bundle: ${filled} of ${total} leaves funded. It stays blank until real folio records exist.`}
+      aria-label={label}
       className="relative mt-12 max-w-[40rem] px-3"
     >
       <Board />

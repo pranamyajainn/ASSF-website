@@ -11,6 +11,16 @@ const MAX_MESSAGE_LENGTH = 1500;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
+/**
+ * The assistant answers in the edition's language. Names and figures stay
+ * as the knowledge base gives them, so a translated answer can never drift
+ * from the published numbers.
+ */
+const LANGUAGE_INSTRUCTIONS: Record<string, string> = {
+  hi: "Reply in Hindi, written in Devanagari script, whatever language the question is in. Keep figures in international digits with Indian grouping (e.g. 1,34,545), exactly as the knowledge base gives them.",
+  kn: "Reply in Kannada, written in Kannada script, whatever language the question is in. Keep figures in international digits with Indian grouping (e.g. 1,34,545), exactly as the knowledge base gives them.",
+};
+
 function isChatMessage(value: unknown): value is ChatMessage {
   if (!value || typeof value !== "object") return false;
   const { role, content } = value as Record<string, unknown>;
@@ -35,6 +45,10 @@ export async function POST(req: Request) {
       ? (body as { messages: unknown[] }).messages
       : [];
 
+  const lang = body && typeof body === "object" ? (body as { lang?: unknown }).lang : undefined;
+  const languageInstruction = typeof lang === "string" ? LANGUAGE_INSTRUCTIONS[lang] : undefined;
+  const system = languageInstruction ? `${systemPrompt}\n\nLANGUAGE: ${languageInstruction}` : systemPrompt;
+
   const messages = rawMessages
     .filter(isChatMessage)
     .slice(-MAX_TURNS)
@@ -56,9 +70,10 @@ export async function POST(req: Request) {
         model: MODEL,
         stream: true,
         temperature: 0.4,
-        max_tokens: 500,
+        // Indic scripts take more tokens per word than English.
+        max_tokens: languageInstruction ? 700 : 500,
         reasoning_effort: "low",
-        messages: [{ role: "system", content: systemPrompt }, ...messages],
+        messages: [{ role: "system", content: system }, ...messages],
       }),
     });
   } catch {

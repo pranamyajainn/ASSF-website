@@ -12,8 +12,8 @@ import {
 } from "./primitives";
 import { LeafPanels } from "./leaf-panels";
 import { ScaleLines } from "./scale-lines";
-import { communityTeaser, ledger, mission, pillarsIntro, ruralTeaser, scale } from "@/content/home";
-import { pillars } from "@/content/shared";
+import { getContent } from "@/i18n/content";
+import { fill } from "@/i18n/ui";
 
 /**
  * Why it cannot wait. The argument in words, then the evidence at full
@@ -21,7 +21,9 @@ import { pillars } from "@/content/shared";
  * lines, its accession slip beside it. The only plate on the page that is
  * allowed to run past the margin to the edge of the screen.
  */
-export function Mission() {
+export async function Mission() {
+  const { home } = await getContent();
+  const { mission } = home;
   return (
     <Leaf id="mission" label={mission.label}>
       <Heading>{mission.heading}</Heading>
@@ -55,20 +57,22 @@ export function Mission() {
   );
 }
 
-export function PillarsIntro() {
+export async function PillarsIntro() {
+  const { home, shared, ui, href } = await getContent();
+  const { pillarsIntro } = home;
   return (
     <Leaf id="pillars" label={pillarsIntro.label}>
       <Heading>{pillarsIntro.heading}</Heading>
       <Lede>{pillarsIntro.body}</Lede>
       <LeafPanels
-        panels={pillars.map((pillar, i) => ({
+        panels={shared.pillars.map((pillar, i) => ({
           key: pillar.slug,
           number: String(i + 1).padStart(2, "0"),
           title: pillar.label,
           tagline: pillar.tagline,
           body: pillar.body,
           note: i === 0 ? pillarsIntro.principal : undefined,
-          link: { label: `Explore ${pillar.label}`, href: `/${pillar.slug}` },
+          link: { label: fill(ui.common.explore, { name: pillar.label }), href: href(`/${pillar.slug}`) },
         }))}
       />
     </Leaf>
@@ -76,7 +80,9 @@ export function PillarsIntro() {
 }
 
 /** The register of work done, then the same quantities drawn to scale. */
-export function Ledger() {
+export async function Ledger() {
+  const { home } = await getContent();
+  const { ledger, scale } = home;
   return (
     <Leaf id="ledger" label={ledger.label}>
       <Heading>{ledger.heading}</Heading>
@@ -106,9 +112,11 @@ export function Ledger() {
  * pair because they are one kind of work — serving the present — beside the
  * conservation work that leads the page.
  */
-export function Spread() {
+export async function Spread() {
+  const { home, ui } = await getContent();
+  const { ruralTeaser, communityTeaser } = home;
   return (
-    <Leaf id="community" label="Rural · Community">
+    <Leaf id="community" label={ui.home.spreadLabel}>
       <div className="bleed-margin grid gap-y-16 lg:grid-cols-[minmax(0,1fr)_4.5rem_minmax(0,1fr)]">
         <div id="rural" className="min-w-0 scroll-mt-6">
           <p className="font-mono text-register text-cinnabar">{ruralTeaser.label}</p>

@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import { Button, Leaf, MarginPlate } from "./primitives";
-import { hero } from "@/content/home";
-import { org } from "@/content/shared";
+import { getContent } from "@/i18n/content";
 
 /**
  * The first leaf. The headline is the Foundation's approved one; on its own
@@ -14,14 +13,15 @@ import { org } from "@/content/shared";
  * own photograph of a folio being tested before treatment. The real work,
  * not a banner.
  */
-export function Hero() {
+export async function Hero() {
+  const { home, shared } = await getContent();
+  const { hero } = home;
+  const { org } = shared;
   return (
     <Leaf id="top" label={hero.label} innerClassName="!pt-10 md:!pt-14 lg:!pt-20">
       <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_4rem] xl:gap-x-12">
         <div className="min-w-0">
-          <p lang="hi" className="font-display text-[1.35rem] leading-none text-ink-soft">
-            {org.nameDeva}
-          </p>
+          <p className="font-display text-[1.35rem] leading-none text-ink-soft">{org.nameNative}</p>
 
           <h1 className="mt-7 font-display text-display font-medium tracking-[-0.015em]">
             {hero.lines.map((line, i) => (

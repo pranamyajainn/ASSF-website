@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { Sites } from "@/components/site/sites";
@@ -14,20 +13,24 @@ import {
   Verses,
 } from "@/components/site/primitives";
 import { VideoLoop } from "@/components/site/video-loop";
-import { ledger, mission } from "@/content/home";
-import { capacity, film, pageHero, process, whatWeConserve } from "@/content/manuscript-conservation";
+import { getContent } from "@/i18n/content";
+import { pageMetadata } from "@/i18n/metadata";
 
-export const metadata: Metadata = {
-  title: "Manuscript Conservation — Acharya Shanti Sagar Foundation",
-  description: pageHero.body,
-};
+export async function generateMetadata() {
+  const { conservation } = await getContent();
+  return pageMetadata("conservation", "/manuscript-conservation", conservation.pageHero.body);
+}
 
-export default function ManuscriptConservationPage() {
+export default async function ManuscriptConservationPage() {
+  const { conservation, home, ui, href } = await getContent();
+  const { capacity, film, pageHero, process, whatWeConserve } = conservation;
+  const { ledger, mission } = home;
+  const t = ui.conservation;
   return (
     <>
       <Header />
       <main>
-        <PageHero label="Conservation" {...pageHero} plate={{ ...pageHero.plate, position: "50% 55%" }} />
+        <PageHero label={t.heroLabel} {...pageHero} plate={{ ...pageHero.plate, position: "50% 55%" }} />
 
         <Leaf id="ledger" label={ledger.label}>
           <Heading>{ledger.heading}</Heading>
@@ -85,7 +88,7 @@ export default function ManuscriptConservationPage() {
             className="mt-10 max-w-[44rem]"
             src={mission.plate.src}
             alt={mission.plate.alt}
-            caption="Documentation comes first: this manuscript was recorded as KBJ/PM/047, and photographed, before treatment."
+            caption={t.documentationCaption}
             ratio="16 / 10"
             imageClassName="object-cover object-[50%_60%]"
             sizes="(min-width: 1024px) 44rem, 100vw"
@@ -97,7 +100,12 @@ export default function ManuscriptConservationPage() {
           <Prose>
             <p>{film.body}</p>
           </Prose>
-          <VideoLoop className="bleed-margin mt-10" youtubeId={film.youtubeId} title={film.heading} />
+          <VideoLoop
+            className="bleed-margin mt-10"
+            youtubeId={film.youtubeId}
+            title={film.heading}
+            watchLabel={ui.common.watchWithSound}
+          />
         </Leaf>
 
         <Sites />
@@ -105,10 +113,10 @@ export default function ManuscriptConservationPage() {
         <Leaf id="capacity" label={capacity.label}>
           <Heading>{capacity.heading}</Heading>
           <Prose>
-            <Gloss label="Recognition">{capacity.recognition}</Gloss>
+            <Gloss label={t.recognition}>{capacity.recognition}</Gloss>
             <p>{capacity.body}</p>
           </Prose>
-          <InlineLink href="/#join">Ways to join the work</InlineLink>
+          <InlineLink href={href("/#join")}>{t.joinLink}</InlineLink>
         </Leaf>
       </main>
       <Footer />

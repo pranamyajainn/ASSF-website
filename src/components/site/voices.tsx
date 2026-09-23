@@ -1,5 +1,8 @@
 import { Heading, Leaf, Prose } from "./primitives";
-import { voices, type Voice } from "@/content/home";
+import type { Voice } from "@/content/home";
+import { getContent } from "@/i18n/content";
+
+type VoicesContent = Awaited<ReturnType<typeof getContent>>["home"]["voices"];
 
 /**
  * Voices from the work. A supplied testimonial is set large — the speaker's
@@ -8,7 +11,9 @@ import { voices, type Voice } from "@/content/home";
  * Foundation has not yet filled is drawn as a lost passage: rows of dots
  * where the lines would be, as a scribe marks a lacuna in the exemplar.
  */
-export function Voices() {
+export async function Voices() {
+  const { home } = await getContent();
+  const { voices } = home;
   const [lead, ...rest] = voices.items;
 
   return (
@@ -19,11 +24,11 @@ export function Voices() {
       </Prose>
 
       <div className="bleed-margin mt-12 border-t border-ink/20 pt-10">
-        <VoiceEntry voice={lead} featured />
+        <VoiceEntry voice={lead} voices={voices} featured />
       </div>
       <div className="bleed-margin mt-10 grid gap-x-14 gap-y-10 border-t border-ink/20 pt-10 md:grid-cols-2">
         {rest.map((voice) => (
-          <VoiceEntry key={voice.kind} voice={voice} />
+          <VoiceEntry key={voice.kind} voice={voice} voices={voices} />
         ))}
       </div>
 
@@ -32,7 +37,15 @@ export function Voices() {
   );
 }
 
-function VoiceEntry({ voice, featured = false }: { voice: Voice; featured?: boolean }) {
+function VoiceEntry({
+  voice,
+  voices,
+  featured = false,
+}: {
+  voice: Voice;
+  voices: VoicesContent;
+  featured?: boolean;
+}) {
   const quoteSize = featured
     ? "text-[clamp(1.7rem,1.2rem+1.9vw,2.7rem)] leading-[1.25]"
     : "text-[clamp(1.35rem,1.15rem+0.8vw,1.75rem)] leading-[1.35]";
@@ -41,7 +54,7 @@ function VoiceEntry({ voice, featured = false }: { voice: Voice; featured?: bool
     return (
       <figure
         role="img"
-        aria-label={`Not yet published: a testimonial from ${voice.kind.toLowerCase()}.`}
+        aria-label={`${voices.pendingNote}: ${voice.kind}`}
       >
         <p aria-hidden="true" className="font-mono text-register text-cinnabar">
           {voice.kind}

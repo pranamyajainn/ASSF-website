@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
@@ -6,10 +5,10 @@ import { Gloss, Heading, Leaf, Lede, PageHero, Plate, Prose } from "@/components
 import { LeafPanels } from "@/components/site/leaf-panels";
 import { ScaleLines } from "@/components/site/scale-lines";
 import { VideoLoop } from "@/components/site/video-loop";
-import { pillars } from "@/content/shared";
-import { lineage } from "@/content/home";
-import { film } from "@/content/manuscript-conservation";
-import { closingLine, mvv, namesake, pageHero, philosophy, plates, scale } from "@/content/about";
+import { getContent } from "@/i18n/content";
+import { pageMetadata } from "@/i18n/metadata";
+import { fill } from "@/i18n/ui";
+import { scriptLang } from "@/lib/deva";
 
 /** Literal class names, so Tailwind sees every span it has to generate. */
 const SPAN = {
@@ -19,17 +18,22 @@ const SPAN = {
   7: "lg:col-span-7",
 } as const;
 
-export const metadata: Metadata = {
-  title: "About Us — Acharya Shanti Sagar Foundation",
-  description: pageHero.body,
-};
+export async function generateMetadata() {
+  const { about } = await getContent();
+  return pageMetadata("about", "/about", about.pageHero.body);
+}
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { about, home, conservation, shared, ui, href } = await getContent();
+  const { closingLine, mvv, namesake, pageHero, philosophy, plates, scale } = about;
+  const { lineage } = home;
+  const { film } = conservation;
+  const t = ui.about;
   return (
     <>
       <Header />
       <main>
-        <PageHero label="About" {...pageHero} />
+        <PageHero label={t.heroLabel} {...pageHero} />
 
         {/* The sutra the whole Foundation is built on, set as the page's
             centrepiece in its own script — then the plain-English case. */}
@@ -69,7 +73,7 @@ export default function AboutPage() {
             size old prints can bear. */}
         <Leaf id="namesake" label={namesake.label}>
           <p
-            lang="hi"
+            lang={scriptLang(lineage.nameDeva)}
             className="max-w-[22ch] font-display text-[clamp(1.6rem,1.2rem+1.5vw,2.4rem)] leading-[1.25] text-cinnabar"
           >
             {lineage.nameDeva}
@@ -177,16 +181,16 @@ export default function AboutPage() {
           </div>
         </Leaf>
 
-        <Leaf id="pillars" label="Three pillars">
-          <Heading>How the mission takes shape</Heading>
+        <Leaf id="pillars" label={t.pillarsLabel}>
+          <Heading>{t.pillarsHeading}</Heading>
           <LeafPanels
-            panels={pillars.map((pillar, i) => ({
+            panels={shared.pillars.map((pillar, i) => ({
               key: pillar.slug,
               number: String(i + 1).padStart(2, "0"),
               title: pillar.label,
               tagline: pillar.tagline,
               body: pillar.body,
-              link: { label: `Explore ${pillar.label}`, href: `/${pillar.slug}` },
+              link: { label: fill(ui.common.explore, { name: pillar.label }), href: href(`/${pillar.slug}`) },
             }))}
           />
         </Leaf>
@@ -226,23 +230,28 @@ export default function AboutPage() {
           <Prose>
             <p>{film.body}</p>
           </Prose>
-          <VideoLoop className="bleed-margin mt-10" youtubeId={film.youtubeId} title={film.heading} />
+          <VideoLoop
+            className="bleed-margin mt-10"
+            youtubeId={film.youtubeId}
+            title={film.heading}
+            watchLabel={ui.common.watchWithSound}
+          />
         </Leaf>
 
         <Leaf id="scale" label={scale.label}>
           <Heading>{scale.heading}</Heading>
           <Prose>
-            <Gloss label="Also recorded, not counted">{scale.note}</Gloss>
+            <Gloss label={t.alsoRecorded}>{scale.note}</Gloss>
             <p>{scale.body}</p>
           </Prose>
 
           <div className="bleed-margin mt-10 overflow-x-auto">
             <table className="w-full min-w-[38rem] border-collapse">
-              <caption className="sr-only">Survey of manuscript repositories, by state</caption>
+              <caption className="sr-only">{t.tableCaption}</caption>
               <thead>
                 <tr className="border-y border-ink/25">
                   <th scope="col" className="py-3 pr-4 text-left font-mono text-register font-normal text-ink-faint">
-                    Measure
+                    {t.measure}
                   </th>
                   {scale.table.columns.map((col, i) => (
                     <th
@@ -283,12 +292,12 @@ export default function AboutPage() {
             className="mt-12"
             lines={scale.folios.map((f) => ({
               label: f.state,
-              detail: "Folios documented by survey",
+              detail: t.foliosBySurvey,
               value: f.value,
               display: f.display,
               state: "open" as const,
             }))}
-            note="Each line is drawn to the same scale."
+            note={ui.common.sameScale}
           />
         </Leaf>
 

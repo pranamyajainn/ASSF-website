@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Container } from "./primitives";
-import { nav, org } from "@/content/shared";
+import { Container } from "./container";
+import { getContent } from "@/i18n/content";
 
 /**
  * The colophon, on the back board. A scribe closes a manuscript with who
@@ -9,7 +9,10 @@ import { nav, org } from "@/content/shared";
  * where it is registered, and how to reach and support it. `#contact` and
  * `#give` are the targets for the "survey" and "support" links above.
  */
-export function Footer() {
+export async function Footer() {
+  const { shared, ui, href } = await getContent();
+  const { org, nav } = shared;
+  const t = ui.footer;
   const tel = `tel:${org.phone.replace(/\s/g, "")}`;
 
   return (
@@ -24,23 +27,24 @@ export function Footer() {
               height={56}
               className="size-12"
             />
-            <p className="font-mono text-register text-board-soft">Colophon</p>
+            <p className="font-mono text-register text-board-soft">{t.colophon}</p>
           </div>
 
           <p className="mt-8 max-w-[30ch] font-display text-[clamp(1.7rem,1.2rem+1.8vw,2.6rem)] font-medium leading-[1.12]">
-            {org.nameLatin}
+            {org.displayName}
           </p>
-          <p lang="hi" className="mt-3 font-display text-[1.35rem] text-board-soft">
-            {org.nameDeva} <span className="text-orpiment">।</span> {org.tagline}
+          <p className="mt-3 font-display text-[1.35rem] text-board-soft">
+            {org.secondaryName} <span className="text-orpiment">।</span>{" "}
+            <span lang="hi">{org.tagline}</span>
           </p>
           <p className="mt-6 font-mono text-register text-board-soft">
-            Registered trust, Bengaluru, {org.founded} — {org.registration}
+            {t.registered}, {org.founded} — {org.registration}
           </p>
         </div>
 
         <div className="grid gap-x-12 gap-y-12 border-b border-board-ink/15 py-12 md:grid-cols-3">
           <section id="contact" className="scroll-mt-8">
-            <h2 className="font-mono text-register text-orpiment">Contact</h2>
+            <h2 className="font-mono text-register text-orpiment">{t.contact}</h2>
             <p className="mt-4">
               <a href={tel} className="font-display text-[1.5rem] leading-none hover:text-orpiment">
                 {org.phone}
@@ -57,35 +61,37 @@ export function Footer() {
           </section>
 
           <section>
-            <h2 className="font-mono text-register text-orpiment">Registered office</h2>
+            <h2 className="font-mono text-register text-orpiment">{t.office}</h2>
             <address className="mt-4 max-w-[34ch] text-[1.0625rem] not-italic leading-relaxed text-board-ink/90">
               {org.office}
             </address>
           </section>
 
           <section id="give" className="scroll-mt-8">
-            <h2 className="font-mono text-register text-orpiment">Support the work</h2>
+            <h2 className="font-mono text-register text-orpiment">{t.support}</h2>
             <dl className="mt-4 space-y-1 font-mono text-register text-board-ink/90">
               <div>
-                <dt className="sr-only">Bank</dt>
+                <dt className="sr-only">{t.bank}</dt>
                 <dd>{org.bank.branch}</dd>
               </div>
               <div>
-                <dt className="sr-only">Account</dt>
+                <dt className="sr-only">{t.account}</dt>
                 <dd>{org.bank.account}</dd>
               </div>
               <div>
-                <dt className="sr-only">IFSC</dt>
+                <dt className="sr-only">{t.ifsc}</dt>
                 <dd>{org.bank.ifsc}</dd>
               </div>
             </dl>
           </section>
         </div>
 
-        <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-8 py-10">
-          <nav aria-label="Footer">
+        {/* Bottom padding clears the fixed "Ask AI" launcher, so at the very
+            end of the page it never sits over the scribe's line. */}
+        <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-8 pb-28 pt-10 sm:pb-32">
+          <nav aria-label={t.nav}>
             <ul className="flex flex-wrap gap-x-7 gap-y-3">
-              {[{ label: "Home", href: "/" }, ...nav].map((item) => (
+              {[{ label: t.home, href: href("/") }, ...nav].map((item) => (
                 <li key={item.label}>
                   <Link
                     href={item.href}
@@ -97,9 +103,26 @@ export function Footer() {
               ))}
             </ul>
           </nav>
-          <p lang="sa" aria-hidden="true" className="font-display text-[1.4rem] text-orpiment">
-            ॥ इति ॥
-          </p>
+          {/* The scribe's line. A manuscript's colophon closes by naming who
+              wrote the copy — लिखितं, "written by" — so this one does too. */}
+          <div className="flex flex-col items-start gap-2 sm:items-end">
+            <p lang="sa" aria-hidden="true" className="font-display text-[1.4rem] text-orpiment">
+              ॥ इति ॥
+            </p>
+            <p className="font-mono text-register text-board-soft">
+              <span lang="sa" className="font-serif text-[0.95rem] text-board-ink">
+                लिखितं
+              </span>{" "}
+              — {t.scribedBy}{" "}
+              <a
+                href="https://sahajta.com/"
+                title={t.scribeTitle}
+                className="text-board-ink underline decoration-orpiment/50 underline-offset-4 transition-colors hover:text-orpiment hover:decoration-orpiment"
+              >
+                Sahajta AI
+              </a>
+            </p>
+          </div>
         </div>
       </Container>
     </footer>

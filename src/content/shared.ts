@@ -12,6 +12,12 @@ export type Pending<T> = T | null;
 export const org = {
   nameDeva: "आचार्य शांति सागर फाउंडेशन",
   nameLatin: "Acharya Shanti Sagar Foundation",
+  /** How each edition names the Foundation: large in the colophon, then in
+      its other script beneath. The Hindi and Kannada editions swap these. */
+  displayName: "Acharya Shanti Sagar Foundation",
+  secondaryName: "आचार्य शांति सागर फाउंडेशन",
+  /** The name in the edition's own Indian script, above the hero headline. */
+  nameNative: "आचार्य शांति सागर फाउंडेशन",
   tagline: "जीवन धरोहर संरक्षण",
   brandLine: "In Service of Heritage and Humanity",
   sealDeva: "शांति सागरम्",
