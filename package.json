@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.10",
     "next": "16.3.5",
     "next-auth": "^5.0.0-beta.32",
     "react": "19.2.8",

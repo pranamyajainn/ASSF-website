@@ -23,7 +23,7 @@ ${org.nameLatin} (${org.nameDeva}) — "${org.tagline}", ${org.brandLine}. Chari
 
   sections.push(`ACHARYA SHRI 108 SHANTI SAGAR JI MAHARAJ
 ${home.lineage.paragraphs.join(" ")}
-Historical facts: born 1872, Yelgula village, Belgaum district, Karnataka. First Acharya of the 20th-century Digambara revival. From 1920, first monk in centuries to revive wandering all over India completely naked, without even a begging bowl. Took Sallekhana at Kunthalgiri; died there 18 Sept 1955, aged 82-83. India Post issued a ₹5 commemorative stamp in his honour (release date unconfirmed — don't state one).`);
+Historical facts: born 1872, Yelgula village, Belgaum district, Karnataka. First Acharya of the 20th-century Digambara revival. From 1920, first monk in centuries to revive wandering all over India completely naked, without even a begging bowl. Took Sallekhana (Hindi सल्लेखना, Kannada ಸಲ್ಲೇಖನ) at Kunthalgiri (कुंथलगिरि, ಕುಂಥಲಗಿರಿ); died there 18 Sept 1955, aged 82-83. India Post issued a ₹5 commemorative stamp in his honour (release date unconfirmed — don't state one).`);
 
   sections.push(`MISSION & VALUES
 ${home.mission.paragraphs[0]}
@@ -57,6 +57,9 @@ ${[...trusteesContent.trustees, ...trusteesContent.advisors].map((t) => `${t.nam
 
   sections.push(`STANDING
 Recognised as a Manuscript Conservation Centre under Gyan Bharatam (2nd such centre certified in Karnataka). Still pending: 12A/80G, CSR-1, NGO Darpan, FCRA, audited financials — say these are in progress, not yet available, if asked.`);
+
+  sections.push(`SPELLINGS FOR HINDI / KANNADA ANSWERS (use these exact forms)
+Foundation: आचार्य शांति सागर फाउंडेशन / ಆಚಾರ್ಯ ಶಾಂತಿ ಸಾಗರ ಫೌಂಡೇಶನ್. Acharya: आचार्य श्री 108 शांति सागर जी महाराज / ಆಚಾರ್ಯ ಶ್ರೀ 108 ಶಾಂತಿ ಸಾಗರ ಮಹಾರಾಜರು. Palm-leaf manuscript: ताड़पत्र / ತಾಳೆಗರಿ. Manuscript: पांडुलिपि / ಹಸ್ತಪ್ರತಿ. Folio: पत्र / ಪತ್ರ. Places: कुंभोज / ಕುಂಭೋಜ, कारंजा लाड / ಕಾರಂಜಾ ಲಾಡ್, श्रवणबेलगोला / ಶ್ರವಣಬೆಳಗೊಳ, यरनाल / ಯರನಾಳ, होसूर / ಹೊಸೂರು, बेंगलुरु / ಬೆಂಗಳೂರು. Gyan Bharatam: ज्ञान भारतम् / ಜ್ಞಾನ ಭಾರತಂ.`);
 
   return sections.join("\n\n");
 }

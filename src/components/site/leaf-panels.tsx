@@ -73,7 +73,7 @@ function PanelBody({ panel, lead }: { panel: Panel; lead: boolean }) {
         {panel.title}
       </h3>
       {panel.tagline ? (
-        <p className="mt-2 text-[1.05rem] italic leading-snug text-ink-soft">{panel.tagline}</p>
+        <p className="mt-2 font-mono text-register text-ink-soft">{panel.tagline}</p>
       ) : null}
       {panel.body ? (
         <p className="mt-4 max-w-[44ch] text-[1.0625rem] leading-relaxed text-ink-soft">{panel.body}</p>

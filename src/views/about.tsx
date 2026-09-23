@@ -46,12 +46,12 @@ export default async function AboutPage() {
               >
                 {philosophy.quote.deva}
               </p>
-              <p className="mt-5 text-lede italic text-ink-soft">
+              <p className="mt-5 text-lede text-ink-soft">
                 {philosophy.quote.latin}
                 <span aria-hidden="true" className="mx-3 text-cinnabar">
                   —
                 </span>
-                <span className="not-italic text-ink">{philosophy.quote.translation}</span>
+                <span className="text-ink">{philosophy.quote.translation}</span>
               </p>
             </blockquote>
             <figcaption className="mt-3 font-mono text-register text-cinnabar">

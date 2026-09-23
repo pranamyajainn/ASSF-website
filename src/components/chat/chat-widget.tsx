@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import type { UI } from "@/i18n/ui";
@@ -67,6 +74,10 @@ export function ChatWidget({
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  /** The answer currently being written onto the leaf, by index. */
+  const [inkingIndex, setInkingIndex] = useState<number | null>(null);
+  /** The finished answer, announced once to screen readers. */
+  const [announcement, setAnnouncement] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [showTeaser, setShowTeaser] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -138,6 +149,15 @@ export function ChatWidget({
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, open]);
 
+  // While an answer is being written, keep the writing point in view —
+  // unless the reader has scrolled up to reread something.
+  const followWriting = useCallback(() => {
+    const el = scrollRef.current;
+    if (el && el.scrollHeight - el.scrollTop - el.clientHeight < 140) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, []);
+
   useEffect(() => {
     if (open) {
       const t = setTimeout(() => inputRef.current?.focus(), 150);
@@ -175,6 +195,8 @@ export function ChatWidget({
     setError(null);
     const payload = [...messages, { role: "user" as const, content: trimmed }];
     setMessages([...payload, { role: "assistant", content: "" }]);
+    setInkingIndex(payload.length);
+    setAnnouncement("");
     setInput("");
     setIsStreaming(true);
 
@@ -196,11 +218,15 @@ export function ChatWidget({
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
+      let full = "";
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
-        appendToLastAssistant(decoder.decode(value, { stream: true }));
+        const chunk = decoder.decode(value, { stream: true });
+        full += chunk;
+        appendToLastAssistant(chunk);
       }
+      setAnnouncement(full);
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
         const message = (err as Error).message;
@@ -322,18 +348,26 @@ export function ChatWidget({
           </div>
 
           {/* Transcript */}
+          {/* Screen readers hear each answer once, whole — not word by word
+              as it is written onto the leaf. */}
+          <p className="sr-only" aria-live="polite">
+            {announcement}
+          </p>
           <div
             ref={scrollRef}
             className="flex-1 space-y-5 overflow-y-auto px-5 py-5"
-            aria-live="polite"
+            aria-busy={isStreaming}
           >
             {messages.map((m, i) => (
               <MessageBubble
                 key={i}
                 message={m}
-                isLast={i === messages.length - 1}
-                isStreaming={isStreaming}
-                typingLabel={strings.typing}
+                answer={i > 0}
+                pending={i === messages.length - 1 && isStreaming && m.content === ""}
+                inking={i === inkingIndex}
+                streaming={i === messages.length - 1 && isStreaming}
+                readingLabel={strings.reading}
+                onGrow={followWriting}
               />
             ))}
 
@@ -403,7 +437,11 @@ export function ChatWidget({
         }}
         aria-label={open ? strings.closeChat : strings.openChat}
         aria-expanded={open}
-        className="on-dark fixed bottom-5 right-5 z-50 flex h-12 items-center gap-2.5 bg-board pl-3 pr-4 text-board-ink shadow-[0_10px_24px_rgb(23_17_12/0.3)] transition-colors hover:bg-board-deep sm:bottom-6 sm:right-6"
+        // On phones the open panel fills the screen and has its own close
+        // button; the launcher would sit on top of the send button.
+        className={`on-dark fixed bottom-5 right-5 z-50 h-12 items-center gap-2.5 bg-board pl-3 pr-4 text-board-ink shadow-[0_10px_24px_rgb(23_17_12/0.3)] transition-colors hover:bg-board-deep sm:bottom-6 sm:right-6 ${
+          open ? "hidden sm:flex" : "flex"
+        }`}
       >
         {open ? (
           <CloseIcon className="size-5" />
@@ -424,20 +462,27 @@ export function ChatWidget({
 
 function MessageBubble({
   message,
-  isLast,
-  isStreaming,
-  typingLabel,
+  answer,
+  pending,
+  inking,
+  streaming,
+  readingLabel,
+  onGrow,
 }: {
   message: Msg;
-  isLast: boolean;
-  isStreaming: boolean;
-  typingLabel: string;
+  /** An assistant reply to a question (not the opening greeting). */
+  answer: boolean;
+  pending: boolean;
+  inking: boolean;
+  streaming: boolean;
+  readingLabel: string;
+  onGrow: () => void;
 }) {
   const isUser = message.role === "user";
-  const pending = isLast && isStreaming && message.content === "";
 
   // A transcript, not a messenger: the visitor's question sits on a deeper
-  // leaf to the right; the answer is plain text on a red rule.
+  // leaf to the right; the answer is written on a red rule, and closes with
+  // a double danda, as a verse does.
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
@@ -448,19 +493,126 @@ function MessageBubble({
             : "border-l border-cinnabar/60 pl-3.5 text-ink",
         ].join(" ")}
       >
-        {pending ? <TypingDots label={typingLabel} /> : message.content}
+        {isUser ? (
+          message.content
+        ) : pending ? (
+          <ReadingLine label={readingLabel} />
+        ) : inking ? (
+          <InkReveal text={message.content} streaming={streaming} onGrow={onGrow} />
+        ) : (
+          <>
+            {message.content}
+            {answer ? <Danda /> : null}
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-function TypingDots({ label }: { label: string }) {
+/** Before the first word arrives: a stylus ruling a line across the leaf. */
+function ReadingLine({ label }: { label: string }) {
   return (
-    <span className="flex items-center gap-1 py-1.5" aria-label={label}>
-      <span className="size-1.5 animate-pulse rounded-full bg-cinnabar [animation-delay:0ms]" />
-      <span className="size-1.5 animate-pulse rounded-full bg-cinnabar [animation-delay:200ms]" />
-      <span className="size-1.5 animate-pulse rounded-full bg-cinnabar [animation-delay:400ms]" />
+    <span className="block py-1" role="status">
+      <span className="block font-mono text-register text-ink-faint">{label}</span>
+      <span aria-hidden="true" className="relative mt-2.5 block h-px w-44 overflow-hidden bg-ink/15">
+        <span className="rule-sweep absolute inset-y-0 left-0 w-1/3 bg-cinnabar" />
+      </span>
     </span>
+  );
+}
+
+function Danda() {
+  return (
+    <span aria-hidden="true" className="text-cinnabar">
+      {" "}॥
+    </span>
+  );
+}
+
+function subscribeMotion(onChange: () => void) {
+  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+
+/**
+ * Writes an answer onto the leaf word by word, at a scribe's pace rather
+ * than the network's. The stream is decoupled from the display: text
+ * arrives as fast as it arrives; the reveal advances ~60 characters a
+ * second, quickening when a backlog builds so it never falls far behind.
+ * Each new word inks in (red, soft → lampblack); a nib blinks at the
+ * writing point; a danda closes the answer. Readers who asked for reduced
+ * motion get the text as it arrives.
+ */
+function InkReveal({
+  text,
+  streaming,
+  onGrow,
+}: {
+  text: string;
+  streaming: boolean;
+  onGrow: () => void;
+}) {
+  const reduced = useSyncExternalStore(
+    subscribeMotion,
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false,
+  );
+  const [shown, setShown] = useState(0);
+  const textRef = useRef(text);
+  const streamingRef = useRef(streaming);
+  const shownRef = useRef(0);
+
+  useEffect(() => {
+    textRef.current = text;
+    streamingRef.current = streaming;
+  }, [text, streaming]);
+
+  useEffect(() => {
+    if (reduced) return;
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      const total = textRef.current.length;
+      if (shownRef.current < total) {
+        const backlog = total - shownRef.current;
+        const rate = 60 + backlog * 0.9; // characters per second
+        shownRef.current = Math.min(total, shownRef.current + Math.max(1, Math.round(rate * dt)));
+        setShown(shownRef.current);
+      } else if (!streamingRef.current) {
+        return; // Written in full: stop the loop.
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [reduced, text]);
+
+  useEffect(() => {
+    onGrow();
+  }, [shown, onGrow]);
+
+  const done = reduced || (!streaming && shown >= text.length);
+  const tokens = (done ? text : text.slice(0, shown)).split(/(\s+)/);
+  // Hold back a half-written word until its last letter has arrived.
+  if (!done && tokens.length && !/^\s*$/.test(tokens[tokens.length - 1])) tokens.pop();
+
+  return (
+    <>
+      {tokens.map((token, i) =>
+        /^\s*$/.test(token) ? (
+          token
+        ) : (
+          <span key={i} className={reduced ? undefined : "ink-word"}>
+            {token}
+          </span>
+        ),
+      )}
+      {done ? <Danda /> : <span aria-hidden="true" className="chat-nib" />}
+    </>
   );
 }
 

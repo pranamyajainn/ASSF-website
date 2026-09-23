@@ -150,6 +150,7 @@ export const ui = {
     send: "Send message",
     disclaimer: "Drawn from the Foundation's published work; may be incomplete.",
     typing: "Assistant is typing",
+    reading: "Reading the Foundation's pages…",
     unavailable: "The assistant is temporarily unavailable. Please try again shortly.",
     failed: "Something went wrong. Please try again, or reach us at",
   },

@@ -384,6 +384,11 @@ ol[data-verses] [data-verse-end]::after {
   transform: perspective(1000px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
     translateY(calc(var(--lift, 0) * -0.25rem));
   transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Promote a portrait to its own layer only while the pointer is on it —
+   not all eleven at once for the life of the page. */
+.person-tilt:hover {
   will-change: transform;
 }
 
@@ -423,6 +428,67 @@ ol[data-verses] [data-verse-end]::after {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/*
+ * The assistant writes its answer onto the leaf. Each word is laid down in
+ * the scribe's red, a little soft, and settles into lampblack — the same
+ * inking as the headings, at the scale of a word. A nib blinks at the
+ * writing point; while it is still reading, a stylus rules a line.
+ */
+@keyframes ink-word {
+  from {
+    opacity: 0;
+    filter: blur(2.5px);
+    color: var(--color-cinnabar);
+  }
+  55% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    color: var(--color-ink);
+  }
+}
+
+.ink-word {
+  animation: ink-word 650ms ease-out both;
+}
+
+@keyframes rule-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+.rule-sweep {
+  animation: rule-sweep 1.1s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+
+@keyframes nib-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.chat-nib {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  margin-left: 3px;
+  vertical-align: -0.18em;
+  background: var(--color-cinnabar);
+  animation: nib-blink 0.9s steps(1) infinite;
 }
 
 /* "Clean the folio": the reader has asked for the leaf without ornament. */
@@ -489,4 +555,35 @@ html[lang="kn"] ol[data-verses] [data-verse-end]::after {
    pull it in so typed register lines in the Indic editions read as words. */
 html:is([lang="hi"], [lang="kn"]) .font-mono {
   word-spacing: -0.28em;
+}
+
+/* ------------------------------------------------------------- sheets */
+
+/* The mobile contents sheet (a native modal <dialog>) slides in from the
+   right edge; the page behind it stops scrolling while it is open. */
+dialog.sheet {
+  transition:
+    translate 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    overlay 220ms allow-discrete,
+    display 220ms allow-discrete;
+}
+
+@starting-style {
+  dialog.sheet[open] {
+    translate: 100% 0;
+  }
+}
+
+dialog.sheet::backdrop {
+  transition: opacity 220ms ease;
+}
+
+@starting-style {
+  dialog.sheet[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+html:has(dialog.sheet[open]) {
+  overflow: hidden;
 }

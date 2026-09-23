@@ -35,14 +35,13 @@ const eczar = Eczar({
 const tiroDeva = Tiro_Devanagari_Hindi({
   subsets: ["devanagari", "latin"],
   weight: "400",
-  style: ["normal", "italic"],
   display: "swap",
   variable: "--font-tiro-deva",
 });
 
 const courier = Courier_Prime({
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: "400",
   display: "swap",
   variable: "--font-courier",
 });
