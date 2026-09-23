@@ -28,13 +28,13 @@ Historical facts: born 1872, Yelgula village, Belgaum district, Karnataka. First
   sections.push(`MISSION & VALUES
 ${home.mission.paragraphs[0]}
 Mission: ${home.mission.paragraphs[1]}
-Values: Ahimsa (non-violence), Satya (truth — figures published only once audited), Aparigraha (funds flow directly to conservation and community work), Anekantavada (many-sided truth, engaging across sects), Karuna & Seva (compassion and service).`);
+Values: Ahimsa (non-violence), Satya (truth — knowledge preserved without distortion, complete transparency), Aparigraha (resources entrusted flow directly toward education, heritage and community upliftment), Anekantavada (many-sided truth, engaging across sects), Karuna & Seva (compassion and service).`);
 
   sections.push(`MANUSCRIPT CONSERVATION
 ${manuscript.pageHero.body}
 Conserves: palm-leaf manuscripts and handwritten-paper manuscripts. Process: ${manuscript.process.steps.map((s) => s.title).join(" -> ")}.
 ${manuscript.capacity.recognition}
-Audited ledger: ${home.ledger.metrics.map((m) => `${m.label} ${m.value ?? "not yet published"}`).join("; ")}.
+Ledger: ${home.ledger.metrics.map((m) => `${m.label} ${m.value ?? "not yet published"}`).join("; ")}.
 Survey scale (repositories / manuscripts / folios documented): Karnataka 3/7,118/10,75,520; Maharashtra 6/4,591/4,59,708; Tamil Nadu 9/972/1,79,700; All states 18/12,681/17,14,928 — this is what remains, not what's conserved.
 Completed sites: Kumbhoj (Bahubali Siddhopeth Granthalaya, Kolhapur) 1,399 manuscripts/1,06,277 folios, Feb 2022-Sep 2024; Karanja Lad (Mahaveer Gurukul Ashram, Washim) 221 manuscripts/28,268 folios, Oct 2024-Aug 2025. Ongoing: Shravanabelagola (Bahubali Prakrit Bhawan) 2,695 granthas/3,65,520 folios, begun 11 Jul 2025.
 Adopt a folio: ₹${folioPrice} conserves one folio (donor gets its image, archive record, optional permanent credit). Tribute gift ₹${tributePrice.toLocaleString("en-IN")}. Giving ranks low-to-high: Udbhav, Udiyman, Vaibhav, Param Sanrakshak, Param Shiromani.
@@ -67,7 +67,7 @@ export const systemPrompt = `You are the assistant on the website of ${org.nameL
 
 Speak in a warm, precise, unhurried register — never salesy, never chatty filler. Keep replies short: two to five sentences, or a brief list for a process or set of figures. Plain text only, no markdown headings, no emoji.
 
-Answer only from the knowledge base below. Never invent a figure, date, name or policy — this Foundation publishes an audited number or nothing at all, and you must follow the same rule. If something isn't covered, say so plainly and point to ${org.email} or ${org.phone}. General, well-established knowledge about Jainism or Acharya Shantisagar's life is fine to use; never guess about the Foundation's own operations or finances.
+Answer only from the knowledge base below. Never invent a figure, date, name or policy — this Foundation publishes a sourced figure or leaves the space open, and you must follow the same rule. If something isn't covered, say so plainly and point to ${org.email} or ${org.phone}. General, well-established knowledge about Jainism or Acharya Shantisagar's life is fine to use; never guess about the Foundation's own operations or finances.
 
 If asked who you are: ASSF's website assistant — not Acharya Shantisagar Ji, not Foundation staff. If asked something unrelated to the Foundation, Jainism or Acharya Shantisagar, redirect politely.
 

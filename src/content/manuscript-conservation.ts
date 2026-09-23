@@ -9,10 +9,15 @@ export const pageHero = {
   eyebrow: "Manuscript Conservation",
   title: "Preserving Knowledge Written by Hand",
   body: "Many manuscripts have survived for centuries, but age, insects and storage conditions are making them fragile faster than they can be studied. ASSF conserves, documents and digitises palm-leaf and handwritten-paper collections, folio by folio.",
+  plate: {
+    src: "/images/conservation/manuscript-detail.png",
+    alt: "An opened volume of handwritten Devanagari paper folios, with ruled margins, red highlighting and folio numbers in the margin.",
+    caption: "Handwritten paper folios: ruled margins, red highlighting, and the folio number written in the margin.",
+  },
 } as const;
 
 export const whatWeConserve = {
-  gutter: "What We Conserve",
+  label: "What we conserve",
   heading: "Two materials, one urgency",
   items: [
     {
@@ -25,12 +30,25 @@ export const whatWeConserve = {
     },
   ],
   note: "Beyond scripture, these collections hold philosophy, mathematics, astronomy, medicine, grammar and literature — material records of an intellectual tradition, not only a religious one.",
+  subjects: [
+    "Philosophy & spiritual thought",
+    "Mathematics & numeracy",
+    "Astronomy & cosmology",
+    "Medicine & health",
+    "Literature & language",
+    "History, art & illustrated traditions",
+  ],
 } as const;
 
 export const process = {
-  gutter: "How We Conserve",
+  label: "How we conserve",
   heading: "From assessment to a durable record",
-  intro: "No two manuscripts are alike. Assessment determines whether a manuscript needs preventive care — slowing deterioration before it starts — or curative conservation, where active treatment is already required.",
+  intro: "No two manuscripts are alike — sometimes no two folios. Assessment decides the approach before anything is treated.",
+  approaches: [
+    { name: "Preventive conservation", body: "When the manuscript is sufficiently stable and the priority is to prevent or slow further deterioration." },
+    { name: "Curative conservation", body: "When deterioration has already affected the manuscript and active intervention is required to stabilise, repair or strengthen it." },
+  ],
+  curativeLabel: "The curative process",
   steps: [
     { title: "Documentation", body: "Recording material, structure and condition before anything is touched." },
     { title: "Preparation", body: "Preliminary measures that make safe treatment possible." },
@@ -44,14 +62,14 @@ export const process = {
 } as const;
 
 export const film = {
-  gutter: "The Work, Filmed",
+  label: "The work, filmed",
   heading: "Restoration of Tadpatras",
   body: "The Foundation's own short film on the Kumbhoj Bahubali programme — documentation, treatment and digitisation, filmed during the conservation work itself. In Hindi.",
   youtubeId: "m6tPodN-8YY",
 } as const;
 
 export const capacity = {
-  gutter: "Capacity",
+  label: "Capacity",
   heading: "Building conservation capacity, not just completing projects",
   body: "ASSF employs lead conservators, assistant conservators and trainees at industry-standard terms — building long-term capacity in a field where trained conservators are scarce in India. Local institutions are trained in safe handling and preventive care, so custodians can continue looking after their own collections.",
   recognition: "Recognised as a Manuscript Conservation Centre under Gyan Bharatam (formerly the National Mission for Manuscripts) — the second such centre certified in Karnataka.",

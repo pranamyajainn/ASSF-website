@@ -35,7 +35,7 @@ export function VideoLoop({
 
   return (
     <div className={className}>
-      <div className="plate">
+      <div className="bg-board-deep">
         <div
           className="relative w-full overflow-hidden"
           style={{ aspectRatio: ratio }}

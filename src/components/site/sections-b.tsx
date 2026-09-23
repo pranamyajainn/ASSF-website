@@ -1,189 +1,315 @@
+import type { CSSProperties } from "react";
 import {
   Button,
   Container,
   EditorialNote,
   Heading,
   InlineLink,
-  Lede,
+  Leaf,
+  Pending,
   PersonGrid,
   Plate,
-  Section,
+  Prose,
 } from "./primitives";
-import { Reveal } from "./reveal";
 import { FolioWall } from "./folio-wall";
-import { adopt, board, field, lineage, standing, survey } from "@/content/home";
+import { adopt, board, field, join, lineage, standing, survey } from "@/content/home";
+import { org } from "@/content/shared";
 
-export function Adopt() {
+/**
+ * Join the work. Giving is one way in among several, never the loudest thing
+ * on the page: the four ways sit as equals in one register, custodians
+ * first. Folio adoption follows as a quieter sub-section — its price stated
+ * once, in a sentence, and the giving ranks and folio bundle set small.
+ */
+export function Join() {
   return (
-    <Section id="adopt" gutter={adopt.gutter}>
-      <Heading>{adopt.heading}</Heading>
-      <Lede>{adopt.body}</Lede>
+    <Leaf id="join" label={join.label}>
+      <Heading>{join.heading}</Heading>
+      <Prose>
+        {join.body.map((p) => (
+          <p key={p.slice(0, 24)}>{p}</p>
+        ))}
+      </Prose>
 
-      <div className="mt-9 flex flex-wrap gap-4">
-        <Button href={adopt.primary.href}>{adopt.primary.label}</Button>
-        <Button href={adopt.secondary.href} variant="outline">
-          {adopt.secondary.label}
-        </Button>
-      </div>
+      <ul className="bleed-margin mt-12 grid border-t border-ink/20 sm:grid-cols-2">
+        {join.ways.map((way, i) => (
+          <li
+            key={way.title}
+            className={`flex flex-col border-b border-ink/20 py-8 sm:pr-10 ${
+              i % 2 === 1 ? "sm:border-l sm:border-ink/20 sm:pl-10" : ""
+            }`}
+          >
+            <h3 className="font-display text-[1.55rem] font-medium leading-tight text-ink">{way.title}</h3>
+            <p className="mt-2.5 max-w-[40ch] text-[1.0625rem] leading-relaxed text-ink-soft">{way.body}</p>
+            <InlineLink href={way.link.href} className="mt-auto pt-5">
+              {way.link.label}
+            </InlineLink>
+          </li>
+        ))}
+      </ul>
 
-      <div className="mt-12 border-t border-ink/20 pt-6">
-        <p className="font-sans text-base text-ink/70">{adopt.ranksLabel}</p>
-        <dl className="mt-5 max-w-3xl space-y-3.5">
-          {adopt.ranks.map((rank) => (
-            <div key={rank.latin} className="flex flex-wrap items-baseline gap-x-4">
-              <dt
-                className={`text-2xl ${rank.highest ? "text-rust" : "text-ink"}`}
+      <div id="adopt" className="bleed-margin mt-20 scroll-mt-6 grid gap-x-16 gap-y-12 border-t border-ink/20 pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div>
+          <Heading as="h3" size="sub">
+            {adopt.heading}
+          </Heading>
+          <p className="mt-5 max-w-[48ch] text-[1.0625rem] leading-relaxed text-ink-soft">{adopt.body}</p>
+          <InlineLink href={adopt.link.href} className="mt-5">
+            {adopt.link.label}
+          </InlineLink>
+
+          <p className="mt-12 font-mono text-register text-ink-faint">
+            {adopt.ranksLabel}; <span className="text-cinnabar">{adopt.thresholdNote}</span>
+          </p>
+          <ol className="mt-4">
+            {adopt.ranks.map((rank, i) => (
+              <li
+                key={rank.latin}
+                className="border-b border-ink/15 py-2.5"
+                style={{ paddingLeft: `calc(${i} * min(1.5rem, 4vw))` } as CSSProperties}
               >
-                {rank.deva} <span className="ml-1">{rank.latin}</span>
-              </dt>
-              <span
-                aria-hidden="true"
-                className="hidden min-w-12 flex-1 translate-y-[-0.35rem] border-t border-dashed border-ink/30 sm:block"
-              />
-              <dd className="font-sans text-sm text-rust">{adopt.thresholdNote}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span
+                    lang="hi"
+                    className={`font-display text-[1.25rem] leading-tight ${
+                      rank.highest ? "text-cinnabar" : "text-ink"
+                    }`}
+                  >
+                    {rank.deva}
+                  </span>
+                  <span className="font-mono text-register text-ink-faint">{rank.latin}</span>
+                  <span className="ml-auto">
+                    <Pending width="2.5rem" />
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
 
-      <FolioWall total={adopt.wall.total} filled={adopt.wall.filled} />
-      <p className="mt-5 max-w-[46ch] text-lg leading-snug text-ink/80">
-        {adopt.wall.note}
-      </p>
-    </Section>
+        <div className="lg:pt-2">
+          <p className="font-mono text-register text-ink-faint">
+            Folio bundle — {adopt.wall.filled} of {adopt.wall.total} leaves adopted
+          </p>
+          <FolioWall total={adopt.wall.total} filled={adopt.wall.filled} />
+          <p className="mt-6 max-w-[44ch] text-[1rem] leading-relaxed text-ink-soft">
+            {adopt.wall.note}
+          </p>
+        </div>
+      </div>
+    </Leaf>
   );
 }
 
+/**
+ * Lineage. The Foundation's namesake, in a real photograph — small, as a
+ * photograph of that age should be shown, not blown up to fill a banner —
+ * beside his full name in Devanagari, the script it is written in.
+ */
 export function Lineage() {
   return (
-    <Section id="lineage" gutter={lineage.gutter}>
-      <Heading>{lineage.heading}</Heading>
-      {lineage.paragraphs.map((p) => (
-        <Lede key={p.slice(0, 24)}>{p}</Lede>
-      ))}
-      <EditorialNote>{lineage.note}</EditorialNote>
-      <Plate
-        className="mt-10 max-w-xl"
-        src={lineage.plate.src}
-        alt="India Post first-day cover bearing the ₹5 commemorative stamp for Acharya Shanti Sagar Ji Maharaj."
-        caption={lineage.plate.caption}
-        ratio="16 / 9"
-      />
-    </Section>
+    <Leaf id="lineage" label={lineage.label}>
+      <div className="bleed-margin grid gap-x-14 gap-y-10 lg:grid-cols-[15rem_minmax(0,1fr)]">
+        <div>
+          <Plate
+            src={lineage.portrait.src}
+            alt={lineage.portrait.alt}
+            caption={lineage.portrait.caption}
+            ratio="297 / 402"
+            className="max-w-[15rem]"
+            sizes="15rem"
+            imageClassName="object-cover grayscale"
+          />
+        </div>
+
+        <div className="min-w-0">
+          <p
+            lang="hi"
+            className="max-w-[20ch] font-display text-[clamp(1.6rem,1.2rem+1.5vw,2.4rem)] leading-[1.25] text-cinnabar"
+          >
+            {lineage.nameDeva}
+          </p>
+          <Heading className="mt-5" size="sub">
+            {lineage.heading}
+          </Heading>
+          <p className="mt-3 font-mono text-register text-ink-faint">{lineage.dates}</p>
+
+          <Prose className="mt-7">
+            {lineage.paragraphs.map((p) => (
+              <p key={p.slice(0, 24)}>{p}</p>
+            ))}
+          </Prose>
+
+          <blockquote className="mt-10 max-w-[36ch] border-l border-cinnabar/60 pl-5">
+            <p lang="hi" className="font-display text-[1.5rem] leading-snug text-ink">
+              {lineage.epigraph}
+            </p>
+          </blockquote>
+
+          <EditorialNote className="mt-10">{lineage.note}</EditorialNote>
+
+          <Plate
+            className="mt-10 max-w-xl"
+            src={lineage.plate.src}
+            alt={lineage.plate.alt}
+            caption={lineage.plate.caption}
+            ratio="768 / 398"
+            sizes="(min-width: 1024px) 36rem, 100vw"
+          />
+        </div>
+      </div>
+    </Leaf>
   );
 }
 
 export function Board() {
   return (
-    <Section id="board" gutter={board.gutter}>
+    <Leaf id="board" label={board.label}>
       <Heading>{board.heading}</Heading>
-      <Lede>{board.intro}</Lede>
-
-      <PersonGrid
-        people={board.members.map((m) => ({
-          name: m.name,
-          rank: m.rank,
-          body: m.affiliation,
-          image: m.image,
-        }))}
-        columns={3}
-      />
-
+      <Prose>
+        <p>{board.intro}</p>
+      </Prose>
+      <div className="bleed-margin">
+        <PersonGrid
+          people={board.members.map((m) => ({
+            name: m.name,
+            rank: m.rank,
+            body: m.affiliation,
+            image: m.image,
+          }))}
+          columns={4}
+        />
+      </div>
       <InlineLink href={board.link.href}>{board.link.label}</InlineLink>
-    </Section>
+    </Leaf>
   );
 }
 
+/**
+ * From the field: dispatches as a register of entries — date and place
+ * typed in the margin of each entry, the Foundation's own Hindi headline
+ * set large, the English summary beneath. An undated dispatch shows its
+ * date as a lacuna rather than picking one of two conflicting dates.
+ */
 export function Field() {
   return (
-    <Section id="field" gutter={field.gutter}>
+    <Leaf id="field" label={field.label}>
       <Heading>{field.heading}</Heading>
-
-      <ul className="mt-10 grid gap-x-10 gap-y-14 sm:grid-cols-2">
+      <Prose>
+        <p>{field.lede}</p>
+      </Prose>
+      <ol className="bleed-margin mt-10 border-t border-ink/20">
         {field.items.map((item) => (
-          <li key={item.title} className="flex flex-col">
-            <Plate src={item.image} alt="" ratio="16 / 9" />
-            <p className="mt-5 font-sans text-sm text-ink/70">{item.meta}</p>
-            <h3
-              lang="hi"
-              className="mt-3 text-pretty text-2xl leading-snug text-ink"
-            >
-              {item.title}
-            </h3>
-            <p className="mt-4 max-w-[36ch] text-lg leading-relaxed text-ink/85">
-              {item.body}
+          <li
+            key={item.title}
+            className="grid gap-x-10 gap-y-3 border-b border-ink/20 py-7 md:grid-cols-[11rem_minmax(0,1fr)]"
+          >
+            <p className="font-mono text-register text-ink-faint">
+              {item.date ?? <Pending width="3rem" label="date to verify" />}
+              <span className="block">{item.place}</span>
             </p>
-            <a
-              href={item.href}
-              className="mt-5 self-start border-b border-rust/40 pb-1 font-sans text-base text-rust transition-colors hover:border-rust"
-            >
-              {field.linkLabel}
-            </a>
+            <div>
+              <h3
+                lang="hi"
+                className="max-w-[34ch] text-pretty font-display text-[clamp(1.35rem,1.15rem+0.7vw,1.75rem)] leading-[1.35] text-ink"
+              >
+                {item.title}
+              </h3>
+              <p className="mt-2.5 max-w-[60ch] text-[1.0625rem] leading-relaxed text-ink-soft">
+                {item.body}
+              </p>
+            </div>
           </li>
         ))}
-      </ul>
-    </Section>
+      </ol>
+    </Leaf>
   );
 }
 
-export function Survey() {
-  return (
-    <section id="survey" className="scroll-mt-24 py-14 sm:py-20">
-      <Container>
-        <Reveal>
-          <div className="border-t-2 border-rust bg-ink px-6 py-12 sm:px-14 sm:py-14">
-            <Heading>{survey.heading}</Heading>
-            <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-parchment/90 sm:text-xl">
-              {survey.body}
-            </p>
-            <div className="mt-9 flex flex-wrap gap-4">
-              <Button href={survey.primary.href}>{survey.primary.label}</Button>
-              <Button href="tel:+918095588411" variant="outline-dark">
-                +91 8095588411
-              </Button>
-            </div>
-          </div>
-        </Reveal>
-      </Container>
-    </section>
-  );
-}
+const standingState = {
+  recognised: { label: "recognised" },
+  verify: { label: "to verify" },
+  pending: { label: "pending" },
+} as const;
 
 export function Standing() {
-  const stateStyles = {
-    recognised: "border-sage/70 text-ink",
-    verify: "border-rust/60 text-ink",
-    pending: "border-ink/30 text-ink/90",
-  } as const;
-  const stateLabels = {
-    recognised: "recognised",
-    verify: "",
-    pending: "pending",
-  } as const;
-
   return (
-    <Section id="standing" gutter={standing.gutter}>
-      <p className="max-w-[54ch] text-lg leading-relaxed text-ink/90 sm:text-xl">
-        {standing.body}
-      </p>
-
-      <ul className="mt-8 flex flex-wrap gap-3.5">
+    <Leaf id="standing" label={standing.label}>
+      <Heading>Standing</Heading>
+      <Prose>
+        <p>{standing.body}</p>
+      </Prose>
+      <ul className="mt-10 max-w-[46rem] border-t border-ink/20">
         {standing.badges.map((badge) => (
           <li
             key={badge.label}
-            className={`flex items-baseline gap-3 border px-4 py-3 ${stateStyles[badge.state]}`}
+            className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-ink/20 py-4"
           >
-            <span className="font-sans text-base">{badge.label}</span>
-            <span className="font-sans text-sm text-rust">
-              {badge.note ?? stateLabels[badge.state]}
-            </span>
+            <span className="text-[1.0625rem] text-ink">{badge.label}</span>
+            <span aria-hidden="true" className="leader hidden sm:block" />
+            {badge.state === "recognised" ? (
+              <span className="ml-auto inline-flex items-center gap-2 font-mono text-register text-ink">
+                <span
+                  aria-hidden="true"
+                  className="size-2.5 rounded-full bg-cinnabar"
+                />
+                {badge.note ?? standingState.recognised.label}
+              </span>
+            ) : (
+              <span className="ml-auto">
+                <Pending width="3rem" label={badge.note ?? standingState[badge.state].label} />
+              </span>
+            )}
           </li>
         ))}
       </ul>
+      <EditorialNote className="mt-8">{standing.note}</EditorialNote>
+    </Leaf>
+  );
+}
 
-      <p className="mt-8 max-w-[58ch] text-lg leading-relaxed text-ink/80">
-        {standing.note}
-      </p>
-    </Section>
+/**
+ * The survey call, addressed to custodians — temple committees, maths,
+ * families holding a bundle. It is set on the red cloth a bundle is wrapped
+ * in, and the phone number is the largest thing in it: for this reader, a
+ * call is the likeliest way in.
+ */
+export function Survey() {
+  const tel = `tel:${org.phone.replace(/\s/g, "")}`;
+  return (
+    <section
+      id="survey"
+      className="on-dark scroll-mt-6 bg-cloth text-leaf"
+      style={{ backgroundImage: "var(--weave)" }}
+    >
+      <Container>
+        <div className="grid gap-x-16 gap-y-10 py-16 md:grid-cols-[5.5rem_minmax(0,1fr)] md:py-20 lg:grid-cols-[7.5rem_minmax(0,1fr)_minmax(0,22rem)] lg:py-24">
+          <p aria-hidden="true" className="hidden font-display text-[2.4rem] leading-none text-orpiment md:block">
+            ॥
+          </p>
+          <div className="min-w-0">
+            <h2 className="max-w-[16ch] text-balance font-display text-title font-medium">
+              {survey.heading}
+            </h2>
+            <p className="mt-6 max-w-[54ch] text-lede text-leaf/90">{survey.body}</p>
+            <div className="mt-9">
+              <Button href={survey.primary.href} variant="outline-dark">
+                {survey.primary.label}
+              </Button>
+            </div>
+          </div>
+          <div className="self-end md:col-start-2 lg:col-start-auto">
+            <p className="font-mono text-register text-orpiment">{survey.callLabel}</p>
+            <a
+              href={tel}
+              className="mt-3 block font-display text-[clamp(2rem,1.4rem+2.2vw,3rem)] font-medium leading-none tracking-[-0.01em] underline decoration-leaf/30 decoration-2 underline-offset-[10px] hover:decoration-orpiment"
+            >
+              {org.phone}
+            </a>
+            <p className="mt-5 font-mono text-register text-leaf/85">{org.email}</p>
+          </div>
+        </div>
+      </Container>
+    </section>
   );
 }

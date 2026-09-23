@@ -1,90 +1,59 @@
-import Image from "next/image";
-import { Button, Container } from "./primitives";
-import { hero, heroStats } from "@/content/home";
+import type { CSSProperties } from "react";
+import { Button, Leaf, MarginPlate } from "./primitives";
+import { hero } from "@/content/home";
+import { org } from "@/content/shared";
 
 /**
- * The hero panel is drawn as a folio: parchment ground, a verse held faintly
- * in the leaf, and the two binding holes a tadpatra is strung through. The
- * photograph sits behind it and shows only at the bound edge.
+ * The first leaf. The headline is the Foundation's approved one; on its own
+ * it could belong to any charity, so each clause carries an interlinear
+ * gloss — the figure that makes it true — the way a commented manuscript
+ * writes its gloss between the lines of the main text. The lines ink in one
+ * after another on load, as lampblack is rubbed across an incised leaf.
+ *
+ * Beside it, in the margin and off the edge of the page: the Foundation's
+ * own photograph of a folio being tested before treatment. The real work,
+ * not a banner.
  */
 export function Hero() {
   return (
-    <section id="top">
-      <Container>
-        <div className="relative isolate overflow-hidden">
-          <Image
-            src="/images/hero-acharya.png"
-            alt=""
-            aria-hidden="true"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-left"
-          />
+    <Leaf id="top" label={hero.label} innerClassName="!pt-10 md:!pt-14 lg:!pt-20">
+      <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_4rem] xl:gap-x-12">
+        <div className="min-w-0">
+          <p lang="hi" className="font-display text-[1.35rem] leading-none text-ink-soft">
+            {org.nameDeva}
+          </p>
 
-          <div className="relative ml-8 bg-gradient-to-br from-parchment-bright via-parchment-dim to-parchment-shade sm:ml-[4.5rem] lg:ml-[6rem]">
-            {/* Binding holes, drawn together by a single thread on load — the
-                page's opening idea: fragile leaves, bound. */}
-            <span
-              data-ornament
-              aria-hidden="true"
-              className="absolute right-[6%] top-1/2 hidden h-px w-[18%] origin-right -translate-y-1/2 scale-x-0 bg-ink/60 [animation:thread-draw_1.1s_ease-out_0.4s_forwards] lg:block"
-            />
-            <span
-              data-ornament
-              aria-hidden="true"
-              className="absolute right-[22%] top-1/2 hidden size-6 -translate-y-1/2 rounded-full bg-ink/85 lg:block"
-            />
-            <span
-              data-ornament
-              aria-hidden="true"
-              className="absolute right-[6%] top-1/2 hidden size-6 -translate-y-1/2 rounded-full bg-ink/85 lg:block"
-            />
+          <h1 className="mt-7 font-display text-display font-medium tracking-[-0.015em]">
+            {hero.lines.map((line, i) => (
+              <span key={line.text} className="block">
+                <span
+                  className="inked ink-on-load inline-block text-balance"
+                  style={{ "--line": i } as CSSProperties}
+                >
+                  {line.text}
+                </span>
+                <small className="mb-5 mt-2.5 flex max-w-[44ch] items-baseline gap-3 font-mono text-register font-normal tracking-normal text-cinnabar sm:mb-6">
+                  <span aria-hidden="true" className="h-px w-5 shrink-0 -translate-y-[0.3em] bg-cinnabar/60" />
+                  {line.gloss}
+                </small>
+              </span>
+            ))}
+          </h1>
 
-            {/* The verse held in the leaf. */}
-            <div
-              data-ornament
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 right-0 hidden w-[52%] items-center px-10 lg:flex"
-            >
-              <p className="text-center text-4xl leading-relaxed text-ink/[0.08]">
-                {hero.watermark}
-              </p>
-            </div>
+          <p className="mt-4 max-w-[46ch] text-lede text-ink">{hero.body}</p>
 
-            <div className="relative max-w-[42rem] px-6 py-12 sm:px-12 sm:py-16 lg:py-20">
-              <p className="text-base text-ink/70">{hero.eyebrow}</p>
-              <h1 className="mt-4 text-5xl leading-[1.08] text-ink sm:text-6xl lg:text-7xl">
-                {hero.title.map((line) => (
-                  <span key={line} className="block">
-                    {line}
-                  </span>
-                ))}
-              </h1>
-              <p className="mt-7 max-w-[40ch] text-lg leading-relaxed text-ink/85 sm:text-xl">
-                {hero.body}
-              </p>
-              <div className="mt-9 flex flex-wrap gap-4">
-                <Button href={hero.primary.href}>{hero.primary.label}</Button>
-                <Button href={hero.secondary.href} variant="outline">
-                  {hero.secondary.label}
-                </Button>
-              </div>
-            </div>
+          <div className="mt-9 flex flex-wrap gap-3">
+            <Button href={hero.primary.href}>{hero.primary.label}</Button>
+            <Button href={hero.secondary.href} variant="outline">
+              {hero.secondary.label}
+            </Button>
           </div>
+
+          <p className="mt-9 font-mono text-register text-ink-faint">{hero.registration}</p>
         </div>
 
-        <dl className="grid gap-x-10 gap-y-7 border-b border-ink/15 py-10 sm:grid-cols-2 lg:grid-cols-3">
-          {heroStats.map((stat) => (
-            <div key={stat.figure} className="flex items-baseline gap-4">
-              <dt className="shrink-0 text-4xl text-rust">{stat.figure}</dt>
-              <dd className="max-w-[24ch] text-lg leading-snug text-ink/85">
-                {stat.note}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </Container>
-    </section>
+        <MarginPlate plate={{ ...hero.plate, position: "14% 0%" }} />
+      </div>
+    </Leaf>
   );
 }

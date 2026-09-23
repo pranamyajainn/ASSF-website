@@ -1,33 +1,50 @@
 import type { Metadata } from "next";
-import { Inter, Tiro_Devanagari_Hindi, Tiro_Kannada } from "next/font/google";
+import { Courier_Prime, Eczar, Tiro_Devanagari_Hindi, Tiro_Kannada } from "next/font/google";
 import { org } from "@/content/shared";
 import { ChatWidget } from "@/components/chat/chat-widget";
 import "./globals.css";
 
 /**
- * Tiro Devanagari Hindi carries both the Devanagari and the Latin of the
- * design — one family for the running text keeps the two scripts on the same
- * baseline and colour. Inter handles labels, badges and UI chrome; Tiro
- * Kannada exists for the ಕನ್ನಡ switcher and Kannada place names.
+ * Three voices, no sans-serif:
+ *
+ * - Eczar — display, Latin and Devanagari. Designed by Vaibhav Singh from
+ *   broad-nib Devanagari, the pen that wrote the paper pothis this site is
+ *   about; it carries headings, figures and every Devanagari headline.
+ * - Tiro Devanagari Hindi — running text in both scripts, one baseline.
+ * - Courier Prime — the conservator's record: accession numbers, dates,
+ *   counts, captions. Typed, like the slip in the Foundation's own
+ *   before-treatment photograph.
+ *
+ * Tiro Kannada is only ever used for the word ಕನ್ನಡ in the language
+ * switcher, so it is not preloaded.
  */
+const eczar = Eczar({
+  subsets: ["latin", "devanagari"],
+  display: "swap",
+  variable: "--font-eczar",
+});
+
 const tiroDeva = Tiro_Devanagari_Hindi({
   subsets: ["devanagari", "latin"],
   weight: "400",
+  style: ["normal", "italic"],
   display: "swap",
   variable: "--font-tiro-deva",
 });
 
-const tiroKannada = Tiro_Kannada({
-  subsets: ["kannada", "latin"],
-  weight: "400",
+const courier = Courier_Prime({
+  subsets: ["latin"],
+  weight: ["400", "700"],
   display: "swap",
-  variable: "--font-tiro-kannada",
+  variable: "--font-courier",
 });
 
-const inter = Inter({
-  subsets: ["latin"],
+const tiroKannada = Tiro_Kannada({
+  subsets: ["kannada"],
+  weight: "400",
   display: "swap",
-  variable: "--font-inter",
+  preload: false,
+  variable: "--font-tiro-kannada",
 });
 
 export const metadata: Metadata = {
@@ -48,9 +65,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${tiroDeva.variable} ${tiroKannada.variable} ${inter.variable}`}
+      className={`${eczar.variable} ${tiroDeva.variable} ${courier.variable} ${tiroKannada.variable}`}
     >
-      <body className="antialiased">
+      <body>
         {children}
         <ChatWidget />
       </body>

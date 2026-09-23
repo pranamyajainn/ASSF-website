@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import {
+  Gloss,
   Heading,
-  Lede,
+  Leaf,
   PageHero,
   Plate,
-  Section,
-  StatGrid,
-  StepList,
+  Prose,
+  Register,
+  Verses,
 } from "@/components/site/primitives";
 import { education, healthcare, method, pageHero, relief } from "@/content/community-services";
 
@@ -22,48 +23,113 @@ export default function CommunityServicesPage() {
     <>
       <Header />
       <main>
-        <PageHero {...pageHero} />
+        <PageHero label="Community services" {...pageHero} />
 
-        <Section id="healthcare" gutter={healthcare.gutter}>
+        <Leaf id="healthcare" label={healthcare.label}>
           <Heading>{healthcare.heading}</Heading>
-          <Lede>{healthcare.body}</Lede>
-          <StatGrid metrics={healthcare.totals} />
+          <Prose>
+            <Gloss label="Also">{healthcare.note}</Gloss>
+            <p>{healthcare.body}</p>
+          </Prose>
+          <Register entries={healthcare.totals} />
 
-          <ul className="mt-12 grid gap-x-10 gap-y-8 border-t border-ink/25 pt-8 sm:grid-cols-3">
-            {healthcare.camps.map((camp) => (
-              <li key={camp.place}>
-                <h3 className="text-xl text-ink">{camp.place}</h3>
-                <p className="mt-1 font-sans text-sm text-rust">{camp.beneficiaries} beneficiaries</p>
-                <p className="mt-2 text-lg leading-snug text-ink/80">{camp.detail}</p>
-              </li>
+          {/* The camps, as a register: place, reach, what was done. */}
+          <div className="bleed-margin mt-14 overflow-x-auto">
+            <table className="w-full min-w-[36rem] border-collapse">
+              <caption className="sr-only">Free medical camps</caption>
+              <thead>
+                <tr className="border-y border-ink/25">
+                  <th scope="col" className="py-3 pr-4 text-left font-mono text-register font-normal text-ink-faint">Camp</th>
+                  <th scope="col" className="px-4 py-3 text-right font-mono text-register font-normal text-ink-faint">Beneficiaries</th>
+                  <th scope="col" className="py-3 pl-6 text-left font-mono text-register font-normal text-ink-faint">Specialties and outcomes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {healthcare.camps.map((camp) => (
+                  <tr key={camp.place} className="border-b border-ink/15 align-baseline">
+                    <th scope="row" className="py-5 pr-4 text-left font-display text-[1.25rem] font-medium text-ink">
+                      {camp.place}
+                    </th>
+                    <td className="px-4 py-5 text-right font-display text-[1.6rem] tabular-nums text-ink">
+                      {camp.beneficiaries}
+                    </td>
+                    <td className="max-w-[40ch] py-5 pl-6 text-[1rem] leading-relaxed text-ink-soft">
+                      {camp.detail}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="bleed-margin mt-12 grid gap-4 sm:grid-cols-2">
+            {healthcare.images.map((img) => (
+              <Plate
+                key={img.src}
+                src={img.src}
+                alt={img.alt}
+                caption={img.caption}
+                ratio="16 / 10"
+                sizes="(min-width: 640px) 40vw, 100vw"
+              />
             ))}
-          </ul>
-          <p className="mt-8 max-w-[62ch] text-lg leading-relaxed text-ink/80">{healthcare.note}</p>
-        </Section>
+          </div>
+        </Leaf>
 
-        <Section id="education" gutter={education.gutter}>
-          <Heading>{education.heading}</Heading>
-          <Lede>{education.body}</Lede>
-          <Plate className="mt-10 max-w-lg" src={education.image} alt="Students receiving books and stationery." ratio="4 / 3" />
-        </Section>
+        <Leaf id="education" label={education.label}>
+          <div className="bleed-margin grid items-start gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+            <div>
+              <Heading>{education.heading}</Heading>
+              <Prose>
+                <p>{education.body}</p>
+              </Prose>
+            </div>
+            <Plate
+              src={education.image}
+              alt={education.imageAlt}
+              caption="Education support near Yarnal."
+              ratio="16 / 9"
+              sizes="(min-width: 1024px) 45vw, 100vw"
+            />
+          </div>
+        </Leaf>
 
-        <Section id="relief" gutter={relief.gutter}>
-          <Heading>Standing with communities in crisis</Heading>
-          <ul className="mt-10 grid gap-x-10 gap-y-14 sm:grid-cols-2">
+        <Leaf id="relief" label={relief.label}>
+          <Heading>{relief.heading}</Heading>
+          <ul className="bleed-margin mt-12 grid gap-x-14 gap-y-14 border-t border-ink/20 pt-10 lg:grid-cols-2">
             {relief.items.map((item) => (
               <li key={item.name}>
-                <Plate src={item.image} alt={item.name} ratio="4 / 3" />
-                <h3 className="mt-4 text-2xl text-ink">{item.name}</h3>
-                <p className="mt-2 text-lg leading-relaxed text-ink/85">{item.body}</p>
+                <h3 className="font-display text-[1.7rem] font-medium leading-tight text-ink">{item.name}</h3>
+                <p className="mt-3 max-w-[50ch] text-[1.0625rem] leading-relaxed text-ink-soft">{item.body}</p>
+                <dl className="mt-6 flex flex-wrap gap-x-10 gap-y-5">
+                  {item.stats.map((stat) => (
+                    <div key={stat.label} className="flex flex-col-reverse">
+                      <dt className="mt-1.5 font-mono text-register text-ink-faint">{stat.label}</dt>
+                      <dd className="font-display text-[clamp(1.9rem,1.5rem+1.4vw,2.6rem)] font-medium leading-none tabular-nums text-ink">
+                        {stat.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                {"image" in item && item.image ? (
+                  <Plate
+                    className="mt-8"
+                    src={item.image}
+                    alt={item.imageAlt}
+                    caption={item.name}
+                    ratio="16 / 9"
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                  />
+                ) : null}
               </li>
             ))}
           </ul>
-        </Section>
+        </Leaf>
 
-        <Section id="method" gutter={method.gutter}>
+        <Leaf id="method" label={method.label}>
           <Heading>{method.heading}</Heading>
-          <StepList steps={method.steps} />
-        </Section>
+          <Verses steps={method.steps} />
+        </Leaf>
       </main>
       <Footer />
     </>

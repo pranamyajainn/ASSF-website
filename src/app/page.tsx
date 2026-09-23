@@ -1,48 +1,42 @@
 import { Header } from "@/components/site/header";
 import { Hero } from "@/components/site/hero";
-import {
-  CommunityTeaser,
-  Ledger,
-  Mission,
-  PillarsIntro,
-  RuralTeaser,
-  Sites,
-} from "@/components/site/sections";
-import {
-  Adopt,
-  Board,
-  Field,
-  Lineage,
-  Standing,
-  Survey,
-} from "@/components/site/sections-b";
+import { Ledger, Mission, PillarsIntro, Spread } from "@/components/site/sections";
+import { Sites } from "@/components/site/sites";
+import { Board, Field, Join, Lineage, Standing, Survey } from "@/components/site/sections-b";
+import { Voices } from "@/components/site/voices";
 import { Footer } from "@/components/site/footer";
 
+/**
+ * The homepage is read as one bundle, leaf by leaf; the margin numbers them
+ * in order (१, २, ३…) on their own.
+ */
 export default function Home() {
   return (
     <>
       <Header />
       <main>
-        {/* WHO — identity, one line of mission. */}
+        {/* WHO — identity, each claim glossed with its evidence. */}
         <Hero />
-        {/* WHAT — the three pillars, named. */}
-        <PillarsIntro />
-        {/* WHY — the urgency, told through the pillar that started it all. */}
+        {/* WHY — the urgency, and the damage it describes. */}
         <Mission />
-        {/* PROOF — audited numbers, then the real sites behind them. */}
+        {/* WHAT — three pillars on one leaf. */}
+        <PillarsIntro />
+        {/* PROOF — the register, the scale, then the sites behind them. */}
         <Ledger />
         <Sites />
-        {/* WHAT, continued — the other two pillars, briefly. */}
-        <RuralTeaser />
-        <CommunityTeaser />
+        {/* MOMENTUM — the work is current, not archival. */}
+        <Field />
+        {/* WHAT, continued — the two pillars that serve the present. */}
+        <Spread />
+        {/* VOICES — the people the work reaches, in their own words. */}
+        <Voices />
         {/* WHO, deepened — origin, leadership, standing. */}
         <Lineage />
         <Board />
         <Standing />
-        {/* MOMENTUM — the work is current, not archival. */}
-        <Field />
-        {/* ACTION — two ways in, donor and custodian. */}
-        <Adopt />
+        {/* ACTION — many ways in, giving one of them; the custodian's call
+            closes the bundle, because the mission is the manuscripts. */}
+        <Join />
         <Survey />
       </main>
       <Footer />

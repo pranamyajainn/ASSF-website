@@ -25,7 +25,7 @@ export default async function TrusteePortalLoginPage({
   const notConfigured = authorizedMembers.length === 0;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-ink-deep px-5 py-16">
+    <main className="flex min-h-screen items-center justify-center bg-board-deep px-5 py-16">
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center text-center">
           <Image
@@ -35,22 +35,22 @@ export default async function TrusteePortalLoginPage({
             height={56}
             className="size-14"
           />
-          <h1 className="mt-5 text-2xl text-parchment-bright">Trustee Portal</h1>
-          <p className="mt-2 font-sans text-[0.95rem] leading-relaxed text-parchment/70">
+          <h1 className="mt-5 text-2xl text-board-ink">Trustee Portal</h1>
+          <p className="mt-2 text-[0.95rem] leading-relaxed text-board-ink/70">
             Board access for {org.nameLatin} trustees and advisors.
           </p>
         </div>
 
-        <div className="mt-9 border border-parchment/15 bg-ink p-6">
+        <div className="mt-9 border border-board-ink/15 bg-board p-6">
           {notConfigured ? (
-            <p className="font-sans text-sm leading-relaxed text-accent">
+            <p className="text-sm leading-relaxed text-orpiment">
               Portal access hasn&apos;t been configured yet — no trustee accounts have been
               added. Please check back once the Foundation sets this up.
             </p>
           ) : (
             <>
               {errorMessage ? (
-                <p className="mb-5 font-sans text-sm leading-relaxed text-accent">{errorMessage}</p>
+                <p className="mb-5 text-sm leading-relaxed text-orpiment">{errorMessage}</p>
               ) : null}
               <form
                 action={async () => {
@@ -60,13 +60,13 @@ export default async function TrusteePortalLoginPage({
               >
                 <button
                   type="submit"
-                  className="flex w-full items-center justify-center gap-3 border border-parchment/25 bg-parchment-bright px-5 py-3.5 font-sans text-base text-ink transition-colors hover:bg-parchment"
+                  className="flex w-full items-center justify-center gap-3 border border-board-ink/25 bg-board-ink px-5 py-3.5 text-base text-ink transition-colors hover:bg-leaf"
                 >
                   <GoogleMark className="size-5" />
                   Continue with Google
                 </button>
               </form>
-              <p className="mt-4 font-sans text-xs leading-relaxed text-parchment/45">
+              <p className="mt-4 text-xs leading-relaxed text-board-ink/45">
                 Access is limited to Google accounts the Foundation has registered for the
                 board. Signing in with any other account will be refused.
               </p>
@@ -74,8 +74,8 @@ export default async function TrusteePortalLoginPage({
           )}
         </div>
 
-        <p className="mt-6 text-center font-sans text-sm text-parchment/45">
-          <Link href="/" className="underline decoration-parchment/30 underline-offset-4 hover:text-parchment/70">
+        <p className="mt-6 text-center text-sm text-board-ink/45">
+          <Link href="/" className="underline decoration-board-ink/30 underline-offset-4 hover:text-board-ink/70">
             Back to the public site
           </Link>
         </p>

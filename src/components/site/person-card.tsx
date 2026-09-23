@@ -47,29 +47,29 @@ export function PersonCard({ person }: { person: Person }) {
 
   return (
     <li className="group">
-      <div className="plate" style={{ perspective: "1000px" }}>
+      <div className="outline outline-1 -outline-offset-1 outline-ink/15" style={{ perspective: "1000px" }}>
         <div
           ref={mountRef}
           onMouseMove={handleMove}
           onMouseLeave={handleLeave}
-          className="person-tilt relative aspect-[4/5] w-full overflow-hidden"
+          className="person-tilt relative aspect-[4/5] w-full overflow-hidden bg-leaf-deep"
         >
           <Image
             src={person.image}
             alt={person.name}
             fill
-            sizes="(min-width: 1024px) 24vw, 45vw"
+            sizes="(min-width: 1024px) 22vw, 45vw"
             className="object-cover"
           />
           <div className="person-glow" aria-hidden="true" />
         </div>
       </div>
-      <div className="mt-5 border-t border-ink/20 pt-3 transition-colors duration-300 group-hover:border-rust/70">
-        <h3 className="text-xl text-ink">{person.name}</h3>
-        <p className="mt-1 font-sans text-sm tracking-wide text-rust">{person.rank}</p>
+      <div className="mt-4 border-t border-ink/20 pt-3 transition-colors duration-300 group-hover:border-cinnabar">
+        <h3 className="font-display text-[1.2rem] font-medium leading-snug text-ink">{person.name}</h3>
+        <p className="mt-1.5 font-mono text-register text-cinnabar">{person.rank}</p>
       </div>
       {person.body ? (
-        <p className="mt-3 line-clamp-3 text-base leading-snug text-ink/75">{person.body}</p>
+        <p className="mt-2.5 line-clamp-3 text-[0.98rem] leading-snug text-ink-soft">{person.body}</p>
       ) : null}
     </li>
   );

@@ -14,9 +14,9 @@ export function PortalSection({
   className?: string;
 }) {
   return (
-    <section className={`border-t border-parchment/10 py-10 ${className}`}>
-      <p className="font-sans text-sm tracking-wide text-parchment/50">{eyebrow}</p>
-      <h2 className="mt-2 text-2xl text-parchment-bright">{heading}</h2>
+    <section className={`border-t border-board-ink/10 py-10 ${className}`}>
+      <p className="text-sm tracking-wide text-board-ink/50">{eyebrow}</p>
+      <h2 className="mt-2 text-2xl text-board-ink">{heading}</h2>
       <div className="mt-6">{children}</div>
     </section>
   );
@@ -36,10 +36,10 @@ export function StatTile({
   note?: string;
 }) {
   return (
-    <div className="border-t border-parchment/20 pt-4">
-      <p className="font-sans text-sm text-parchment/70">{label}</p>
-      <p className="mt-3 font-sans text-3xl font-semibold text-gold">{value}</p>
-      {note ? <p className="mt-2 max-w-[26ch] text-base leading-snug text-parchment/60">{note}</p> : null}
+    <div className="border-t border-board-ink/20 pt-4">
+      <p className="text-sm text-board-ink/70">{label}</p>
+      <p className="mt-3 font-display text-3xl font-medium text-orpiment">{value}</p>
+      {note ? <p className="mt-2 max-w-[26ch] text-base leading-snug text-board-ink/60">{note}</p> : null}
     </div>
   );
 }
@@ -62,28 +62,28 @@ export function Meter({
   const pct = Math.max(0, Math.min(1, fraction)) * 100;
   return (
     <div>
-      <div className="flex items-baseline justify-between gap-4 font-sans text-sm text-parchment/70">
+      <div className="flex items-baseline justify-between gap-4 text-sm text-board-ink/70">
         <span>{label}</span>
-        <span className="text-parchment/50">{pct.toFixed(1)}%</span>
+        <span className="text-board-ink/50">{pct.toFixed(1)}%</span>
       </div>
-      <div className="mt-3 h-2 rounded-full bg-parchment/10">
+      <div className="mt-3 h-2 rounded-full bg-board-ink/10">
         <div
-          className="h-2 rounded-full bg-gold"
+          className="h-2 rounded-full bg-orpiment"
           style={{ width: `${Math.max(pct, 1.5)}%` }}
         />
       </div>
-      <div className="mt-2 flex items-baseline justify-between font-sans text-sm">
-        <span className="text-parchment-bright">{filledLabel}</span>
-        <span className="text-parchment/50">of {totalLabel}</span>
+      <div className="mt-2 flex items-baseline justify-between text-sm">
+        <span className="text-board-ink">{filledLabel}</span>
+        <span className="text-board-ink/50">of {totalLabel}</span>
       </div>
     </div>
   );
 }
 
 const STATUS_STYLE = {
-  recognised: { dot: "bg-sage", text: "text-sage", label: "Recognised" },
-  verify: { dot: "bg-gold", text: "text-gold", label: "To verify" },
-  pending: { dot: "bg-accent", text: "text-accent", label: "In progress" },
+  recognised: { dot: "bg-board-ink", text: "text-board-ink", label: "Recognised" },
+  verify: { dot: "bg-orpiment", text: "text-orpiment", label: "To verify" },
+  pending: { dot: "bg-cinnabar-light", text: "text-cinnabar-light", label: "In progress" },
 } as const;
 
 export function StatusRow({
@@ -95,9 +95,9 @@ export function StatusRow({
 }) {
   const style = STATUS_STYLE[state];
   return (
-    <div className="flex items-center justify-between gap-4 border-t border-parchment/10 py-3 first:border-t-0">
-      <span className="font-sans text-[0.95rem] text-parchment/85">{label}</span>
-      <span className={`flex items-center gap-2 font-sans text-sm ${style.text}`}>
+    <div className="flex items-center justify-between gap-4 border-t border-board-ink/10 py-3 first:border-t-0">
+      <span className="text-[0.95rem] text-board-ink/85">{label}</span>
+      <span className={`flex items-center gap-2 text-sm ${style.text}`}>
         <span className={`size-1.5 rounded-full ${style.dot}`} aria-hidden="true" />
         {style.label}
       </span>
@@ -117,18 +117,18 @@ export function ReportCard({
   return (
     <Link
       href={href}
-      className="block border border-parchment/15 bg-ink p-5 transition-colors hover:border-accent/40"
+      className="block border border-board-ink/15 bg-board p-5 transition-colors hover:border-orpiment/40"
     >
-      <p className="font-sans text-base text-parchment-bright">{name}</p>
+      <p className="text-base text-board-ink">{name}</p>
       <dl className="mt-4 space-y-2.5">
         {stats.map((s) => (
-          <div key={s.label} className="flex items-baseline justify-between gap-3 font-sans text-sm">
-            <dt className="text-parchment/60">{s.label}</dt>
-            <dd className="text-parchment-bright">{s.value}</dd>
+          <div key={s.label} className="flex items-baseline justify-between gap-3 text-sm">
+            <dt className="text-board-ink/60">{s.label}</dt>
+            <dd className="text-board-ink">{s.value}</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-4 font-sans text-sm text-accent underline decoration-accent/40 underline-offset-4">
+      <p className="mt-4 text-sm text-orpiment underline decoration-orpiment/40 underline-offset-4">
         Open full report
       </p>
     </Link>

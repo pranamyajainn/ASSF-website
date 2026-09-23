@@ -14,10 +14,16 @@ export const pageHero = {
   eyebrow: "Community Services",
   title: "Service Where It Is Needed",
   body: "Heritage work does not stand apart from human need. ASSF responds to healthcare, education and emergency needs directly — understanding what a community requires, then acting on it.",
+  plate: {
+    src: "/images/community/health-camp-team.jpg",
+    alt: "Doctors, nurses and volunteers standing in rows behind an Acharya Shanti Sagar Foundation banner at a free health camp.",
+    caption: "The team at a free health camp.",
+    position: "55% 50%",
+  },
 } as const;
 
 export const healthcare = {
-  gutter: "Healthcare",
+  label: "Healthcare",
   heading: "Taking specialist care closer to villages",
   body: "Free medical camps bring doctors and diagnostics to communities where specialist care is otherwise out of reach — with follow-up, not just a single day's consultation.",
   totals: [
@@ -32,34 +38,53 @@ export const healthcare = {
     { place: "Yarnal, Belagavi", beneficiaries: "1,800", detail: "Cardiology, ophthalmology, gynaecology, dentistry — 78 cataract cases treated" },
   ],
   note: "Also included: dengue and chikungunya prevention camps for 48 beneficiaries, and blood-donation drives screening 178 participants and collecting 78 units.",
+  images: [
+    { src: "/images/community/health-screening.jpeg", alt: "A nurse recording an ECG for a man lying on a camp bed.", caption: "Diagnostic screening at a camp." },
+    { src: "/images/community/health-consultation.jpeg", alt: "A doctor consulting patients at a table beneath Kannada camp banners.", caption: "Specialist consultation, free of charge." },
+  ],
 } as const;
 
 export const education = {
-  gutter: "Education Support",
+  label: "Education support",
   heading: "Helping children continue to learn",
   body: "ASSF studied schools around Yarnal and identified three serving children from economically disadvantaged backgrounds. Nearly 500 students received books and stationery — support chosen after understanding what each school actually needed.",
   image: "/images/community/education-support-2.jpeg",
+  imageAlt: "Schoolchildren in uniform with teachers and Foundation members, in front of a school banner.",
 } as const;
 
+/**
+ * Every relief photograph in the archive shows masked volunteers, so they
+ * belong to the 2020 COVID-19 response; the 2019 flood entry has none rather
+ * than borrowing one.
+ */
 export const relief = {
-  gutter: "Emergency Relief",
+  label: "Emergency relief",
   heading: "Standing with communities in crisis",
   items: [
     {
       name: "North Karnataka & Maharashtra floods, 2019",
       body: "ASSF reached six villages with 2,000 food kits and 500 clothing kits, then extended direct financial support to 262 families rebuilding their homes.",
-      image: "/images/community/relief-distribution-1.jpeg",
+      stats: [
+        { value: "2,000", label: "food kits" },
+        { value: "500", label: "clothing kits" },
+        { value: "262", label: "families supported to rebuild" },
+      ],
     },
     {
       name: "COVID-19 response, Bengaluru, 2020",
       body: "With Sakal Digambar Jain Samaj and volunteer networks, ASSF distributed 7,77,534 cooked meals and 2,795 food-grain kits across Bengaluru between 1 April and 3 May 2020.",
       image: "/images/community/relief-distribution-3.jpeg",
+      imageAlt: "Masked volunteers handing a food packet to a woman at her doorway.",
+      stats: [
+        { value: "7,77,534", label: "cooked meals" },
+        { value: "2,795", label: "food-grain kits" },
+      ],
     },
   ],
 } as const;
 
 export const method = {
-  gutter: "How We Work",
+  label: "How we work",
   heading: "Practical, and community-led",
   steps: [
     { title: "Understand", body: "Identify the need through direct engagement with local institutions." },

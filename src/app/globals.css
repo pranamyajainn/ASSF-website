@@ -1,69 +1,114 @@
 @import "tailwindcss";
 
 /*
- * Palette sampled directly from the design's vector fills, not eyeballed.
- * The page is a parchment ground now, ink for running text — a handful of
- * ink-deep bands (header utility bar, footer, key CTAs, the mobile panel)
- * stay dark, anchoring the light field rather than sitting inside it.
+ * THE POTHI
+ *
+ * The site is built as a Jain manuscript bundle, and every visual decision
+ * is taken from the object itself — most of them visible in the Foundation's
+ * own conservation photographs (the ruled margin and marginal folio number
+ * in `survey-in-progress.jpeg`, the accession slip in `palm-leaf-before`):
+ *
+ *   leaf       — the page ground: palm leaf in good light, fibres running
+ *                lengthwise (not a woven cross-hatch; that is cloth)
+ *   ink        — lampblack, rubbed into incised letters
+ *   cinnabar   — hingula, the scribe's red: dandas, rules, folio numbers,
+ *                anything the eye should find first
+ *   orpiment   — haritala, the yellow a scribe painted over a mistake.
+ *                Used only for text selection: a correction mark.
+ *   board      — the wooden covers that close a bundle top and bottom
+ *                (the utility bar and the colophon footer)
+ *   cloth      — the red wrapping cloth a bundle is kept in, in a bhandar
+ *
+ * Contrast (WCAG, measured on --leaf): ink 14.3:1, ink-soft 8.1:1,
+ * ink-faint 5.4:1, cinnabar 5.6:1. On --leaf-deep panels use ink-soft or
+ * darker for small text; ink-faint drops below 4.5:1 there.
  */
 @theme {
-  --color-ground: #544835;
-  --color-ground-deep: #3c3123;
-  --color-ink: #241e16;
-  --color-ink-deep: #14110b;
+  --color-leaf: #f0e7d0;
+  --color-leaf-deep: #e6d8b6;
+  --color-leaf-edge: #cdbb8f;
+  --color-ink: #1d1812;
+  --color-ink-soft: #4a4134;
+  --color-ink-faint: #5f5443;
+  --color-cinnabar: #a82e17;
+  --color-cinnabar-deep: #862310;
+  /* Cinnabar for small text on the dark boards (5.6:1 on --board). */
+  --color-cinnabar-light: #e0775a;
+  --color-orpiment: #e0b040;
+  --color-board: #241b14;
+  --color-board-deep: #17110c;
+  --color-board-ink: #eadfc6;
+  --color-board-soft: #b9aa8e;
+  --color-cloth: #7e1c12;
 
-  --color-parchment: #e7dabc;
-  --color-parchment-bright: #f2e7cc;
-  --color-parchment-dim: #dccba6;
-  --color-parchment-shade: #d3c39b;
-  --color-parchment-edge: #c7b58d;
-
-  --color-accent: #ee9878;
-  --color-rust: #9a3b22;
-  /* Rust is only legible on parchment (9.0:1). On the olive ground it drops to
-     1.3:1, so small "pending" labels use this lighter tone (3.4:1) instead. */
-  --color-rust-bright: #ef8354;
-  --color-gold: #d9af55;
-  --color-bark: #8b6f47;
-  --color-sage: #a9c0ac;
-
+  /* Three voices. The manuscript speaks in Eczar (display, both scripts —
+     its Devanagari descends from the broad-nib pen that wrote paper pothis)
+     and Tiro Devanagari (running text, both scripts on one baseline). The
+     conservator's record — accession numbers, dates, counts, captions —
+     is typed, in Courier Prime. There is no sans-serif on this site. */
+  --font-display: var(--font-eczar), "Iowan Old Style", Georgia, serif;
   --font-serif: var(--font-tiro-deva), "Iowan Old Style", Georgia, serif;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-kannada: var(--font-tiro-kannada), var(--font-inter), sans-serif;
+  --font-sans: var(--font-tiro-deva), "Iowan Old Style", Georgia, serif;
+  --font-mono: var(--font-courier), "Courier New", ui-monospace, monospace;
+  --font-kannada: var(--font-tiro-kannada), var(--font-tiro-deva), serif;
 
-  --spacing-gutter: 9.5rem;
-}
-
-:root {
-  color-scheme: light;
+  --text-display: clamp(2.55rem, 1.35rem + 4.1vw, 5.1rem);
+  --text-display--line-height: 1;
+  --text-title: clamp(2rem, 1.35rem + 2.3vw, 3.3rem);
+  --text-title--line-height: 1.06;
+  --text-lede: clamp(1.18rem, 1.05rem + 0.45vw, 1.4rem);
+  --text-lede--line-height: 1.55;
+  --text-register: 0.8125rem;
+  --text-register--line-height: 1.5;
 }
 
 /*
- * The ground carries a faint woven tint so the page reads as a leaf lying on
- * a surface rather than a flat fill. Kept in CSS (no image request) and
- * deliberately low-contrast.
+ * Palm-leaf fibre. Fractal noise stretched almost flat along x, so it reads
+ * as the lengthwise striation of a dried leaf. One inline SVG, no request.
  */
+:root {
+  color-scheme: light;
+  --fibre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='360'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0016 0.3' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.27 0 0 0 0 0.12 0 0 0 0.26 -0.085'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  /* The wrapping cloth is woven, so it — and only it — gets a weave. */
+  --weave: repeating-linear-gradient(90deg, rgb(0 0 0 / 0.07) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 0.035) 0 1px, transparent 1px 4px);
+  /* Distance from the main text column's right edge to the viewport edge,
+     for the few plates that are allowed to break out of the margin. */
+  --gutter-outer: max(0px, (100vw - 86rem) / 2);
+}
+
+html {
+  background: var(--color-leaf);
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background-color: var(--color-parchment-dim);
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 255, 255, 0.3), transparent 70%),
-    repeating-linear-gradient(90deg, rgba(36, 30, 22, 0.025) 0 2px, transparent 2px 7px),
-    repeating-linear-gradient(0deg, rgba(36, 30, 22, 0.02) 0 2px, transparent 2px 7px);
+  background-color: var(--color-leaf);
+  background-image: var(--fibre);
   color: var(--color-ink);
   font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: clip;
+  /* Leaves and plates are numbered by the page itself, in Devanagari
+     numerals, so reordering a section can never leave a wrong folio number. */
+  counter-reset: leaf plate;
 }
 
 ::selection {
-  background: var(--color-accent);
+  background: var(--color-orpiment);
   color: var(--color-ink);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-rust);
+  outline: 2px solid var(--color-cinnabar);
   outline-offset: 3px;
-  border-radius: 1px;
+}
+
+.on-dark :focus-visible {
+  outline-color: var(--color-orpiment);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -71,6 +116,7 @@ body {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
@@ -80,52 +126,245 @@ body {
   font-family: var(--font-kannada);
 }
 
+/* ---------------------------------------------------------------- leaves */
+
+/* Each <section data-leaf> is one folio; its number is written in the
+   margin in cinnabar, as a scribe numbers the verso. */
+[data-leaf] {
+  counter-increment: leaf;
+}
+
+[data-leaf-no]::before {
+  content: counter(leaf, devanagari);
+}
+
 /*
- * A "plate": a photograph mounted on a parchment mat with the mat's own
- * shadow falling down-right, as in the design.
+ * The ruled margin: a double line down the left of the text block, as in
+ * both Foundation photographs. Sections abut, so the rule runs unbroken from
+ * the first leaf to the colophon — the cord the whole bundle hangs on.
  */
-@utility plate {
-  background: linear-gradient(160deg, var(--color-parchment-bright), var(--color-parchment-shade));
-  padding: 0.55rem;
+@utility ruled {
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--color-cinnabar) 55%, transparent), color-mix(in oklab, var(--color-cinnabar) 55%, transparent)),
+    linear-gradient(color-mix(in oklab, var(--color-cinnabar) 55%, transparent), color-mix(in oklab, var(--color-cinnabar) 55%, transparent));
+  background-size: 1px 100%, 1px 100%;
+  background-position: 0 0, 4px 0;
+  background-repeat: no-repeat;
+}
+
+/* A marginal gloss. On wide screens it floats out of the text column into
+   the right margin, beside the passage it annotates (the pañcapāṭha layout
+   of a commented Jain manuscript); narrower, it sits inline after it. */
+@utility gloss {
+  display: block;
+  margin-block: 1.25rem;
+  padding-left: 0.9rem;
+  border-left: 1px solid color-mix(in oklab, var(--color-cinnabar) 55%, transparent);
+  font-family: var(--font-mono);
+  font-size: var(--text-register);
+  line-height: var(--text-register--line-height);
+  color: var(--color-ink-soft);
+
+  @media (width >= 64rem) {
+    float: right;
+    clear: right;
+    width: 13rem;
+    margin: 0.35rem -16rem 1rem 0;
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+/* Break out of the text column, over the right margin, to the viewport. */
+@utility bleed-right {
+  margin-right: -1.25rem;
+  @media (width >= 40rem) {
+    margin-right: -2rem;
+  }
+  @media (width >= 48rem) {
+    margin-right: calc(-2rem - var(--gutter-outer));
+  }
+  @media (width >= 64rem) {
+    margin-right: calc(-19rem - var(--gutter-outer));
+  }
+}
+
+/* Span the text column plus the right margin, but stop at the container. */
+@utility bleed-margin {
+  @media (width >= 64rem) {
+    margin-right: -16rem;
+  }
+}
+
+/* --------------------------------------------------------------- ink */
+
+/*
+ * Inking. A South Indian palm leaf is written twice: the scribe incises the
+ * letters with a stylus, then rubs lampblack across the leaf so the grooves
+ * take the ink. Headings do the same — they start as faint incisions and
+ * darken left to right. The resting state is fully inked; motion is only
+ * ever added on top, so nothing is illegible where animation is unsupported.
+ */
+@utility inked {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-ink) 0 44%,
+    color-mix(in oklab, var(--color-ink) 16%, transparent) 56% 100%
+  );
+  background-size: 250% 100%;
+  background-position: 0% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes ink-in {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0% 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ink-on-load {
+    animation: ink-in 1.5s cubic-bezier(0.35, 0.1, 0.25, 1) both;
+    animation-delay: calc(var(--line, 0) * 220ms + 120ms);
+  }
+
+  @supports (animation-timeline: view()) {
+    .ink-on-scroll {
+      animation: ink-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 32%;
+    }
+
+    /* Scale lines draw out to their true length as they come into view. */
+    .draw-on-scroll {
+      transform-origin: left center;
+      animation: draw-x linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 40%;
+    }
+  }
+}
+
+@keyframes draw-x {
+  from {
+    transform: scaleX(0.02);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ------------------------------------------------------------- objects */
+
+/*
+ * A palm leaf, drawn: long, with the rounded-cut ends of a trimmed leaf and
+ * edges a shade darker than its face. Laid flat on wide screens, turned
+ * upright when the screen is narrow.
+ */
+@utility leaf-panel {
+  background-color: var(--color-leaf-deep);
+  background-image: var(--fibre);
+  border-radius: 50% / 1.75rem;
   box-shadow:
-    0.5rem 0.5rem 0 rgba(20, 17, 11, 0.22),
-    0 1px 0 rgba(255, 255, 255, 0.35) inset;
+    inset 0 0 0 1px color-mix(in oklab, var(--color-leaf-edge) 80%, transparent),
+    inset 0 0 3rem color-mix(in oklab, #7a5a22 16%, transparent);
+
+  @media (width >= 64rem) {
+    border-radius: 2.25rem / 50%;
+  }
+}
+
+/* A string-hole: the hole the binding cord passes through, ringed in red as
+   the vestigial hole is painted on Jain paper manuscripts. */
+@utility string-hole {
+  display: block;
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: none;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 50% 38%, #0e0b07 0 52%, #3b2f20 72%, #5a4a33 100%);
+  box-shadow:
+    0 0 0 0.3rem var(--hole-ground, var(--color-leaf-deep)),
+    0 0 0 calc(0.3rem + 1px) color-mix(in oklab, var(--color-cinnabar) 65%, transparent);
 }
 
 /*
- * The dashed rule that stands in for a number the Foundation has not
- * supplied. It breathes slowly rather than sitting dead on the page, so an
- * absent figure still reads as "awaited", not as inert empty space.
+ * A lacuna: the gap a scribe leaves, marked with a row of dots, where the
+ * exemplar could not be read. On this site it stands wherever the Foundation
+ * has not yet supplied a figure — never a zero, never a guess. It breathes
+ * slowly, so it reads as awaited rather than broken.
  */
-@utility pending-rule {
+@utility lacuna {
   display: inline-block;
-  height: 0;
-  border-top: 2px dashed color-mix(in oklab, var(--color-ink) 45%, transparent);
+  height: 0.6em;
   vertical-align: middle;
-  animation: pending-pulse 2.6s ease-in-out infinite;
+  background-image: radial-gradient(circle, var(--color-cinnabar) 0 1.3px, transparent 1.9px);
+  background-size: 8px 100%;
+  background-repeat: repeat-x;
+  background-position: left center;
 }
 
-@keyframes pending-pulse {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .lacuna {
+    animation: lacuna-breathe 2.8s ease-in-out infinite;
+  }
 }
 
-/* The thread drawn between the hero folio's binding holes, once, on load. */
-@keyframes thread-draw {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+@keyframes lacuna-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
-/* Chat widget: panel opens with a soft rise, the teaser note fades up. */
-@keyframes panel-in {
-  from { opacity: 0; transform: translateY(12px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+/* Dotted leaders, as in a ledger or a table of contents. */
+@utility leader {
+  flex: 1 1 2rem;
+  min-width: 1.5rem;
+  height: 0.9em;
+  background-image: radial-gradient(circle, color-mix(in oklab, var(--color-ink) 40%, transparent) 0 0.9px, transparent 1.3px);
+  background-size: 7px 3px;
+  background-repeat: repeat-x;
+  background-position: left bottom;
 }
 
-@keyframes teaser-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Plates (photographs) are numbered in order down the page — "Pl. ३" — the
+   way a manuscript catalogue numbers its photographic plates. */
+figure[data-plate] {
+  counter-increment: plate;
 }
+
+figure[data-plate] figcaption::before {
+  content: "Pl. " counter(plate, devanagari) "\2002";
+  content: "Pl. " counter(plate, devanagari) "\2002" / "";
+  color: var(--color-cinnabar);
+}
+
+/* Verse-numbered lists: each step ends as a verse does, ॥१॥. */
+ol[data-verses] {
+  counter-reset: verse;
+}
+
+ol[data-verses] > li {
+  counter-increment: verse;
+}
+
+ol[data-verses] [data-verse-end]::after {
+  content: "\00a0॥" counter(verse, devanagari) "॥";
+  content: "\00a0॥" counter(verse, devanagari) "॥" / "";
+  color: var(--color-cinnabar);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------- portraits */
 
 /*
  * A trustee/advisor portrait: tilts gently toward the cursor and carries a
@@ -150,8 +389,41 @@ body {
   transition: opacity 350ms ease;
   background: radial-gradient(
     circle 45% at var(--glow-x, 50%) var(--glow-y, 50%),
-    color-mix(in oklab, var(--color-gold) 55%, white) 0%,
+    color-mix(in oklab, var(--color-orpiment) 55%, white) 0%,
     transparent 70%
   );
   mix-blend-mode: soft-light;
+}
+
+/* ----------------------------------------------------------------- chat */
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes teaser-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* "Clean the folio": the reader has asked for the leaf without ornament. */
+html[data-clean] body {
+  background-image: none;
+}
+
+html[data-clean] [data-ornament] {
+  visibility: hidden;
 }
