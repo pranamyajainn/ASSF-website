@@ -1,0 +1,9 @@
+# Never upload local secrets; production env vars are set in the Vercel dashboard.
+.env*
+# Local build output, tooling and internal source material.
+.next
+node_modules
+.claude
+docs
+reference
+*.tsbuildinfo
