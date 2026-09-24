@@ -32,13 +32,13 @@ Values: Ahimsa (non-violence), Satya (truth — knowledge preserved without dist
 
   sections.push(`MANUSCRIPT CONSERVATION
 ${manuscript.pageHero.body}
-Conserves: palm-leaf manuscripts and handwritten-paper manuscripts. Process: ${manuscript.process.steps.map((s) => s.title).join(" -> ")}.
+Conserves: palm-leaf manuscripts and handwritten-paper manuscripts (plus archival books). By material, the completed work was mostly paper — Kumbhoj: 122 palm-leaf, 1,018 paper manuscripts, 259 archival books; Karanja Lad: 4 palm-leaf, 189 paper, 28 archival books — while most of what the survey found still waiting is palm leaf. Scripts treated include Devanagari, Modi and Hale Kannada; languages include Sanskrit, Prakrit, Marathi and Kannada. Process: ${manuscript.process.steps.map((s) => s.title).join(" -> ")}.
 ${manuscript.capacity.recognition}
 Ledger: ${home.ledger.metrics.map((m) => `${m.label} ${m.value ?? "not yet published"}`).join("; ")}.
 Survey scale (repositories / manuscripts / folios documented): Karnataka 3/7,118/10,75,520; Maharashtra 6/4,591/4,59,708; Tamil Nadu 9/972/1,79,700; All states 18/12,681/17,14,928 — this is what remains, not what's conserved.
 Completed sites: Kumbhoj (Bahubali Siddhopeth Granthalaya, Kolhapur) 1,399 manuscripts/1,06,277 folios, Feb 2022-Sep 2024; Karanja Lad (Mahaveer Gurukul Ashram, Washim) 221 manuscripts/28,268 folios, Oct 2024-Aug 2025. Ongoing: Shravanabelagola (Bahubali Prakrit Bhawan) 2,695 granthas/3,65,520 folios, begun 11 Jul 2025.
 Adopt a folio: ₹${folioPrice} conserves one folio (donor gets its image, archive record, optional permanent credit). Tribute gift ₹${tributePrice.toLocaleString("en-IN")}. Giving ranks low-to-high: Udbhav, Udiyman, Vaibhav, Param Sanrakshak, Param Shiromani.
-Custodians with tadpatras: survey is free, manuscripts never leave the premises — contact the Foundation to arrange one.`);
+Custodians with palm-leaf or paper manuscripts: survey is free, manuscripts never leave the premises — contact the Foundation to arrange one.`);
 
   sections.push(`RURAL INFRASTRUCTURE
 ${rural.pageHero.body}

@@ -77,10 +77,13 @@ export const hero = {
 
 export const mission = {
   label: "Why it cannot wait",
-  heading: "Palm leaf does not wait",
+  // The collections are palm leaf and handmade paper. The completed projects
+  // were mostly paper; most of what the survey found still waiting is palm
+  // leaf ("Impact" and "Mission, Vision & Values" documents).
+  heading: "Palm leaf and paper do not wait",
   lede: "Manuscripts do not announce when they are dying. The deterioration is quiet — a crack in a palm leaf, a folio that crumbles at the edge, ink that fades to nothing over a season.",
   paragraphs: [
-    "A tadpatra is a palm leaf, incised with a stylus and inked with lampblack. It is organic: it embrittles, darkens, grows fungus, and is eaten. A folio left untreated this decade may not exist in the next.",
+    "The collections the Foundation cares for are written on two materials. A tadpatra is a palm leaf, incised with a stylus and inked; it grows brittle, cracks and splits. Handmade paper tears, stains and weakens, often unevenly from one folio to the next. Most of what has been conserved so far was paper; most of what the survey found still waiting is palm leaf.",
     "The Foundation surveys collections held by bhandars, mandirs, mathas and traditional institutions, treats folio by folio at the custodian's own site, and digitises what it treats. Conservation is free to the custodian, and the manuscripts never change hands.",
   ],
   gloss: {
@@ -489,8 +492,8 @@ export const field = {
 } as const;
 
 export const survey = {
-  heading: "Do you hold tadpatras?",
-  body: "Bhandars, mandirs, mathas and families across Karnataka, Maharashtra, Rajasthan, Gujarat and Madhya Pradesh hold folios that are deteriorating now. A survey costs the custodian nothing and the manuscripts never leave your premises. Send photographs from a phone, or call.",
+  heading: "Do you hold palm-leaf or paper manuscripts?",
+  body: "Bhandars, mandirs, mathas and families hold folios that are deteriorating now — the Foundation's own survey of Karnataka, Maharashtra and Tamil Nadu found far more than has yet been treated. A survey costs the custodian nothing and the manuscripts never leave your premises. Send photographs from a phone, or call.",
   callLabel: "Call the Foundation",
   primary: {
     label: "Ask us to survey your collection",

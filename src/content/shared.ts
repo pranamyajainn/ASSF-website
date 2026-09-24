@@ -62,7 +62,7 @@ export const pillars = [
     slug: "manuscript-conservation",
     label: "Manuscript Conservation",
     tagline: "Preserving Knowledge Written by Hand",
-    body: "Scientific conservation of fragile palm-leaf and handwritten-paper manuscripts — assessed, treated, documented, digitised and returned to their custodians.",
+    body: "Scientific conservation of fragile palm-leaf and handwritten-paper manuscripts — assessed, treated, documented, archivally housed and digitised.",
   },
   {
     slug: "rural-infrastructure",
