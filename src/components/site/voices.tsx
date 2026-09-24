@@ -36,12 +36,12 @@ function tracksFor(base: string, lang: Lang): FilmTrack[] {
  * written — and likhita, what was written. Recordings come first.
  */
 export async function Voices() {
-  const { home, lang } = await getContent();
+  const { home, lang, ui } = await getContent();
   const { voices } = home;
   const { heard, written } = voices;
 
   return (
-    <Leaf id="voices" label={voices.label}>
+    <Leaf id="voices" label={voices.label} question={ui.steps.voices}>
       <Heading>{voices.heading}</Heading>
       <Prose>
         <p>{voices.lede}</p>

@@ -26,9 +26,27 @@ export default async function CommunityServicesPage() {
     <>
       <Header />
       <main>
-        <PageHero label={t.heroLabel} {...pageHero} />
+        <PageHero
+          question={ui.steps.why}
+          thread={{
+            title: ui.steps.thread,
+            items: [
+              { id: "method", question: ui.steps.how },
+              { id: "healthcare", question: ui.steps.health },
+              { id: "education", question: ui.steps.learning },
+              { id: "relief", question: ui.steps.crisis },
+            ],
+          }}
+          label={t.heroLabel}
+          {...pageHero}
+        />
 
-        <Leaf id="healthcare" label={healthcare.label}>
+        <Leaf id="method" label={method.label} question={ui.steps.how}>
+          <Heading>{method.heading}</Heading>
+          <Verses steps={method.steps} />
+        </Leaf>
+
+        <Leaf id="healthcare" label={healthcare.label} question={ui.steps.health}>
           <Heading>{healthcare.heading}</Heading>
           <Prose>
             <Gloss label={t.also}>{healthcare.note}</Gloss>
@@ -79,7 +97,7 @@ export default async function CommunityServicesPage() {
           </div>
         </Leaf>
 
-        <Leaf id="education" label={education.label}>
+        <Leaf id="education" label={education.label} question={ui.steps.learning}>
           <div className="bleed-margin grid items-start gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
             <div>
               <Heading>{education.heading}</Heading>
@@ -97,7 +115,7 @@ export default async function CommunityServicesPage() {
           </div>
         </Leaf>
 
-        <Leaf id="relief" label={relief.label}>
+        <Leaf id="relief" label={relief.label} question={ui.steps.crisis}>
           <Heading>{relief.heading}</Heading>
           <ul className="bleed-margin mt-12 grid gap-x-14 gap-y-14 border-t border-ink/20 pt-10 lg:grid-cols-2">
             {relief.items.map((item) => (
@@ -127,11 +145,6 @@ export default async function CommunityServicesPage() {
               </li>
             ))}
           </ul>
-        </Leaf>
-
-        <Leaf id="method" label={method.label}>
-          <Heading>{method.heading}</Heading>
-          <Verses steps={method.steps} />
         </Leaf>
       </main>
       <Footer />

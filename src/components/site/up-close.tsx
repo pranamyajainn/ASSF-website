@@ -10,11 +10,11 @@ import { getContent } from "@/i18n/content";
  * over a folio keep the shapes they were photographed in.
  */
 export async function UpClose() {
-  const { home } = await getContent();
+  const { home, ui } = await getContent();
   const { upClose } = home;
 
   return (
-    <Leaf id="up-close" label={upClose.label}>
+    <Leaf id="up-close" label={upClose.label} question={ui.steps.how}>
       <Heading>{upClose.heading}</Heading>
       <Prose>
         <p>{upClose.lede}</p>

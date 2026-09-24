@@ -18,6 +18,7 @@ export async function generateMetadata() {
  */
 export default async function TrusteesPage() {
   const content = await getContent();
+  const { ui } = content;
   const { advisors, pageHero, trustees } = content.trustees;
   const t = content.ui.trustees;
   // Grouped by the English rank, so the grouping holds in every edition.
@@ -30,9 +31,20 @@ export default async function TrusteesPage() {
     <>
       <Header />
       <main>
-        <PageHero label={t.heroLabel} {...pageHero} />
+        <PageHero
+          question={ui.steps.glance}
+          thread={{
+            title: ui.steps.thread,
+            items: [
+              { id: "trustees", question: ui.steps.who },
+              { id: "advisors", question: ui.steps.advises },
+            ],
+          }}
+          label={t.heroLabel}
+          {...pageHero}
+        />
 
-        <Leaf id="trustees" label={t.trusteesLabel}>
+        <Leaf id="trustees" label={t.trusteesLabel} question={ui.steps.who}>
           <Heading>{t.trusteesHeading}</Heading>
           <Prose>
             <p>
@@ -49,7 +61,7 @@ export default async function TrusteesPage() {
           </div>
         </Leaf>
 
-        <Leaf id="advisors" label={t.advisorsLabel}>
+        <Leaf id="advisors" label={t.advisorsLabel} question={ui.steps.advises}>
           <Heading>{t.advisorsHeading}</Heading>
           <div className="bleed-margin">
             <PersonGrid people={advisors} columns={5} profileLabels={profile} />

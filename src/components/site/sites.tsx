@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { EditorialNote, Heading, Leaf, Pending } from "./primitives";
+import { Heading, Leaf, Pending } from "./primitives";
 import { getContent, type Content } from "@/i18n/content";
 
 type Site = Content["home"]["sites"]["items"][number];
@@ -22,7 +22,7 @@ export async function Sites() {
   const rest = sites.items.filter((s) => s !== featured);
 
   return (
-    <Leaf id="sites" label={sites.label}>
+    <Leaf id="sites" label={sites.label} question={ui.steps.where}>
       <Heading>{sites.heading}</Heading>
       <Timeline items={sites.items} t={t} />
 
@@ -31,7 +31,7 @@ export async function Sites() {
       <ul className="bleed-margin mt-14 grid gap-x-10 gap-y-12 border-t border-ink/20 pt-10 md:grid-cols-3">
         {rest.map((site) => (
           <li key={site.name}>
-            <SiteRecord site={site} t={t} variantLabel={ui.common.variantReading} awaiting={ui.common.awaiting} />
+            <SiteRecord site={site} t={t} awaiting={ui.common.awaiting} />
           </li>
         ))}
       </ul>
@@ -177,12 +177,10 @@ function Figures({
 function SiteRecord({
   site,
   t,
-  variantLabel,
   awaiting,
 }: {
   site: Site;
   t: SitesUI;
-  variantLabel: string;
   awaiting: string;
 }) {
   return (
@@ -198,11 +196,6 @@ function SiteRecord({
       </p>
       <Figures site={site} t={t} awaiting={awaiting} />
       <p className="mt-4 text-[1rem] leading-relaxed text-ink-soft">{site.footnote}</p>
-      {site.altName ? (
-        <EditorialNote label={variantLabel} className="mt-5">
-          {site.altName}
-        </EditorialNote>
-      ) : null}
     </article>
   );
 }

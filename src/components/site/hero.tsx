@@ -61,7 +61,7 @@ export async function Hero() {
   ];
 
   return (
-    <Leaf id="top" label={hero.label} innerClassName="!pt-8 md:!pt-10 lg:!pt-12">
+    <Leaf id="top" label={hero.label} question={ui.steps.glance} innerClassName="!pt-8 md:!pt-10 lg:!pt-12">
       <p className="font-display text-[1.2rem] leading-none text-ink-soft">{org.nameNative}</p>
 
       <h1 className="mt-4 font-display text-[clamp(2.05rem,1.2rem+2.5vw,3.35rem)] font-medium leading-[1.08] tracking-[-0.012em]">

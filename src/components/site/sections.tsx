@@ -13,6 +13,7 @@ import {
 import { LeafPanels } from "./leaf-panels";
 import { ScaleLines } from "./scale-lines";
 import { getContent } from "@/i18n/content";
+import { toScriptNumerals } from "@/lib/deva";
 import { fill } from "@/i18n/ui";
 
 /**
@@ -22,20 +23,37 @@ import { fill } from "@/i18n/ui";
  * allowed to run past the margin to the edge of the screen.
  */
 export async function Mission() {
-  const { home } = await getContent();
+  const { home, ui, lang } = await getContent();
   const { mission } = home;
   return (
-    <Leaf id="mission" label={mission.label}>
+    <Leaf id="mission" label={mission.label} question={ui.steps.why}>
       <Heading>{mission.heading}</Heading>
       <p className="mt-7 max-w-[34ch] font-display text-[clamp(1.45rem,1.15rem+1.1vw,2rem)] leading-[1.3] text-ink">
         {mission.lede}
       </p>
       <Prose className="mt-8">
         <Gloss label={mission.gloss.label}>{mission.gloss.text}</Gloss>
-        {mission.paragraphs.map((p) => (
-          <p key={p.slice(0, 24)}>{p}</p>
-        ))}
+        <p>{mission.paragraphs[0]}</p>
       </Prose>
+
+      {/* How, in three steps rather than a paragraph. */}
+      <ol className="bleed-margin mt-12 grid gap-x-8 gap-y-8 border-t border-ink/20 pt-8 sm:grid-cols-3">
+        {mission.steps.map((step, i) => (
+          <li key={step.title} className="relative">
+            <span aria-hidden="true" className="block font-display text-[2.2rem] leading-none text-cinnabar">
+              {toScriptNumerals(i + 1, lang)}
+            </span>
+            <p className="mt-3 font-display text-[1.35rem] leading-tight text-ink">{step.title}</p>
+            <p className="mt-2 max-w-[28ch] text-[1rem] leading-relaxed text-ink-soft">{step.body}</p>
+            {i < mission.steps.length - 1 ? (
+              <span aria-hidden="true" className="absolute right-0 top-2 hidden text-[1.4rem] text-cinnabar/70 sm:block">
+                →
+              </span>
+            ) : null}
+          </li>
+        ))}
+      </ol>
+      <p className="mt-6 font-mono text-register text-ink-soft">{mission.note}</p>
 
       <figure data-plate className="bleed-right mt-14">
         <div className="relative aspect-[4/3] overflow-hidden bg-leaf-deep sm:aspect-[16/9] lg:aspect-[21/10]">
@@ -61,7 +79,7 @@ export async function PillarsIntro() {
   const { home, shared, ui, href } = await getContent();
   const { pillarsIntro } = home;
   return (
-    <Leaf id="pillars" label={pillarsIntro.label}>
+    <Leaf id="pillars" label={pillarsIntro.label} question={ui.steps.what}>
       <Heading>{pillarsIntro.heading}</Heading>
       <Lede>{pillarsIntro.body}</Lede>
       <LeafPanels
@@ -81,10 +99,10 @@ export async function PillarsIntro() {
 
 /** The register of work done, then the same quantities drawn to scale. */
 export async function Ledger() {
-  const { home } = await getContent();
+  const { home, ui } = await getContent();
   const { ledger, scale } = home;
   return (
-    <Leaf id="ledger" label={ledger.label}>
+    <Leaf id="ledger" label={ledger.label} question={ui.steps.much}>
       <Heading>{ledger.heading}</Heading>
       <Prose>
         <p>{ledger.intro}</p>
@@ -116,7 +134,7 @@ export async function Spread() {
   const { home, ui } = await getContent();
   const { ruralTeaser, communityTeaser } = home;
   return (
-    <Leaf id="community" label={ui.home.spreadLabel}>
+    <Leaf id="community" label={ui.home.spreadLabel} question={ui.steps.else}>
       <div className="bleed-margin grid gap-y-16 lg:grid-cols-[minmax(0,1fr)_4.5rem_minmax(0,1fr)]">
         <div id="rural" className="min-w-0 scroll-mt-6">
           <p className="font-mono text-register text-cinnabar">{ruralTeaser.label}</p>

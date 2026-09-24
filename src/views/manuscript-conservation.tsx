@@ -31,18 +31,26 @@ export default async function ManuscriptConservationPage() {
     <>
       <Header />
       <main>
-        <PageHero label={t.heroLabel} {...pageHero} plate={{ ...pageHero.plate, position: "50% 55%" }} />
-
-        <Leaf id="ledger" label={ledger.label}>
-          <Heading>{ledger.heading}</Heading>
-          <Prose>
-            <p>{ledger.intro}</p>
-          </Prose>
-          <Register entries={ledger.metrics} />
-        </Leaf>
+        <PageHero
+          question={ui.steps.why}
+          thread={{
+            title: ui.steps.thread,
+            items: [
+              { id: "what-we-conserve", question: ui.steps.what },
+              { id: "painted", question: ui.steps.inside },
+              { id: "process", question: ui.steps.how },
+              { id: "sites", question: ui.steps.where },
+              { id: "ledger", question: ui.steps.much },
+              { id: "capacity", question: ui.steps.lasts },
+            ],
+          }}
+          label={t.heroLabel}
+          {...pageHero}
+          plate={{ ...pageHero.plate, position: "50% 55%" }}
+        />
 
         {/* Two materials, set as the two facing pages of an opened bundle. */}
-        <Leaf id="what-we-conserve" label={whatWeConserve.label}>
+        <Leaf id="what-we-conserve" label={whatWeConserve.label} question={ui.steps.what}>
           <Heading>{whatWeConserve.heading}</Heading>
           <div className="bleed-margin mt-10 grid border-y border-ink/20 md:grid-cols-2">
             {whatWeConserve.items.map((item, i) => (
@@ -68,7 +76,35 @@ export default async function ManuscriptConservationPage() {
           </ul>
         </Leaf>
 
-        <Leaf id="process" label={process.label}>
+        {/* Painted pages, shown as they would be in a museum case: on the
+            dark board of a bundle's cover, each with its own caption. */}
+        <Leaf id="painted" label={illuminated.label} question={ui.steps.inside}>
+          <Heading>{illuminated.heading}</Heading>
+          <Prose>
+            <p>{illuminated.body}</p>
+          </Prose>
+          <div className="on-dark bleed-margin mt-12 bg-board px-5 pb-4 pt-8 [background-image:var(--weave)] sm:px-8 lg:px-10 lg:pt-10">
+            <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 lg:gap-8">
+              {illuminated.items.map((item) => (
+                <figure key={item.src} className="rise-on-scroll mb-8 break-inside-avoid">
+                  <div className="relative w-full overflow-hidden bg-board-deep shadow-[0_0.6rem_1.6rem_-0.6rem_rgb(0_0_0/0.6)]" style={{ aspectRatio: item.ratio }}>
+                    <Image
+                      src={item.src}
+                      alt={item.alt}
+                      fill
+                      sizes="(min-width: 1024px) 26vw, (min-width: 640px) 44vw, 90vw"
+                      className="object-cover"
+                    />
+                  </div>
+                  <figcaption className="mt-3 font-mono text-register text-board-soft">{item.caption}</figcaption>
+                </figure>
+              ))}
+            </div>
+            <p className="border-t border-board-soft/25 py-4 font-mono text-register text-board-soft">{illuminated.source}</p>
+          </div>
+        </Leaf>
+
+        <Leaf id="process" label={process.label} question={ui.steps.how}>
           <Heading>{process.heading}</Heading>
           <Prose>
             <p>{process.intro}</p>
@@ -96,35 +132,7 @@ export default async function ManuscriptConservationPage() {
           />
         </Leaf>
 
-        {/* Painted pages, shown as they would be in a museum case: on the
-            dark board of a bundle's cover, each with its own caption. */}
-        <Leaf id="painted" label={illuminated.label}>
-          <Heading>{illuminated.heading}</Heading>
-          <Prose>
-            <p>{illuminated.body}</p>
-          </Prose>
-          <div className="on-dark bleed-margin mt-12 bg-board px-5 pb-4 pt-8 [background-image:var(--weave)] sm:px-8 lg:px-10 lg:pt-10">
-            <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 lg:gap-8">
-              {illuminated.items.map((item) => (
-                <figure key={item.src} className="rise-on-scroll mb-8 break-inside-avoid">
-                  <div className="relative w-full overflow-hidden bg-board-deep shadow-[0_0.6rem_1.6rem_-0.6rem_rgb(0_0_0/0.6)]" style={{ aspectRatio: item.ratio }}>
-                    <Image
-                      src={item.src}
-                      alt={item.alt}
-                      fill
-                      sizes="(min-width: 1024px) 26vw, (min-width: 640px) 44vw, 90vw"
-                      className="object-cover"
-                    />
-                  </div>
-                  <figcaption className="mt-3 font-mono text-register text-board-soft">{item.caption}</figcaption>
-                </figure>
-              ))}
-            </div>
-            <p className="border-t border-board-soft/25 py-4 font-mono text-register text-board-soft">{illuminated.source}</p>
-          </div>
-        </Leaf>
-
-        <Leaf id="film" label={film.label}>
+        <Leaf id="film" label={film.label} question={ui.steps.watch}>
           <Heading>{film.heading}</Heading>
           <Prose>
             <p>{film.body}</p>
@@ -139,7 +147,15 @@ export default async function ManuscriptConservationPage() {
 
         <Sites />
 
-        <Leaf id="capacity" label={capacity.label}>
+        <Leaf id="ledger" label={ledger.label} question={ui.steps.much}>
+          <Heading>{ledger.heading}</Heading>
+          <Prose>
+            <p>{ledger.intro}</p>
+          </Prose>
+          <Register entries={ledger.metrics} />
+        </Leaf>
+
+        <Leaf id="capacity" label={capacity.label} question={ui.steps.lasts}>
           <Heading>{capacity.heading}</Heading>
           <Prose>
             <Gloss label={t.recognition}>{capacity.recognition}</Gloss>

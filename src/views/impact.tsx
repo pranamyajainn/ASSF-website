@@ -23,9 +23,21 @@ export default async function ImpactPage() {
     <>
       <Header />
       <main>
-        <PageHero label={t.heroLabel} {...pageHero} plate={{ ...pageHero.plate, position: "50% 45%" }} />
+        <PageHero
+          question={ui.steps.glance}
+          thread={{
+            title: ui.steps.thread,
+            items: [
+              { id: "streams", question: ui.steps.much },
+              { id: "evidence", question: ui.steps.means },
+            ],
+          }}
+          label={t.heroLabel}
+          {...pageHero}
+          plate={{ ...pageHero.plate, position: "50% 45%" }}
+        />
 
-        <Leaf id="streams" label={t.streamsLabel}>
+        <Leaf id="streams" label={t.streamsLabel} question={ui.steps.much}>
           <Heading>{closing.heading}</Heading>
           <Prose>
             <p>{closing.body}</p>
@@ -44,7 +56,7 @@ export default async function ImpactPage() {
 
         {/* Each stream's figure beside a photograph of the work it counts:
             the number inks in as it scrolls into view, as the headings do. */}
-        <Leaf id="evidence" label={t.evidenceLabel}>
+        <Leaf id="evidence" label={t.evidenceLabel} question={ui.steps.means}>
           <Heading>{t.evidenceHeading}</Heading>
           <div className="bleed-margin mt-12">
             {evidence.map((item, i) => (

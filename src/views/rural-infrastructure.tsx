@@ -21,17 +21,31 @@ export default async function RuralInfrastructurePage() {
       <Header />
       <main>
         <PageHero
+          question={ui.steps.why}
+          thread={{
+            title: ui.steps.thread,
+            items: [
+              { id: "method", question: ui.steps.how },
+              { id: "projects", question: ui.steps.what },
+              { id: "shanti-stambh", question: ui.steps.memory },
+            ],
+          }}
           label={t.heroLabel}
           {...pageHero}
           plate={{
-            src: "/images/rural/samudaya-bhavan-3-completed.jpeg",
+            src: "/images/rural/samudaya-bhavan-wide.jpg",
             alt: t.heroAlt,
             caption: t.heroCaption,
             position: "40% 50%",
           }}
         />
 
-        <Leaf id="projects" label={projects.label}>
+        <Leaf id="method" label={method.label} question={ui.steps.how}>
+          <Heading>{method.heading}</Heading>
+          <Verses steps={method.steps} />
+        </Leaf>
+
+        <Leaf id="projects" label={projects.label} question={ui.steps.what}>
           <Heading>{projects.heading}</Heading>
 
           {/* The one project photographed at every stage leads, as a
@@ -85,7 +99,7 @@ export default async function RuralInfrastructurePage() {
           </ul>
         </Leaf>
 
-        <Leaf id="shanti-stambh" label={shantiStambh.label}>
+        <Leaf id="shanti-stambh" label={shantiStambh.label} question={ui.steps.memory}>
           <Heading>{shantiStambh.heading}</Heading>
           <Prose>
             {/* A small drawing, shown at its own size in the margin. */}
@@ -105,11 +119,6 @@ export default async function RuralInfrastructurePage() {
               <p key={p.slice(0, 24)}>{p}</p>
             ))}
           </Prose>
-        </Leaf>
-
-        <Leaf id="method" label={method.label}>
-          <Heading>{method.heading}</Heading>
-          <Verses steps={method.steps} />
         </Leaf>
       </main>
       <Footer />

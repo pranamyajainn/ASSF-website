@@ -86,6 +86,13 @@ export const mission = {
     "The collections the Foundation cares for are written on two materials. A tadpatra is a palm leaf, incised with a stylus and inked; it grows brittle, cracks and splits. Handmade paper tears, stains and weakens, often unevenly from one folio to the next. Most of what has been conserved so far was paper; most of what the survey found still waiting is palm leaf.",
     "The Foundation surveys collections held by bhandars, mandirs, mathas and traditional institutions, treats folio by folio at the custodian's own site, and digitises what it treats. Conservation is free to the custodian, and the manuscripts never change hands.",
   ],
+  /** How the work is done, in three steps — simpler than a paragraph. */
+  steps: [
+    { title: "Survey", body: "Collections in bhandars, mandirs, mathas and institutions are visited and recorded." },
+    { title: "Treat", body: "Folio by folio, at the custodian's own site." },
+    { title: "Digitise", body: "A digital record, so the original need not be handled again." },
+  ],
+  note: "Conservation is free to the custodian, and the manuscripts never change hands.",
   gloss: {
     label: "What the Foundation's field survey found",
     text: "Brittle palm leaves breaking at touch, insects consuming pages, moisture causing deterioration, ink fading beyond legibility, fragile bindings failing.",
@@ -468,7 +475,8 @@ export const lineage = {
   },
   /** The line carried on the Foundation's own banner beside his portrait. */
   epigraph: "क्रिया करनी चाहिए तब अपना कार्य सिद्ध होता है।",
-  note: "The current site carries two conflicting dates for the stamp release. The date is left out here until the Foundation confirms it.",
+  /** Settled from the Foundation's own sources: the first-day cover's postmark (13-11-2024) and its news post of the release. */
+  note: "",
   portrait: {
     src: "/images/lineage/acharya-shantisagar-1955.jpg",
     alt: "Black-and-white close-up of Acharya Shanti Sagar Ji Maharaj in old age.",
@@ -477,7 +485,7 @@ export const lineage = {
   plate: {
     src: "/images/stamp-first-day-cover.jpeg",
     alt: "India Post first-day cover bearing the ₹5 commemorative stamp for Acharya Shanti Sagar Ji Maharaj.",
-    caption: "The India Post ₹5 commemorative stamp and first-day cover. Date to be confirmed.",
+    caption: "The India Post ₹5 commemorative stamp and first-day cover, released 13 November 2024.",
   },
 } as const;
 
@@ -485,7 +493,7 @@ export const board = {
   label: "Board",
   heading: "Guided by trustees and advisors",
   intro:
-    "Eight founder trustees and three advisors guide the Foundation's work. A separate honorific ladder — Param Shiromani, Param Sanrakshak, Vaibhav, Udiyman, Udbhav — names the giving tiers, in the Foundation's own vocabulary.",
+    "Eight founder trustees and three advisors guide the Foundation's work.",
   members: [
     { name: "Dr. D. Veerendra Heggade", rank: "Param Samrakshak Margadarshak & Founder Trustee", affiliation: "Hereditary Dharmadhikari, Shri Kshetra Dharmasthala; Padma Vibhushan (2015); Member of Parliament, Rajya Sabha", image: "/images/trustees/veerendra-heggade.jpeg" },
     { name: "Shri Ashok Patni", rank: "Settlor, Visionary & Founder Trustee", affiliation: "Chairman Emeritus, R.K. Group; R.K. Marble; Wonder Cement", image: "/images/trustees/ashok-patni.jpeg" },
@@ -517,10 +525,10 @@ export const field = {
       body: "The Mahotsav procession at Parsola, 13 October 2024.",
     },
     {
-      date: null,
+      date: "13 November 2024",
       place: "India Post",
       title: "आचार्य श्री शांति सागर जी पर विशेष ₹5 डाक टिकट का शुभ विमोचन",
-      body: "Release of the ₹5 commemorative stamp and first-day cover for Acharya Shri Shanti Sagar Ji. Two conflicting dates exist for this release.",
+      body: "Release of the ₹5 commemorative stamp and first-day cover for Acharya Shri Shanti Sagar Ji.",
     },
   ] as { date: Pending<string>; place: string; title: string; body: string }[],
 } as const;

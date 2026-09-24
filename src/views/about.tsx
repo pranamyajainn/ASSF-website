@@ -33,45 +33,28 @@ export default async function AboutPage() {
     <>
       <Header />
       <main>
-        <PageHero label={t.heroLabel} {...pageHero} />
-
-        {/* The sutra the whole Foundation is built on, set as the page's
-            centrepiece in its own script — then the plain-English case. */}
-        <Leaf id="philosophy" label={philosophy.label}>
-          <figure className="bleed-margin">
-            <blockquote>
-              <p
-                lang="sa"
-                className="inked ink-on-scroll font-display text-[clamp(2.6rem,1.2rem+5.6vw,6.2rem)] font-medium leading-[1.15]"
-              >
-                {philosophy.quote.deva}
-              </p>
-              <p className="mt-5 text-lede text-ink-soft">
-                {philosophy.quote.latin}
-                <span aria-hidden="true" className="mx-3 text-cinnabar">
-                  —
-                </span>
-                <span className="text-ink">{philosophy.quote.translation}</span>
-              </p>
-            </blockquote>
-            <figcaption className="mt-3 font-mono text-register text-cinnabar">
-              {philosophy.quote.source}
-            </figcaption>
-          </figure>
-
-          <Heading className="mt-20">{philosophy.heading}</Heading>
-          <Prose>
-            {philosophy.paragraphs.map((p) => (
-              <p key={p.slice(0, 24)}>{p}</p>
-            ))}
-          </Prose>
-        </Leaf>
+        <PageHero
+          question={ui.steps.glance}
+          thread={{
+            title: ui.steps.thread,
+            items: [
+              { id: "namesake", question: ui.steps.whose },
+              { id: "philosophy", question: ui.steps.why },
+              { id: "mvv", question: ui.steps.believe },
+              { id: "pillars", question: ui.steps.what },
+              { id: "plates", question: ui.steps.looks },
+              { id: "scale", question: ui.steps.next },
+            ],
+          }}
+          label={t.heroLabel}
+          {...pageHero}
+        />
 
         {/* The namesake, in the archive's own photographs: the ceremony print
             large — a garlanded scripture before him, lineage and manuscript
             in one frame — and two small portraits beside it, shown at the
             size old prints can bear. */}
-        <Leaf id="namesake" label={namesake.label}>
+        <Leaf id="namesake" label={namesake.label} question={ui.steps.whose}>
           <p
             lang={scriptLang(lineage.nameDeva)}
             className="max-w-[22ch] font-display text-[clamp(1.6rem,1.2rem+1.5vw,2.4rem)] leading-[1.25] text-cinnabar"
@@ -133,7 +116,39 @@ export default async function AboutPage() {
           </blockquote>
         </Leaf>
 
-        <Leaf id="mvv" label={mvv.label}>
+        {/* The sutra the whole Foundation is built on, set as the page's
+            centrepiece in its own script — then the plain-English case. */}
+        <Leaf id="philosophy" label={philosophy.label} question={ui.steps.why}>
+          <figure className="bleed-margin">
+            <blockquote>
+              <p
+                lang="sa"
+                className="inked ink-on-scroll font-display text-[clamp(2.6rem,1.2rem+5.6vw,6.2rem)] font-medium leading-[1.15]"
+              >
+                {philosophy.quote.deva}
+              </p>
+              <p className="mt-5 text-lede text-ink-soft">
+                {philosophy.quote.latin}
+                <span aria-hidden="true" className="mx-3 text-cinnabar">
+                  —
+                </span>
+                <span className="text-ink">{philosophy.quote.translation}</span>
+              </p>
+            </blockquote>
+            <figcaption className="mt-3 font-mono text-register text-cinnabar">
+              {philosophy.quote.source}
+            </figcaption>
+          </figure>
+
+          <Heading className="mt-20">{philosophy.heading}</Heading>
+          <Prose>
+            {philosophy.paragraphs.map((p) => (
+              <p key={p.slice(0, 24)}>{p}</p>
+            ))}
+          </Prose>
+        </Leaf>
+
+        <Leaf id="mvv" label={mvv.label} question={ui.steps.believe}>
           <Heading>{mvv.heading}</Heading>
 
           <div className="mt-12">
@@ -181,7 +196,7 @@ export default async function AboutPage() {
           </div>
         </Leaf>
 
-        <Leaf id="pillars" label={t.pillarsLabel}>
+        <Leaf id="pillars" label={t.pillarsLabel} question={ui.steps.what}>
           <Heading>{t.pillarsHeading}</Heading>
           <LeafPanels
             panels={shared.pillars.map((pillar, i) => ({
@@ -195,7 +210,7 @@ export default async function AboutPage() {
           />
         </Leaf>
 
-        <Leaf id="plates" label={plates.label}>
+        <Leaf id="plates" label={plates.label} question={ui.steps.looks}>
           <Heading>{plates.heading}</Heading>
           <div className="bleed-margin mt-12 space-y-10">
             {plates.rows.map((row, r) => (
@@ -225,7 +240,7 @@ export default async function AboutPage() {
           </div>
         </Leaf>
 
-        <Leaf id="film" label={film.label}>
+        <Leaf id="film" label={film.label} question={ui.steps.watch}>
           <Heading>{film.heading}</Heading>
           <Prose>
             <p>{film.body}</p>
@@ -238,7 +253,7 @@ export default async function AboutPage() {
           />
         </Leaf>
 
-        <Leaf id="scale" label={scale.label}>
+        <Leaf id="scale" label={scale.label} question={ui.steps.next}>
           <Heading>{scale.heading}</Heading>
           <Prose>
             <Gloss label={t.alsoRecorded}>{scale.note}</Gloss>
@@ -300,7 +315,6 @@ export default async function AboutPage() {
             note={ui.common.sameScale}
           />
         </Leaf>
-
         <section className="py-20 text-center lg:py-28">
           <p className="mx-auto max-w-[24ch] px-5 font-display text-[clamp(1.8rem,1.2rem+2.4vw,3rem)] font-medium leading-[1.15] text-ink">
             <span aria-hidden="true" className="text-cinnabar">

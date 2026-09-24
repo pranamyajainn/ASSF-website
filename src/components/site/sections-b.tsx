@@ -25,7 +25,7 @@ export async function Join() {
   const { home, ui } = await getContent();
   const { join, adopt } = home;
   return (
-    <Leaf id="join" label={join.label}>
+    <Leaf id="join" label={join.label} question={ui.steps.help}>
       <Heading>{join.heading}</Heading>
       <Prose>
         {join.body.map((p) => (
@@ -104,10 +104,10 @@ export async function Join() {
  * beside his full name in Devanagari, the script it is written in.
  */
 export async function Lineage() {
-  const { home } = await getContent();
+  const { home, ui } = await getContent();
   const { lineage } = home;
   return (
-    <Leaf id="lineage" label={lineage.label}>
+    <Leaf id="lineage" label={lineage.label} question={ui.steps.whose}>
       <div className="bleed-margin grid gap-x-14 gap-y-10 lg:grid-cols-[15rem_minmax(0,1fr)]">
         <div>
           <Plate
@@ -166,7 +166,7 @@ export async function Lineage() {
             <p className="mt-6 font-mono text-register text-ink-faint">{lineage.tributes.source}</p>
           </div>
 
-          <EditorialNote className="mt-10">{lineage.note}</EditorialNote>
+          {lineage.note ? <EditorialNote className="mt-10">{lineage.note}</EditorialNote> : null}
 
           <Plate
             className="mt-10 max-w-xl"
@@ -183,14 +183,18 @@ export async function Lineage() {
 }
 
 export async function Board() {
-  const { home } = await getContent();
-  const { board } = home;
+  const { home, ui } = await getContent();
+  const { board, standing } = home;
   return (
-    <Leaf id="board" label={board.label}>
+    <Leaf id="board" label={board.label} question={ui.steps.guides}>
       <Heading>{board.heading}</Heading>
       <Prose>
         <p>{board.intro}</p>
       </Prose>
+      <p className="mt-6 flex max-w-[60ch] items-start gap-3 font-mono text-register text-ink">
+        <span aria-hidden="true" className="mt-1 size-2.5 shrink-0 rounded-full bg-cinnabar" />
+        {standing.body}
+      </p>
       <div className="bleed-margin">
         <PersonGrid
           people={board.members.map((m) => ({
@@ -217,7 +221,7 @@ export async function Field() {
   const { home, ui } = await getContent();
   const { field } = home;
   return (
-    <Leaf id="field" label={field.label}>
+    <Leaf id="field" label={field.label} question={ui.steps.news}>
       <Heading>{field.heading}</Heading>
       <Prose>
         <p>{field.lede}</p>
