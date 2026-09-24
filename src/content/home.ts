@@ -288,11 +288,12 @@ export type Voice = {
 
 /**
  * Voices from the work ("Final Homepage Content", §11). Entries from the
- * Foundation's visitors' book, supplied by the Foundation (Sept 2026). Each
- * is transcribed word for word and set beside a photograph of the
- * handwritten page — a facsimile facing its transcription, as a critical
- * edition prints them. A voice with `quote: null` renders as a lacuna, for
- * places the Foundation wants reserved but has not yet filled.
+ * Foundation's visitors' book, supplied by the Foundation (Sept 2026),
+ * transcribed word for word. Photographs of the handwritten pages were
+ * supplied too but are not published: one carries an official's signature,
+ * and publishing the pages needs the Foundation's explicit consent. Add a
+ * `facsimile` to an entry once it is given. A voice with `quote: null`
+ * renders as a lacuna, for places reserved but not yet filled.
  */
 export const voices = {
   label: "Voices",
@@ -301,7 +302,7 @@ export const voices = {
   pendingNote: "testimonial awaiting Foundation",
   translationLabel: "Translation",
   zoomLabel: "Open the handwritten page at full size",
-  sourceNote: "From the Foundation's visitors' book. Each entry is transcribed as written, beside a photograph of the page.",
+  sourceNote: "From the Foundation's visitors' book, transcribed as written.",
   items: [
     {
       kind: "From the visitors' book — Government of Maharashtra",
@@ -310,12 +311,6 @@ export const voices = {
       name: "Dr. Jyotsna Padiyar, IAS",
       role: "Commissioner, Economics & Statistics, Planning Department, Government of Maharashtra",
       alongside: "Signed with Shri Krishna Phirke, Special Commissioner, and Amol Khandare, Additional Commissioner.",
-      facsimile: {
-        src: "/images/voices/visitors-book-maharashtra-officials.jpg",
-        alt: "The handwritten entry in the Foundation's visitors' book: the names of Dr. Jyotsna Padiyar, Shri Krishna Phirke and Amol Khandare, and their remarks, with a signature.",
-        ratio: "1280 / 724",
-        caption: "The entry in the Foundation's visitors' book.",
-      },
     },
     {
       kind: "From the visitors' book — a visitor from Washim",
@@ -323,12 +318,6 @@ export const voices = {
         "Seeing the restoration work of more than 1000 granths of our Jainism, filled me with immense pride and happiness. It made me realize the greatness of our saints who worked hard for the betterment of society and spiritual upliftment. I am deeply grateful for the restoration team, the trust and everyone involved for their initiative and extremely happy for all the work that has been done and is still going on. Thank you for reviving the gems of Jainism.",
       name: "Rishabh Jitendra Chhabda",
       place: "Washim, Maharashtra",
-      facsimile: {
-        src: "/images/voices/visitors-book-washim.jpg",
-        alt: "A handwritten page of the Foundation's visitors' book: Rishabh Jitendra Chhabda of Washim, Maharashtra, and his remarks.",
-        ratio: "1280 / 1231",
-        caption: "The entry in the Foundation's visitors' book.",
-      },
     },
   ] as Voice[],
 } as const;
