@@ -29,54 +29,48 @@ export const hero = {
   primary: { label: "Explore our work", href: "#pillars" },
   secondary: { label: "Support the mission", href: "#join" },
   /**
-   * The work in pictures, one after another beside the headline — the
-   * Foundation's own photographs, two for each pillar, in a frame no larger
-   * than the single photograph it replaces. Captions say what each picture
-   * shows; they reuse the wording already used for these photographs
-   * elsewhere on the site.
+   * Banners, after the Foundation's own hero banners: each says one thing
+   * about the work in a line a visitor can read in a few seconds, over the
+   * Foundation's own photographs of it. The first two headlines are the
+   * Foundation's own banner copy; the last is the epigraph its banner sets
+   * beside the Acharya's portrait. Photographs, captions and figures are
+   * drawn from the rest of the site, so each has one source.
    */
-  slides: [
+  banners: [
     {
-      src: "/images/survey-in-progress.jpeg",
-      alt: "A handwritten Devanagari folio on a conservator's blotting paper, beside a pH indicator strip held in tweezers.",
-      pillar: "Manuscript conservation",
-      caption: "A folio's acidity tested before treatment.",
-      position: "18% 22%",
+      key: "conservation",
+      tab: "Manuscripts",
+      eyebrow: "Manuscript conservation",
+      title: "These pages have",
+      em: "survived centuries.",
+      body: "Will they survive the next one? We're making sure the answer is yes.",
     },
     {
-      src: "/images/community/health-camp-team.jpg",
-      alt: "Doctors, nurses and volunteers standing in rows behind an Acharya Shanti Sagar Foundation banner at a free health camp.",
-      pillar: "Community services",
-      caption: "The team at a free health camp.",
-      position: "62% 50%",
+      key: "community",
+      tab: "Community",
+      eyebrow: "Community services",
+      title: "Committed to community,",
+      em: "rooted in action.",
+      body: "From medical camps to flood and pandemic relief, our work speaks through service.",
     },
     {
-      src: "/images/rural/samudaya-bhavan-1-site.jpeg",
-      alt: "Bare, levelled ground beside a village road at Yarnal.",
-      pillar: "Rural infrastructure",
-      caption: "Yarnal: the site before development.",
-      position: "50% 50%",
+      key: "rural",
+      tab: "Villages",
+      eyebrow: "Rural infrastructure",
+      title: "Spaces that strengthen",
+      em: "rural communities.",
+      body: "A community hall, housing for teachers, public sanitation — built for what a village needs.",
     },
     {
-      src: "/images/rural/samudaya-bhavan-3-completed.jpeg",
-      alt: "The completed Samudaya Bhavan at Yarnal: long, whitewashed wings with blue railings around a paved courtyard.",
-      pillar: "Rural infrastructure",
-      caption: "The completed Samudaya Bhavan, Yarnal.",
-      position: "45% 55%",
-    },
-    {
-      src: "/images/conservation/manuscript-detail.png",
-      alt: "An opened volume of handwritten Devanagari paper folios, with ruled margins and red highlighting.",
-      pillar: "Manuscript conservation",
-      caption: "Handwritten paper folios, ruled and numbered in the margin.",
-      position: "50% 55%",
-    },
-    {
-      src: "/images/community/relief-distribution-3.jpeg",
-      alt: "Masked volunteers handing a food packet to a woman at her doorway.",
-      pillar: "Community services",
-      caption: "The COVID-19 response, Bengaluru, 2020.",
-      position: "42% 50%",
+      key: "acharya",
+      tab: "The Acharya",
+      eyebrow: "Lineage",
+      // The epigraph stays in Hindi in every edition, with a translation.
+      title: "क्रिया करनी चाहिए,",
+      em: "तब अपना कार्य सिद्ध होता है।",
+      translation: "One must act; only then is one's work accomplished.",
+      body: "The Foundation carries his name and upholds his tradition.",
+      link: "About the Acharya",
     },
   ],
 } as const;

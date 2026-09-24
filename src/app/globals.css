@@ -257,20 +257,22 @@ body {
 }
 
 /*
- * The hero's pictures. Each new photograph slides in across the last, as
- * one leaf is laid on another; the one beneath drifts a little the other way
- * and dims. The resting photograph eases very slowly out of a close crop, so
- * the frame is never quite still while it waits. Under reduced motion the
+ * The hero's banners. Each new leaf slides in across the last, as one leaf
+ * is laid on another; the one beneath drifts a little the other way and
+ * dims. Its photographs ease very slowly out of a close crop, so the banner
+ * is never quite still while it is read. Under reduced motion the
  * global rule above cuts all of this to an instant change.
  */
 .reel-slide {
   opacity: 0;
+  pointer-events: none;
 }
 
 .reel-slide[data-state="current"],
 .reel-slide[data-state="in"] {
   opacity: 1;
   z-index: 2;
+  pointer-events: auto;
 }
 
 .reel-slide[data-state="out"] {
@@ -279,17 +281,15 @@ body {
 }
 
 .reel-slide[data-state="in"] {
-  animation: reel-in 950ms cubic-bezier(0.65, 0, 0.3, 1) both;
-  box-shadow: -1.25rem 0 2rem -1.25rem rgb(29 24 18 / 0.45);
+  animation: reel-in 1s cubic-bezier(0.65, 0, 0.3, 1) both;
 }
 
 .reel-slide[data-state="in"][data-dir="back"] {
   animation-name: reel-in-back;
-  box-shadow: 1.25rem 0 2rem -1.25rem rgb(29 24 18 / 0.45);
 }
 
 .reel-slide[data-state="out"] {
-  animation: reel-out 950ms cubic-bezier(0.65, 0, 0.3, 1) both;
+  animation: reel-out 1s cubic-bezier(0.65, 0, 0.3, 1) both;
 }
 
 .reel-slide[data-state="out"][data-dir="back"] {
@@ -298,18 +298,18 @@ body {
 
 .reel-slide[data-state="current"] img,
 .reel-slide[data-state="in"] img {
-  animation: reel-drift 6.5s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+  animation: reel-drift 8s cubic-bezier(0.25, 0.1, 0.25, 1) both;
 }
 
 .reel-fill {
-  animation: reel-fill 5s linear both;
+  animation: reel-fill var(--dwell, 5s) linear both;
 }
 
 /* The clock keeps its own time even under reduced motion; there it only
    runs if the reader presses play, and pictures then change without moving. */
 @media (prefers-reduced-motion: reduce) {
   .reel-fill {
-    animation-duration: 5s !important;
+    animation-duration: var(--dwell, 5s) !important;
   }
 }
 
@@ -335,10 +335,15 @@ body {
   from {
     transform: none;
     filter: brightness(1);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
   }
   to {
     transform: translateX(-28%);
     filter: brightness(0.7);
+    opacity: 0;
   }
 }
 
@@ -346,10 +351,15 @@ body {
   from {
     transform: none;
     filter: brightness(1);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
   }
   to {
     transform: translateX(28%);
     filter: brightness(0.7);
+    opacity: 0;
   }
 }
 

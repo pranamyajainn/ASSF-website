@@ -61,12 +61,12 @@ export const ui = {
   },
   home: {
     reel: {
-      label: "The work, in pictures",
-      pause: "Pause the pictures",
-      play: "Play the pictures",
-      previous: "Previous picture",
-      next: "Next picture",
-      show: "Show picture {n}",
+      label: "What the Foundation does",
+      pause: "Pause",
+      play: "Play",
+      previous: "Previous",
+      next: "Next",
+      show: "Show {name}",
       position: "{n} of {total}",
     },
     spreadLabel: "Rural · Community",
