@@ -1,11 +1,14 @@
-import { systemPrompt } from "@/lib/assistant-knowledge";
+import { systemPromptFor } from "@/lib/assistant-knowledge";
+import { retrieve } from "@/lib/assistant-corpus";
+import { resolveContent } from "@/i18n/content";
+import { isLang, localizeHref } from "@/i18n/config";
 
 export const runtime = "nodejs";
 
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "openai/gpt-oss-120b";
-// Kept small: the API key in use has an 8,000 token/minute cap, and the
-// system prompt alone is a fixed cost on every request.
+// Kept small: the API key in use has an 8,000 token/minute cap. Only the
+// passages retrieved for each question travel with it, not the whole site.
 const MAX_TURNS = 8;
 const MAX_MESSAGE_LENGTH = 1500;
 
@@ -45,9 +48,9 @@ export async function POST(req: Request) {
       ? (body as { messages: unknown[] }).messages
       : [];
 
-  const lang = body && typeof body === "object" ? (body as { lang?: unknown }).lang : undefined;
-  const languageInstruction = typeof lang === "string" ? LANGUAGE_INSTRUCTIONS[lang] : undefined;
-  const system = languageInstruction ? `${systemPrompt}\n\nLANGUAGE: ${languageInstruction}` : systemPrompt;
+  const rawLang = body && typeof body === "object" ? (body as { lang?: unknown }).lang : undefined;
+  const lang = typeof rawLang === "string" && isLang(rawLang) ? rawLang : "en";
+  const languageInstruction = LANGUAGE_INSTRUCTIONS[lang];
 
   const messages = rawMessages
     .filter(isChatMessage)
@@ -56,6 +59,27 @@ export async function POST(req: Request) {
 
   if (messages.length === 0) {
     return new Response("No message provided.", { status: 400 });
+  }
+
+  // Retrieval: the site's passages that best answer this question, with the
+  // previous question folded in so a follow-up keeps its subject.
+  const asked = messages.filter((m) => m.role === "user").map((m) => m.content);
+  const passages = retrieve(lang, asked.at(-1) ?? "", asked.at(-2) ?? "");
+  const prompt = systemPromptFor(passages);
+  const system = languageInstruction ? `${prompt}\n\nLANGUAGE: ${languageInstruction}` : prompt;
+
+  // The pages the answer draws on, for the reader to check.
+  // One link per page, in the edition's own language where there is one.
+  const { shared, ui } = resolveContent(lang);
+  const sources: { page: string; href: string }[] = [];
+  // Only the strongest matches name a source, so a weak passage that came
+  // along for context never shows up as where the answer came from.
+  for (const p of passages.slice(0, 4)) {
+    const href = localizeHref(p.href.replace(/^\/(hi|kn)(?=\/|$)/, "") || "/", lang);
+    if (sources.some((s) => s.href === href)) continue;
+    const label = shared.nav.find((n) => n.href === href)?.label ?? (p.page === "Home" ? ui.header.homeLink : p.page);
+    sources.push({ page: label, href });
+    if (sources.length === 3) break;
   }
 
   let upstream: Response;
@@ -69,7 +93,8 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         model: MODEL,
         stream: true,
-        temperature: 0.4,
+        // Low: the answer should restate the passages, not riff on them.
+        temperature: 0.2,
         // Indic scripts take more tokens per word than English.
         max_tokens: languageInstruction ? 700 : 500,
         reasoning_effort: "low",
@@ -143,6 +168,21 @@ export async function POST(req: Request) {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "no-cache",
+      "X-Sources": encodeURIComponent(JSON.stringify(sources)),
     },
   });
+}
+
+/**
+ * Development only: `GET /api/chat?q=…&lang=…&prev=…` shows which passages
+ * a question retrieves, to check the assistant's grounding without spending
+ * a model call. Disabled in production.
+ */
+export async function GET(req: Request) {
+  if (process.env.NODE_ENV === "production") return new Response("Not found", { status: 404 });
+  const url = new URL(req.url);
+  const rawLang = url.searchParams.get("lang") ?? "en";
+  const lang = isLang(rawLang) ? rawLang : "en";
+  const passages = retrieve(lang, url.searchParams.get("q") ?? "", url.searchParams.get("prev") ?? "");
+  return Response.json(passages.map((p) => ({ lang: p.lang, page: p.page, title: p.title, text: p.text.slice(0, 160) })));
 }

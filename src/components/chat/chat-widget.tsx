@@ -13,7 +13,8 @@ import { usePathname } from "next/navigation";
 import type { UI } from "@/i18n/ui";
 
 type Role = "user" | "assistant";
-type Msg = { role: Role; content: string };
+type Source = { page: string; href: string };
+type Msg = { role: Role; content: string; sources?: Source[] };
 
 const TEASER_KEY = "assf-chat-teaser-seen";
 
@@ -216,6 +217,14 @@ export function ChatWidget({
         throw new Error(detail || strings.unavailable);
       }
 
+      // The pages the answer was drawn from, sent alongside the stream.
+      let sources: Source[] = [];
+      try {
+        sources = JSON.parse(decodeURIComponent(res.headers.get("X-Sources") ?? "[]")) as Source[];
+      } catch {
+        sources = [];
+      }
+
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let full = "";
@@ -225,6 +234,14 @@ export function ChatWidget({
         const chunk = decoder.decode(value, { stream: true });
         full += chunk;
         appendToLastAssistant(chunk);
+      }
+      if (sources.length) {
+        setMessages((prev) => {
+          const copy = [...prev];
+          const last = copy[copy.length - 1];
+          if (last?.role === "assistant") copy[copy.length - 1] = { ...last, sources };
+          return copy;
+        });
       }
       setAnnouncement(full);
     } catch (err) {
@@ -367,6 +384,7 @@ export function ChatWidget({
                 inking={i === inkingIndex}
                 streaming={i === messages.length - 1 && isStreaming}
                 readingLabel={strings.reading}
+                sourcesLabel={strings.sources}
                 onGrow={followWriting}
               />
             ))}
@@ -467,6 +485,7 @@ function MessageBubble({
   inking,
   streaming,
   readingLabel,
+  sourcesLabel,
   onGrow,
 }: {
   message: Msg;
@@ -476,6 +495,7 @@ function MessageBubble({
   inking: boolean;
   streaming: boolean;
   readingLabel: string;
+  sourcesLabel: string;
   onGrow: () => void;
 }) {
   const isUser = message.role === "user";
@@ -505,6 +525,19 @@ function MessageBubble({
             {answer ? <Danda /> : null}
           </>
         )}
+        {!isUser && !streaming && message.sources?.length ? (
+          <p className="mt-2 whitespace-normal font-mono text-[0.72rem] leading-relaxed text-ink-faint">
+            {sourcesLabel}{" "}
+            {message.sources.map((s, i) => (
+              <span key={s.href}>
+                {i > 0 ? " · " : null}
+                <a href={s.href} className="text-ink-soft underline decoration-cinnabar/60 underline-offset-2 hover:text-cinnabar">
+                  {s.page}
+                </a>
+              </span>
+            ))}
+          </p>
+        ) : null}
       </div>
     </div>
   );
