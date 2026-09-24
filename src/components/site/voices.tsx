@@ -1,20 +1,26 @@
-import { Heading, Leaf, Prose } from "./primitives";
+import { Heading, Leaf, Plate, Prose } from "./primitives";
 import type { Voice } from "@/content/home";
 import { getContent } from "@/i18n/content";
 
 type VoicesContent = Awaited<ReturnType<typeof getContent>>["home"]["voices"];
 
 /**
- * Voices from the work. A supplied testimonial is set large — the speaker's
- * own words are the one place on the page allowed to be louder than the
- * Foundation's — with the quotation mark hung in the margin. A place the
- * Foundation has not yet filled is drawn as a lost passage: rows of dots
- * where the lines would be, as a scribe marks a lacuna in the exemplar.
+ * Voices from the work. Each entry is set as a critical edition sets a
+ * source: the facsimile — a photograph of the handwritten page in the
+ * visitors' book — facing its transcription, the words exactly as written,
+ * with the quotation mark hung in the margin. The speaker's words are the
+ * one thing on the page allowed to be louder than the Foundation's.
+ *
+ * Quotes stay in the language they were written in, in every edition; the
+ * Hindi and Kannada editions add a marked translation beneath rather than
+ * putting new words in the writer's mouth.
+ *
+ * A place the Foundation has reserved but not filled (`quote: null`) is
+ * drawn as a lost passage: rows of dots where the lines would be.
  */
 export async function Voices() {
   const { home } = await getContent();
   const { voices } = home;
-  const [lead, ...rest] = voices.items;
 
   return (
     <Leaf id="voices" label={voices.label}>
@@ -23,16 +29,13 @@ export async function Voices() {
         <p>{voices.lede}</p>
       </Prose>
 
-      <div className="bleed-margin mt-12 border-t border-ink/20 pt-10">
-        <VoiceEntry voice={lead} voices={voices} featured />
-      </div>
-      <div className="bleed-margin mt-10 grid gap-x-14 gap-y-10 border-t border-ink/20 pt-10 md:grid-cols-2">
-        {rest.map((voice) => (
-          <VoiceEntry key={voice.kind} voice={voice} voices={voices} />
+      <div className="bleed-margin mt-12">
+        {voices.items.map((voice, i) => (
+          <VoiceEntry key={voice.kind} voice={voice} voices={voices} featured={i === 0} mirrored={i % 2 === 1} />
         ))}
       </div>
 
-      <p className="mt-10 font-mono text-register text-ink-faint">{voices.consentNote}</p>
+      <p className="mt-10 max-w-[60ch] font-mono text-register text-ink-faint">{voices.sourceNote}</p>
     </Leaf>
   );
 }
@@ -40,21 +43,20 @@ export async function Voices() {
 function VoiceEntry({
   voice,
   voices,
-  featured = false,
+  featured,
+  mirrored,
 }: {
   voice: Voice;
   voices: VoicesContent;
-  featured?: boolean;
+  featured: boolean;
+  mirrored: boolean;
 }) {
-  const quoteSize = featured
-    ? "text-[clamp(1.7rem,1.2rem+1.9vw,2.7rem)] leading-[1.25]"
-    : "text-[clamp(1.35rem,1.15rem+0.8vw,1.75rem)] leading-[1.35]";
-
   if (!voice.quote) {
     return (
       <figure
         role="img"
         aria-label={`${voices.pendingNote}: ${voice.kind}`}
+        className="border-t border-ink/20 py-10"
       >
         <p aria-hidden="true" className="font-mono text-register text-cinnabar">
           {voice.kind}
@@ -67,41 +69,82 @@ function VoiceEntry({
     );
   }
 
-  return (
-    <figure className={voice.video && featured ? "grid gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,1fr)_15rem]" : ""}>
-      <div>
-        <p className="font-mono text-register text-cinnabar">{voice.kind}</p>
-        <blockquote className={`relative mt-4 max-w-[34ch] font-display text-ink ${quoteSize}`}>
-          <span
-            aria-hidden="true"
-            className="absolute -left-[0.55em] top-0 text-cinnabar"
-          >
-            “
-          </span>
-          {voice.quote}
-          <span aria-hidden="true" className="text-cinnabar">
-            ”
-          </span>
-        </blockquote>
-        <figcaption className="mt-5 font-mono text-register text-ink-soft">
-          — {voice.name}
-          {voice.role ? `, ${voice.role}` : ""}
-          {voice.place ? ` · ${voice.place}` : ""}
-        </figcaption>
-      </div>
-      {voice.video ? (
-        <video
-          controls
-          playsInline
-          preload="none"
-          poster={voice.video.poster}
-          className="aspect-[9/16] w-full max-w-[15rem] bg-board-deep"
-        >
-          <source src={voice.video.src} type="video/mp4" />
-          <track kind="captions" src={voice.video.captions} srcLang="en" label="English" default />
-        </video>
+  const quoteSize = featured
+    ? "text-[clamp(1.5rem,1.1rem+1.3vw,2.2rem)] leading-[1.3]"
+    : "text-[clamp(1.25rem,1.1rem+0.6vw,1.6rem)] leading-[1.45]";
+
+  const transcription = (
+    <figure className="min-w-0">
+      <p className="font-mono text-register text-cinnabar">{voice.kind}</p>
+      <blockquote lang="en" className={`relative mt-5 max-w-[38ch] font-display text-ink ${quoteSize}`}>
+        <span aria-hidden="true" className="absolute -left-[0.55em] top-0 text-cinnabar">
+          “
+        </span>
+        {voice.quote}
+        <span aria-hidden="true" className="text-cinnabar">
+          ”
+        </span>
+      </blockquote>
+
+      {voice.translation ? (
+        <div className="mt-5 max-w-[52ch] border-l border-cinnabar/50 pl-4">
+          <p className="font-mono text-register text-cinnabar">{voices.translationLabel}</p>
+          <p className="mt-1 text-[1.0625rem] leading-relaxed text-ink-soft">{voice.translation}</p>
+        </div>
       ) : null}
+
+      <figcaption className="mt-6 max-w-[52ch] font-mono text-register text-ink-soft">
+        <span className="text-ink">— {voice.name}</span>
+        {voice.role ? <span className="block">{voice.role}</span> : null}
+        {voice.place ? <span className="block">{voice.place}</span> : null}
+        {voice.alongside ? <span className="mt-1 block text-ink-faint">{voice.alongside}</span> : null}
+      </figcaption>
     </figure>
+  );
+
+  // The handwriting is the evidence: a click opens the page at full size.
+  const facsimile = voice.facsimile ? (
+    <a
+      href={voice.facsimile.src}
+      target="_blank"
+      rel="noopener"
+      title={voices.zoomLabel}
+      className="group block cursor-zoom-in"
+    >
+      <Plate
+        src={voice.facsimile.src}
+        alt={voice.facsimile.alt}
+        caption={voice.facsimile.caption}
+        ratio={voice.facsimile.ratio}
+        sizes="(min-width: 1024px) 24rem, 100vw"
+        className="w-full transition-opacity group-hover:opacity-90"
+      />
+      <span className="sr-only">{voices.zoomLabel}</span>
+    </a>
+  ) : null;
+
+  return (
+    <div
+      className={`grid items-start gap-x-14 gap-y-8 border-t border-ink/20 py-12 ${
+        !facsimile
+          ? ""
+          : mirrored
+            ? "lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]"
+            : "lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]"
+      }`}
+    >
+      {mirrored && facsimile ? (
+        <>
+          <div className="order-2 lg:order-1">{facsimile}</div>
+          <div className="order-1 lg:order-2">{transcription}</div>
+        </>
+      ) : (
+        <>
+          {transcription}
+          {facsimile}
+        </>
+      )}
+    </div>
   );
 }
 

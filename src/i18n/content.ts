@@ -62,6 +62,11 @@ function overlay(base: unknown, over: unknown): unknown {
     for (const key of Object.keys(base)) {
       out[key] = overlay((base as Record<string, unknown>)[key], o[key]);
     }
+    // Optional fields only an edition supplies (a quote's `translation`, say)
+    // have no English counterpart to overlay; carry strings across as-is.
+    for (const key of Object.keys(o)) {
+      if (!(key in out) && typeof o[key] === "string") out[key] = o[key];
+    }
     return out;
   }
   // Leaves: only a string may replace a string (or fill a null).
