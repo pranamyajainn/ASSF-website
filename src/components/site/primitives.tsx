@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import type { Pending as PendingValue } from "@/content/shared";
-import { PersonCard } from "./person-card";
+import { PersonCard, type ProfileLabels } from "./person-card";
 import { Container } from "./container";
 import { getContent } from "@/i18n/content";
 
@@ -300,7 +300,7 @@ export function Verses({
   );
 }
 
-type Person = { name: string; rank: string; body?: string; image: string };
+type Person = { name: string; rank: string; body?: string; bio?: readonly string[]; image: string };
 
 /**
  * A wall of people: trustees, advisors, anyone the site introduces by
@@ -313,10 +313,13 @@ export function PersonGrid({
   people,
   columns = 3,
   className = "mt-12",
+  profileLabels,
 }: {
   people: readonly Person[];
   columns?: 3 | 4 | 5;
   className?: string;
+  /** When given, people with a full `bio` get a "read full profile" sheet. */
+  profileLabels?: ProfileLabels;
 }) {
   const cols = {
     3: "grid-cols-2 lg:grid-cols-3",
@@ -326,7 +329,7 @@ export function PersonGrid({
   return (
     <ul className={`grid gap-x-6 gap-y-12 sm:gap-x-8 ${cols} ${className}`}>
       {people.map((person) => (
-        <PersonCard key={person.name} person={person} />
+        <PersonCard key={person.name} person={person} labels={profileLabels} />
       ))}
     </ul>
   );

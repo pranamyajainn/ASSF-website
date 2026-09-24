@@ -121,11 +121,13 @@ export const ui = {
       "{total} founder trustees. {named} carry a named role — Param Samrakshak Margadarshak, Settlor, President, Working President and Secretary — and {founders} serve as founder trustees.",
     advisorsLabel: "Advisors",
     advisorsHeading: "Advisors",
+    readProfile: "Read full profile",
+    closeProfile: "Close",
   },
   meta: {
     home: "Acharya Shanti Sagar Foundation — जीवन धरोहर संरक्षण",
     homeDescription:
-      "The Acharya Shanti Sagar Foundation conserves tadpatra — palm-leaf folios carrying Jain scripture, Ayurvedic texts, grammars and commentaries. Conservation is free to the custodian and the manuscripts never leave their premises.",
+      "Acharya Shanti Sagar Foundation, Bengaluru, conserves, documents and digitises palm-leaf and handwritten paper manuscripts, and serves communities through rural infrastructure, healthcare, education and relief.",
     suffix: "Acharya Shanti Sagar Foundation",
     about: "About Us",
     conservation: "Manuscript Conservation",

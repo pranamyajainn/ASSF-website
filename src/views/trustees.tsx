@@ -24,6 +24,8 @@ export default async function TrusteesPage() {
   const officeBearers = trustees.filter((_, i) => sourceTrustees[i].rank !== "Founder Trustee");
   const founders = trustees.filter((_, i) => sourceTrustees[i].rank === "Founder Trustee");
 
+  const profile = { open: t.readProfile, close: t.closeProfile };
+
   return (
     <>
       <Header />
@@ -42,15 +44,15 @@ export default async function TrusteesPage() {
             </p>
           </Prose>
           <div className="bleed-margin">
-            <PersonGrid people={officeBearers} columns={5} />
-            <PersonGrid people={founders} columns={5} className="mt-14 border-t border-ink/15 pt-12" />
+            <PersonGrid people={officeBearers} columns={5} profileLabels={profile} />
+            <PersonGrid people={founders} columns={5} className="mt-14 border-t border-ink/15 pt-12" profileLabels={profile} />
           </div>
         </Leaf>
 
         <Leaf id="advisors" label={t.advisorsLabel}>
           <Heading>{t.advisorsHeading}</Heading>
           <div className="bleed-margin">
-            <PersonGrid people={advisors} columns={5} />
+            <PersonGrid people={advisors} columns={5} profileLabels={profile} />
           </div>
         </Leaf>
       </main>

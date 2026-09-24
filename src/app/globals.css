@@ -709,6 +709,34 @@ dialog.sheet::backdrop {
   }
 }
 
-html:has(dialog.sheet[open]) {
+html:has(dialog.sheet[open]),
+html:has(dialog.profile[open]) {
   overflow: hidden;
+}
+
+/* A trustee's full profile: a leaf laid over the page, rising into place. */
+dialog.profile {
+  transition:
+    opacity 240ms ease,
+    translate 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    overlay 240ms allow-discrete,
+    display 240ms allow-discrete;
+}
+
+@starting-style {
+  dialog.profile[open] {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+}
+
+dialog.profile::backdrop {
+  background: color-mix(in oklab, var(--color-board-deep) 62%, transparent);
+  transition: opacity 240ms ease;
+}
+
+@starting-style {
+  dialog.profile[open]::backdrop {
+    opacity: 0;
+  }
 }
