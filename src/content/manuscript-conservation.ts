@@ -61,6 +61,26 @@ export const process = {
   ],
 } as const;
 
+/**
+ * Illustrated manuscripts — "some collections also contain richly
+ * illustrated manuscripts" ("What we do — Manuscript Conservation"). The
+ * Foundation's photographs from the Shravanabelagola inauguration gallery.
+ */
+export const illuminated = {
+  label: "Painted pages",
+  heading: "Painted within the collections",
+  body: "Some collections hold far more than text: folios painted beneath their lines, cloth paintings of the cosmos, whole leaves of colour. Paint cracks and lifts along every fold, so conservation has to hold the picture as carefully as the word.",
+  items: [
+    { src: "/images/illuminated/cosmology.jpg", ratio: "1237 / 1800", alt: "A painted diagram on cloth shaped like an hourglass, divided into tiers filled with small figures.", caption: "The Jain cosmos (loka), drawn as an hourglass of tiered worlds." },
+    { src: "/images/illuminated/procession-folio.jpg", ratio: "1408 / 725", alt: "A paper folio with lines of Devanagari text above a yellow painted band of elephants, riders and animals.", caption: "A folio with a procession painted beneath its text." },
+    { src: "/images/illuminated/painted-leaf.jpg", ratio: "1536 / 971", alt: "An orange painted leaf showing an elephant, a white bull, a lion, a crescent moon, fish and vessels.", caption: "Elephant, bull, lion, moon and vessel — emblems of the auspicious dreams in Jain tradition." },
+    { src: "/images/illuminated/painted-panel.jpg", ratio: "1223 / 1800", alt: "A painted panel of a crowned, many-armed figure seated above an elephant, on an orange ground.", caption: "A crowned, many-armed figure above an elephant." },
+    { src: "/images/illuminated/assembly-folio.jpg", ratio: "1456 / 747", alt: "A paper folio with text above a turquoise painted band of standing figures beside a tree.", caption: "A folio with an assembly of figures painted beneath its text." },
+    { src: "/images/illuminated/damage-detail.jpg", ratio: "1200 / 1800", alt: "Close view of painted cloth, the paint cracked and lifting along a fold.", caption: "Paint cracking along a fold — the damage conservation stabilises." },
+  ],
+  source: "Photographed at the inauguration of the Shravanabelagola conservation programme, July 2025.",
+} as const;
+
 export const film = {
   label: "The work, filmed",
   heading: "Restoration of Tadpatras",

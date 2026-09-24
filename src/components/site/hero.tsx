@@ -29,7 +29,7 @@ export async function Hero() {
       key: "conservation",
       fact: hero.lines[0].gloss,
       link: home.mission.link,
-      images: [about.pageHero.plate, about.plates.rows[0][0], conservation.pageHero.plate],
+      images: [about.pageHero.plate, about.plates.rows[0][0], conservation.illuminated.items[2]],
     },
     {
       ...comm,

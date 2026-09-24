@@ -13,6 +13,7 @@ import {
   Verses,
 } from "@/components/site/primitives";
 import { VideoLoop } from "@/components/site/video-loop";
+import Image from "next/image";
 import { getContent } from "@/i18n/content";
 import { pageMetadata } from "@/i18n/metadata";
 
@@ -23,7 +24,7 @@ export async function generateMetadata() {
 
 export default async function ManuscriptConservationPage() {
   const { conservation, home, ui, href } = await getContent();
-  const { capacity, film, pageHero, process, whatWeConserve } = conservation;
+  const { capacity, film, illuminated, pageHero, process, whatWeConserve } = conservation;
   const { ledger, mission } = home;
   const t = ui.conservation;
   return (
@@ -93,6 +94,34 @@ export default async function ManuscriptConservationPage() {
             imageClassName="object-cover object-[50%_60%]"
             sizes="(min-width: 1024px) 44rem, 100vw"
           />
+        </Leaf>
+
+        {/* Painted pages, shown as they would be in a museum case: on the
+            dark board of a bundle's cover, each with its own caption. */}
+        <Leaf id="painted" label={illuminated.label}>
+          <Heading>{illuminated.heading}</Heading>
+          <Prose>
+            <p>{illuminated.body}</p>
+          </Prose>
+          <div className="on-dark bleed-margin mt-12 bg-board px-5 pb-4 pt-8 [background-image:var(--weave)] sm:px-8 lg:px-10 lg:pt-10">
+            <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 lg:gap-8">
+              {illuminated.items.map((item) => (
+                <figure key={item.src} className="rise-on-scroll mb-8 break-inside-avoid">
+                  <div className="relative w-full overflow-hidden bg-board-deep shadow-[0_0.6rem_1.6rem_-0.6rem_rgb(0_0_0/0.6)]" style={{ aspectRatio: item.ratio }}>
+                    <Image
+                      src={item.src}
+                      alt={item.alt}
+                      fill
+                      sizes="(min-width: 1024px) 26vw, (min-width: 640px) 44vw, 90vw"
+                      className="object-cover"
+                    />
+                  </div>
+                  <figcaption className="mt-3 font-mono text-register text-board-soft">{item.caption}</figcaption>
+                </figure>
+              ))}
+            </div>
+            <p className="border-t border-board-soft/25 py-4 font-mono text-register text-board-soft">{illuminated.source}</p>
+          </div>
         </Leaf>
 
         <Leaf id="film" label={film.label}>

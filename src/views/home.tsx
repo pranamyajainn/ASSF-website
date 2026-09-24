@@ -4,6 +4,7 @@ import { Ledger, Mission, PillarsIntro, Spread } from "@/components/site/section
 import { Sites } from "@/components/site/sites";
 import { Board, Field, Join, Lineage, Standing, Survey } from "@/components/site/sections-b";
 import { Voices } from "@/components/site/voices";
+import { UpClose } from "@/components/site/up-close";
 import { Footer } from "@/components/site/footer";
 import { pageMetadata } from "@/i18n/metadata";
 
@@ -29,6 +30,8 @@ export default function Home() {
         {/* PROOF — the register, the scale, then the sites behind them. */}
         <Ledger />
         <Sites />
+        {/* The work itself, in the Foundation's own field photographs. */}
+        <UpClose />
         {/* MOMENTUM — the work is current, not archival. */}
         <Field />
         {/* WHAT, continued — the two pillars that serve the present. */}

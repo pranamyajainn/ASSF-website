@@ -423,6 +423,27 @@ export const voices = {
   ] as Voice[],
 } as const;
 
+/**
+ * The work, up close: the Foundation's own photographs from its field
+ * programmes, published on its earlier websites' galleries and captioned
+ * only with where and when each was taken (the gallery it appeared in).
+ */
+export const upClose = {
+  label: "Up close",
+  heading: "The work, up close",
+  lede: "Conservation happens at the custodian's side, in rooms full of visitors, munis and conservators. These are the Foundation's own photographs from Shravanabelagola, Karanja Lad and Kumbhoj.",
+  items: [
+    { src: "/images/work/bundles-red-cloth.jpg", ratio: "1600 / 1066", alt: "Palm-leaf bundles and cloth-wrapped manuscripts laid out in rows on red cloth.", caption: "Palm-leaf bundles and wrapped manuscripts laid out at the start of the Shravanabelagola programme, July 2025." },
+    { src: "/images/work/mending-palm-leaf.jpg", ratio: "1333 / 1800", alt: "A man in a white shirt working on a palm leaf laid on a padded board.", caption: "Working on a palm leaf, Shravanabelagola workshop." },
+    { src: "/images/work/munis-reading.jpg", ratio: "1429 / 1800", alt: "Three munis bending over an open paper manuscript in a tray.", caption: "Munis reading a paper manuscript at the Shravanabelagola inauguration." },
+    { src: "/images/work/karanja-exhibition.jpg", ratio: "1600 / 1201", alt: "A building entrance under a maroon Foundation banner announcing an exhibition of palm-leaf and paper Jinvani.", caption: "The Foundation's exhibition of palm-leaf and paper Jinvani, Karanja Lad." },
+    { src: "/images/work/workshop-table.jpg", ratio: "1600 / 1067", alt: "Conservators in white coats and visitors gathered around a table of palm leaves.", caption: "Conservators and visitors at the palm-leaf table, Shravanabelagola workshop." },
+    { src: "/images/work/karanja-visitors.jpg", ratio: "1200 / 1520", alt: "Three men examining handwritten folios spread on a table beside a camera.", caption: "Visitors examining folios at Karanja Lad." },
+    { src: "/images/work/kumbhoj-munis.jpg", ratio: "1600 / 1201", alt: "A large group of munis gathered close around a conservation table.", caption: "Munis visiting the conservation work at Kumbhoj." },
+    { src: "/images/work/lab-rolls.jpg", ratio: "1351 / 1800", alt: "Rolls of paper laid on a blue cloth in a bright conservation room.", caption: "The conservation room at the Karanja Lad exhibition." },
+  ],
+} as const;
+
 export const lineage = {
   label: "Lineage",
   nameDeva: "चारित्र चक्रवर्ती आचार्य श्री १०८ शांति सागर जी महाराज",
@@ -432,6 +453,20 @@ export const lineage = {
     "The Foundation carries the name and upholds the tradition of Acharya Shri 108 Shanti Sagar Ji Maharaj, the first Acharya of the twentieth-century Digambar revival — the figure whose teachings shaped ASSF's founding philosophy.",
     "India Post issued a ₹5 commemorative stamp and first-day cover in his honour. The centenaries of his Muni Deeksha and of his Acharya Pad Pratishthapana are the occasion for the current conservation programme.",
   ],
+  /**
+   * Tributes on his death in 1955, from the Jain Gazette's "Homage Number",
+   * as reproduced on the Foundation's earlier website. Quoted verbatim;
+   * `translation` is filled only by the Hindi and Kannada editions.
+   */
+  tributes: {
+    label: "Homage, 1955",
+    items: [
+      { quote: "In the death of Acharya Shanti Sagar Maharaj, India has lost a great man, a great Tapasvi and a great Rishi.", name: "Dr. S. Radhakrishnan", role: "Vice-President of India", translation: "" },
+      { quote: "I had known Acharya Shanti Sagar Maharaj. He was a profound scholar and a great ascetic of modern India.", name: "Shri K. M. Munshi", role: "Governor, Uttar Pradesh", translation: "" },
+      { quote: "Saints give their message not so much through words as through the life they live.", name: "Shri Ajit Prasad Jain", role: "Union Minister for Food and Agriculture", translation: "" },
+    ],
+    source: "From the Jain Gazette's Homage Number, 1955, as reproduced on the Foundation's earlier website.",
+  },
   /** The line carried on the Foundation's own banner beside his portrait. */
   epigraph: "क्रिया करनी चाहिए तब अपना कार्य सिद्ध होता है।",
   note: "The current site carries two conflicting dates for the stamp release. The date is left out here until the Foundation confirms it.",
