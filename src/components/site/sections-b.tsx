@@ -13,7 +13,6 @@ import {
 } from "./primitives";
 import { FolioWall } from "./folio-wall";
 import { getContent } from "@/i18n/content";
-import { fill } from "@/i18n/ui";
 import { scriptLang } from "@/lib/deva";
 
 /**
@@ -91,17 +90,8 @@ export async function Join() {
         </div>
 
         <div className="lg:pt-2">
-          <p className="font-mono text-register text-ink-faint">
-            {fill(ui.home.bundleLabel, { filled: adopt.wall.filled, total: adopt.wall.total })}
-          </p>
-          <FolioWall
-            total={adopt.wall.total}
-            filled={adopt.wall.filled}
-            label={fill(ui.home.bundleAria, { filled: adopt.wall.filled, total: adopt.wall.total })}
-          />
-          <p className="mt-6 max-w-[44ch] text-[1rem] leading-relaxed text-ink-soft">
-            {adopt.wall.note}
-          </p>
+          <p className="font-mono text-register text-ink-faint">{ui.home.bundleLabel}</p>
+          <FolioWall filled={adopt.wall.filled} label={ui.home.bundleAria} note={adopt.wall.note} />
         </div>
       </div>
     </Leaf>

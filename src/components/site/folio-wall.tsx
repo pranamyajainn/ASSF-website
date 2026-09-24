@@ -1,88 +1,96 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+
+/** Leaves drawn in the bundle — enough to read as a pothi, not a count. */
+const LEAVES = 16;
 
 /**
- * The folio wall, drawn as what it is: a bundle. Each leaf is one folio a
- * donor can fund; a funded leaf is inked, a waiting one is bare. Between
- * the two wooden boards, the binding cord runs through the stack at the
- * string-holes. Today `filled` is 0, so the bundle arrives blank.
+ * The folio bundle, drawn as the object itself: a pothi of palm leaves
+ * between two painted wooden covers, the binding cord through the
+ * string-hole and a tassel hanging free. When it comes into view the cord
+ * slackens and the leaves fan open around it, one after another — the way
+ * a bundle is opened to be read.
  *
- * The leaves settle onto the stack one after another the first time the
- * bundle scrolls into view. Same safety rule as before: if it is already on
- * screen when this mounts (a direct link to #adopt, or slow JS), it renders
- * in its final state immediately — never a stuck, invisible bundle.
+ * An adopted folio will carry a red slip at its edge, as a reader marks a
+ * leaf. None has been adopted yet, and the bundle says so rather than
+ * inventing a tally.
+ *
+ * If the bundle is already on screen when this mounts (a direct link to
+ * #adopt, or slow JavaScript) it opens at once. Under reduced motion it
+ * rests open, without moving.
  */
-export function FolioWall({
-  total,
-  filled,
-  label,
-}: {
-  total: number;
-  filled: number;
-  /** The bundle's accessible description, in the page's language. */
-  label: string;
-}) {
+export function FolioWall({ filled, label, note }: { filled: number; label: string; note: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [animate, setAnimate] = useState(false);
-  const [shown, setShown] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-
     const rect = el.getBoundingClientRect();
-    const inView = rect.top < window.innerHeight * 0.92 && rect.bottom > 0;
-    if (inView) return;
-
-    setAnimate(true);
+    if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
+      setOpen(true);
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setShown(true);
+          setOpen(true);
           observer.disconnect();
         }
       },
-      { threshold: 0.2 },
+      { threshold: 0.45 },
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
   return (
-    <div
-      ref={ref}
-      role="img"
-      aria-label={label}
-      className="relative mt-12 max-w-[40rem] px-3"
-    >
-      <Board />
-      <div className="flex flex-col-reverse gap-[2px] py-[3px]">
-        {Array.from({ length: total }, (_, i) => (
+    <figure className="mt-10 max-w-[40rem]">
+      <div
+        ref={ref}
+        role="img"
+        aria-label={label}
+        data-open={open ? "" : undefined}
+        className="pothi relative mx-auto aspect-[16/9] w-full"
+      >
+        {/* Lower cover. */}
+        <span aria-hidden="true" className="pothi-cover absolute bottom-[7%] left-[2%] right-[2%] h-[7%]" />
+
+        {Array.from({ length: LEAVES }, (_, i) => (
           <span
             key={i}
             aria-hidden="true"
-            style={animate ? { transitionDelay: `${Math.min(i * 7, 640)}ms` } : undefined}
-            className={`block h-[2px] rounded-full ${
-              i < filled ? "bg-ink" : "bg-[color-mix(in_oklab,var(--color-leaf-edge)_85%,var(--color-ink))]"
-            } ${
-              animate
-                ? `transition-[opacity,transform] duration-500 ease-out ${
-                    shown ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
-                  }`
-                : ""
-            }`}
-          />
+            className="pothi-leaf absolute left-[5%] right-[5%] h-[8%]"
+            style={
+              {
+                "--i": i,
+                "--k": LEAVES - 1 - i,
+                bottom: `calc(14% + ${i} * 2.3%)`,
+                "--tone": `${(i * 37) % 11}%`,
+              } as CSSProperties
+            }
+          >
+            {i < filled ? <span className="pothi-slip" /> : null}
+          </span>
         ))}
-      </div>
-      <Board />
-      {/* The cord, through both string-holes. */}
-      <span data-ornament aria-hidden="true" className="absolute -inset-y-3 left-[28%] w-px bg-cinnabar/70" />
-      <span data-ornament aria-hidden="true" className="absolute -inset-y-3 left-[72%] w-px bg-cinnabar/70" />
-    </div>
-  );
-}
 
-function Board() {
-  return <span aria-hidden="true" className="-mx-3 block h-2.5 rounded-[3px] bg-board" />;
+        {/* Upper cover, painted. */}
+        <span
+          aria-hidden="true"
+          className="pothi-cover pothi-cover-top absolute left-[2%] right-[2%] h-[7%]"
+          style={{ bottom: `calc(14% + ${LEAVES} * 2.3% + 1%)` }}
+        />
+
+        {/* The cord through the string-hole, and its tassel. */}
+        <span data-ornament aria-hidden="true" className="pothi-cord absolute bottom-[3%] left-[29.6%] top-[30%] w-[2px]" />
+        <span data-ornament aria-hidden="true" className="pothi-tassel absolute bottom-0 left-[28.4%] h-[9%] w-[2.4%]" />
+      </div>
+
+      <figcaption className="mt-5 flex items-start gap-3 font-mono text-register text-ink-soft">
+        <span aria-hidden="true" className="mt-1 inline-block h-3 w-1.5 shrink-0 bg-cinnabar" />
+        <span>{note}</span>
+      </figcaption>
+    </figure>
+  );
 }

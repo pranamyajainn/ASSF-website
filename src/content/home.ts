@@ -304,8 +304,7 @@ export const adopt = {
   wall: {
     /** Leaves stay blank until real folio records exist. */
     filled: 0,
-    total: 92,
-    note: "The bundle fills as folios are adopted: each leaf is one conserved folio, linkable and searchable. It stays blank until real folio records exist.",
+    note: "An adopted folio is marked with a red slip at its edge. None has been adopted yet.",
   },
 } as const;
 

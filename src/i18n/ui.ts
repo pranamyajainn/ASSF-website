@@ -72,8 +72,8 @@ export const ui = {
     spreadLabel: "Rural · Community",
     standingHeading: "Standing",
     standingStates: { recognised: "recognised", verify: "to verify", pending: "pending" },
-    bundleLabel: "Folio bundle — {filled} of {total} leaves adopted",
-    bundleAria: "Folio bundle: {filled} of {total} leaves funded. It stays blank until real folio records exist.",
+    bundleLabel: "The bundle",
+    bundleAria: "A palm-leaf manuscript bundle between painted wooden covers, bound with a cord, its leaves fanned open. No leaf yet carries the red slip that marks an adopted folio.",
   },
   about: {
     heroLabel: "About",
@@ -111,6 +111,8 @@ export const ui = {
   impact: {
     heroLabel: "Impact",
     streamsLabel: "Three streams",
+    evidenceLabel: "Evidence",
+    evidenceHeading: "The work behind the numbers",
     fullPicture: "See the full picture",
   },
   trustees: {
