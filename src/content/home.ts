@@ -378,8 +378,8 @@ export const voices = {
       {
         key: "maharaj-ji",
         kind: "A blessing, recorded at Karanja",
-        name: "Maharaj Ji",
-        role: "Digambar Jain muni, at the Mahavir Digambar Jain Gurukul, Karanja Lad",
+        name: "Muni Shri 108 Subrat Sagar Ji Maharaj",
+        role: "At the Mahavir Digambar Jain Gurukul, Karanja Lad",
         lang: "hi",
         quote: "आप भी इस तरह के जीर्णोद्धार को कराएँ, जिससे ग्रंथ सैकड़ों साल के लिए पुनर्जीवित हो जाएँ।",
         translation: "Have this kind of restoration done too, so that the granthas come back to life for hundreds of years.",
