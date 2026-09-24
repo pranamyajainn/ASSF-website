@@ -60,6 +60,15 @@ export const ui = {
     folios: "Folios",
   },
   home: {
+    reel: {
+      label: "The work, in pictures",
+      pause: "Pause the pictures",
+      play: "Play the pictures",
+      previous: "Previous picture",
+      next: "Next picture",
+      show: "Show picture {n}",
+      position: "{n} of {total}",
+    },
     spreadLabel: "Rural · Community",
     standingHeading: "Standing",
     standingStates: { recognised: "recognised", verify: "to verify", pending: "pending" },

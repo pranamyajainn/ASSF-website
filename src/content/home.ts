@@ -28,11 +28,57 @@ export const hero = {
   /** The Foundation's own hero actions ("Final Homepage Content", §1). */
   primary: { label: "Explore our work", href: "#pillars" },
   secondary: { label: "Support the mission", href: "#join" },
-  plate: {
-    src: "/images/survey-in-progress.jpeg",
-    alt: "A handwritten Devanagari folio on a conservator's blotting paper, beside a pH indicator strip held in tweezers.",
-    caption: "Survey in progress. A folio's acidity is tested before any treatment begins.",
-  },
+  /**
+   * The work in pictures, one after another beside the headline — the
+   * Foundation's own photographs, two for each pillar, in a frame no larger
+   * than the single photograph it replaces. Captions say what each picture
+   * shows; they reuse the wording already used for these photographs
+   * elsewhere on the site.
+   */
+  slides: [
+    {
+      src: "/images/survey-in-progress.jpeg",
+      alt: "A handwritten Devanagari folio on a conservator's blotting paper, beside a pH indicator strip held in tweezers.",
+      pillar: "Manuscript conservation",
+      caption: "A folio's acidity tested before treatment.",
+      position: "18% 22%",
+    },
+    {
+      src: "/images/community/health-camp-team.jpg",
+      alt: "Doctors, nurses and volunteers standing in rows behind an Acharya Shanti Sagar Foundation banner at a free health camp.",
+      pillar: "Community services",
+      caption: "The team at a free health camp.",
+      position: "62% 50%",
+    },
+    {
+      src: "/images/rural/samudaya-bhavan-1-site.jpeg",
+      alt: "Bare, levelled ground beside a village road at Yarnal.",
+      pillar: "Rural infrastructure",
+      caption: "Yarnal: the site before development.",
+      position: "50% 50%",
+    },
+    {
+      src: "/images/rural/samudaya-bhavan-3-completed.jpeg",
+      alt: "The completed Samudaya Bhavan at Yarnal: long, whitewashed wings with blue railings around a paved courtyard.",
+      pillar: "Rural infrastructure",
+      caption: "The completed Samudaya Bhavan, Yarnal.",
+      position: "45% 55%",
+    },
+    {
+      src: "/images/conservation/manuscript-detail.png",
+      alt: "An opened volume of handwritten Devanagari paper folios, with ruled margins and red highlighting.",
+      pillar: "Manuscript conservation",
+      caption: "Handwritten paper folios, ruled and numbered in the margin.",
+      position: "50% 55%",
+    },
+    {
+      src: "/images/community/relief-distribution-3.jpeg",
+      alt: "Masked volunteers handing a food packet to a woman at her doorway.",
+      pillar: "Community services",
+      caption: "The COVID-19 response, Bengaluru, 2020.",
+      position: "42% 50%",
+    },
+  ],
 } as const;
 
 export const mission = {
