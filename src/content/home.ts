@@ -335,6 +335,22 @@ export type Voice = {
  * `facsimile` to an entry once it is given. A voice with `quote: null`
  * renders as a lacuna, for places reserved but not yet filled.
  */
+/** A recorded voice: the words as spoken, never tidied, with captions. */
+export type HeardVoice = {
+  key: string;
+  kind: string;
+  name: Pending<string>;
+  role?: string;
+  /** Language the speaker uses; the quote and transcript are in it. */
+  lang: "hi";
+  /** A line lifted from the recording, verbatim. */
+  quote: string;
+  translation: string;
+  transcript: string;
+  transcriptTranslation: string;
+  video: { src: string; poster: string; width: number; height: number; duration: string; captions: string };
+};
+
 export const voices = {
   label: "Voices",
   heading: "Voices from the work",
@@ -343,6 +359,48 @@ export const voices = {
   translationLabel: "Translation",
   zoomLabel: "Open the handwritten page at full size",
   sourceNote: "From the Foundation's visitors' book, transcribed as written.",
+  /**
+   * Spoken appreciation, recorded at Karanja Lad and supplied by the
+   * Foundation (Sept 2026). Quotes and transcripts are the words as spoken,
+   * transcribed from the recordings; "[…]" marks a word that could not be
+   * made out, rather than a guess. Captions for each recording are WebVTT
+   * files beside the video, in Hindi, English and Kannada.
+   */
+  heard: {
+    native: "श्रुत",
+    label: "Heard",
+    note: "Recorded at Karanja Lad, where the Foundation's conservation work is under way.",
+    listen: "Listen",
+    transcriptLabel: "Read the whole recording",
+    transcriptNote: "Transcribed from the recording and translated. […] marks a word that could not be made out.",
+    nameAwaited: "name awaiting the Foundation",
+    items: [
+      {
+        key: "maharaj-ji",
+        kind: "A blessing, recorded at Karanja",
+        name: "Maharaj Ji",
+        role: "Digambar Jain muni, at the Mahavir Digambar Jain Gurukul, Karanja Lad",
+        lang: "hi",
+        quote: "आप भी इस तरह के जीर्णोद्धार को कराएँ, जिससे ग्रंथ सैकड़ों साल के लिए पुनर्जीवित हो जाएँ।",
+        translation: "Have this kind of restoration done too, so that the granthas come back to life for hundreds of years.",
+        transcript: "जैन समाज की काशी — महाराष्ट्र का कारंजा नगर। समन्तभद्राचार्य द्वारा स्थापित महावीर दिगंबर जैन गुरुकुल। इसमें प्राचीन जैन साहित्य का जीर्णोद्धार, पुनर्लेखन, आलेखन, व्यवस्था करने का कार्य श्री शान्तिसागर फ़ाउंडेशन, बैंगलोर के द्वारा हो रहा है, जिसे हमारे मंत्रीवर […] जी, जो धन्यकुमार जी के सुपुत्र हैं, उन्होंने समग्र जीर्णोद्धार के कार्यों को दिखाया। देखकर बड़ी प्रसन्नता हुई। और मैं समग्र भारतवासी जैन समाज से एवं प्राचीन ग्रंथवानों से भाव रखता हूँ कि आप भी इस तरह के जीर्णोद्धार को कराएँ, जिससे ग्रंथ सैकड़ों साल के लिए पुनर्जीवित हो जाएँ और धर्म एवं संस्कृति का संरक्षण हो। इस हेतु सकल समाज एवं फ़ाउंडेशन के लिए मेरा बहुत-बहुत आशीर्वाद, आशीर्वाद।",
+        transcriptTranslation: "Karanja, in Maharashtra — the Kashi of the Jain community. The Mahavir Digambar Jain Gurukul, founded by Acharya Samantabhadra. Here, the restoration of ancient Jain literature — its recopying, recording and ordering — is being done by the Shri Shanti Sagar Foundation, Bangalore. Our secretary, […] ji, son of Dhanyakumar ji, showed us all of the restoration work. Seeing it brought great joy. And to the Jain community across India, and to all who keep ancient granthas, I say: have this kind of restoration done too, so that the granthas come back to life for hundreds of years and our dharma and culture are preserved. For this, my many, many blessings to the whole community and to the Foundation.",
+        video: { src: "/videos/voices/maharaj-ji.mp4", poster: "/videos/voices/maharaj-ji.jpg", width: 478, height: 850, duration: "1:24", captions: "/videos/voices/maharaj-ji" },
+      },
+      {
+        key: "karanja-visit",
+        kind: "To a visiting group, at Karanja",
+        name: null,
+        lang: "hi",
+        quote: "एक-एक प्रोसेस इतना नियंत्रित तरीके से होता है… अब मैं जितना बोलूँ, उतना कम है।",
+        translation: "Every single process is done in such a controlled way… however much I say, it falls short.",
+        transcript: "तो कारंजा का कितना बड़ा महत्व है। और ये धरोहर — पाँच सौ, साढ़े पाँच सौ साल पुरानी धरोहर — आज जिस प्रकार सँभाल के रखना… और समय के साथ वो खंडित तो होती है। तो फिर उसको और आगे ले जाने के लिए ये टीम जूझ रही है, लगातार। ये जो अभी इस तरह से आप देख रहे हैं न, यह ऐसा नहीं होता है। आप यहाँ जब वो काम सारा चलता है, तब वो देखने जैसा है कि किस प्रकार वो एक-एक पत्र को […] सँभालते हैं, उसका कार्य करते हैं। […] इंक डाइल्यूट हो जाती है, तो उसके लिए प्रॉपर सॉल्यूशन बना के… एक-एक प्रोसेस इतना नियंत्रित तरीके से होता है, कि अगर ऐसे ही किया जाए, तो ये और छिन्न-भिन्न होके ख़राब हो जाएगा। और ये एक बार यहाँ से जो ग्रंथ पास होके जाता है, उसकी लाइफ़ और 100–150 साल बढ़ जाती है, क्योंकि उसके ऊपर लेमिनेशन होता है — आपको दिखेगा भी नहीं कि ये लेमिनेशन किया गया है। और सबसे बड़ी बात कि यह सारा प्रोसेस रिवर्सिबल है। कहीं भी कोई ऐसे केमिकल का यूज़ नहीं हुआ है कि वो उसको डैमेज करे, और […] ख़राब करे। कि आप उसको ओरिजिनल में ले जाना चाहते हो, तो आप उसको पूरा रिवर्सिबल कर सकते हो। इस प्रकार का सारा कार्य होता है। मतलब, अब मैं जितना बोलूँ, उतना कम है। आप एक-एक चीज़ में कितना समय देते हो, वही चीज़ बताती है — इसमें गर्व है, इन्वॉल्वमेंट है।",
+        transcriptTranslation: "So — how great Karanja's importance is. And this heritage — five hundred, five hundred and fifty years old — keeping it safe the way it is today… and with time, it does break apart. So, to carry it further forward, this team is at it, without a break. What you're seeing now, like this — it isn't like this. When the work is going on here, that is worth seeing — how they handle each single leaf […], how they work on it. […] the ink has thinned, so they make up a proper solution for it… every single process is done in such a controlled way, because done any other way, it would come apart and be ruined. And once a grantha has passed through here, its life grows by another 100–150 years, because it is laminated — and you won't even see that it has been laminated. And the biggest thing: this whole process is reversible. Nowhere is any chemical used that would damage it, or […] ruin it. If you want to take it back to the original, you can reverse it completely. That is the kind of work done here. Honestly — however much I say, it falls short. How much time you give to every single thing says it all — there is pride in it, and involvement.",
+        video: { src: "/videos/voices/karanja-visit.mp4", poster: "/videos/voices/karanja-visit.jpg", width: 1280, height: 720, duration: "1:46", captions: "/videos/voices/karanja-visit" },
+      },
+    ] as HeardVoice[],
+  },
+  written: { native: "लिखित", label: "Written" },
   items: [
     {
       kind: "From the visitors' book — Government of Maharashtra",
