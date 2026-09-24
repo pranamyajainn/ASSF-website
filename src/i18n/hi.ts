@@ -252,7 +252,7 @@ export const hi: Translation = {
         items: [
           {
             kind: "आशीर्वचन, कारंजा में",
-            name: "मुनि श्री 108 सुब्रत सागर जी महाराज",
+            name: "मुनि श्री १०८ सुब्रत सागरजी महाराज",
             role: "महावीर दिगंबर जैन गुरुकुल, कारंजा लाड में",
             translation: "",
             transcriptTranslation: "",
