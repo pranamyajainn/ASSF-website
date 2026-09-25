@@ -1,5 +1,17 @@
 {
-  "revision": 2,
-  "updatedAt": "2026-09-25T14:15:15.725Z",
-  "ops": []
+  "revision": 3,
+  "updatedAt": "2026-09-25T14:17:00.899Z",
+  "ops": [
+    {
+      "path": [
+        "home",
+        "hero",
+        "lines",
+        0,
+        "text"
+      ],
+      "scope": "en",
+      "value": "Wisdom."
+    }
+  ]
 }
