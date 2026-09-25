@@ -19,7 +19,7 @@ export default async function RuralInfrastructurePage() {
   return (
     <>
       <Header />
-      <main>
+      <main id="main">
         <PageHero
           question={ui.steps.why}
           thread={{

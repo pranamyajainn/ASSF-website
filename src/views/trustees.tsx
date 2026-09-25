@@ -30,7 +30,7 @@ export default async function TrusteesPage() {
   return (
     <>
       <Header />
-      <main>
+      <main id="main">
         <PageHero
           question={ui.steps.glance}
           thread={{

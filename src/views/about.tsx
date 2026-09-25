@@ -32,7 +32,7 @@ export default async function AboutPage() {
   return (
     <>
       <Header />
-      <main>
+      <main id="main">
         <PageHero
           question={ui.steps.glance}
           thread={{

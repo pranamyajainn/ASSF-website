@@ -12,6 +12,7 @@ import { Meter, PortalSection, ReportCard, StatTile, StatusRow } from "@/compone
 
 export const metadata = {
   title: `Trustee Portal — ${org.nameLatin}`,
+  robots: { index: false, follow: false },
 };
 
 function toNumber(value: string) {

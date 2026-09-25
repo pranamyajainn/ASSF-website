@@ -10,6 +10,7 @@ export const ui = {
     original: "",
   },
   header: {
+    skip: "Skip to the content",
     language: "Language",
     cleanFolio: "Clean the folio",
     cleanShort: "Clean",
@@ -195,6 +196,7 @@ export const ui = {
     reading: "Reading the Foundation's pages…",
     sources: "From:",
     unavailable: "The assistant is temporarily unavailable. Please try again shortly.",
+    busy: "That's a lot of questions at once — please wait a few seconds and ask again.",
     failed: "Something went wrong. Please try again, or reach us at",
   },
 };

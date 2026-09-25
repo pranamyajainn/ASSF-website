@@ -6,6 +6,7 @@ import { org } from "@/content/shared";
 
 export const metadata = {
   title: `Trustee Portal — ${org.nameLatin}`,
+  robots: { index: false, follow: false },
 };
 
 const ERROR_COPY: Record<string, string> = {

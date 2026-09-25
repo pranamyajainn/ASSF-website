@@ -75,6 +75,12 @@ export function HeaderClient({
 
   return (
     <>
+      <a
+        href="#main"
+        className="sr-only z-[100] bg-cinnabar px-4 py-2.5 text-leaf focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+      >
+        {t.skip}
+      </a>
       <div className="on-dark bg-board-deep text-board-ink">
         <Container>
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-2">

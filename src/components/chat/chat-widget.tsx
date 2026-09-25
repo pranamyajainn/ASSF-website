@@ -212,10 +212,8 @@ export function ChatWidget({
         signal: controller.signal,
       });
 
-      if (!res.ok || !res.body) {
-        const detail = await res.text().catch(() => "");
-        throw new Error(detail || strings.unavailable);
-      }
+      // The server's reasons are in English; the reader sees their edition's words.
+      if (!res.ok || !res.body) throw new Error(res.status === 429 ? strings.busy : strings.unavailable);
 
       // The pages the answer was drawn from, sent alongside the stream.
       let sources: Source[] = [];

@@ -22,7 +22,7 @@ export default async function ImpactPage() {
   return (
     <>
       <Header />
-      <main>
+      <main id="main">
         <PageHero
           question={ui.steps.glance}
           thread={{

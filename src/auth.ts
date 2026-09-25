@@ -3,7 +3,14 @@ import Google from "next-auth/providers/google";
 import { isAuthorizedEmail } from "@/lib/trustee-directory";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [Google],
+  // Auth.js reads AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET; the Google console's
+  // own names (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET) are accepted too.
+  providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID ?? process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET ?? process.env.GOOGLE_CLIENT_SECRET,
+    }),
+  ],
   session: { strategy: "jwt" },
   pages: {
     signIn: "/trustee-portal/login",

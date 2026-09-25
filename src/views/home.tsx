@@ -6,6 +6,7 @@ import { Board, Field, Join, Lineage, Survey } from "@/components/site/sections-
 import { Voices } from "@/components/site/voices";
 import { UpClose } from "@/components/site/up-close";
 import { Footer } from "@/components/site/footer";
+import { OrgSchema } from "@/components/site/org-schema";
 import { pageMetadata } from "@/i18n/metadata";
 
 export function generateMetadata() {
@@ -19,8 +20,9 @@ export function generateMetadata() {
 export default function Home() {
   return (
     <>
+      <OrgSchema />
       <Header />
-      <main>
+      <main id="main">
         {/* AT A GLANCE — who the Foundation is, and what it does, in banners. */}
         <Hero />
         {/* WHY — the urgency, and the damage it describes. */}

@@ -25,7 +25,7 @@ export default async function CommunityServicesPage() {
   return (
     <>
       <Header />
-      <main>
+      <main id="main">
         <PageHero
           question={ui.steps.why}
           thread={{

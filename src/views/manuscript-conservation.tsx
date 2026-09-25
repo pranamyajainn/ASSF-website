@@ -30,7 +30,7 @@ export default async function ManuscriptConservationPage() {
   return (
     <>
       <Header />
-      <main>
+      <main id="main">
         <PageHero
           question={ui.steps.why}
           thread={{

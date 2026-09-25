@@ -2,6 +2,7 @@ import { systemPromptFor } from "@/lib/assistant-knowledge";
 import { retrieve } from "@/lib/assistant-corpus";
 import { resolveContent } from "@/i18n/content";
 import { isLang, localizeHref } from "@/i18n/config";
+import { clientKey, overLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -11,6 +12,8 @@ const MODEL = "openai/gpt-oss-120b";
 // passages retrieved for each question travel with it, not the whole site.
 const MAX_TURNS = 8;
 const MAX_MESSAGE_LENGTH = 1500;
+// Eight turns of 1,500 characters, with room for JSON — anything larger isn't the widget.
+const MAX_BODY_BYTES = 32_000;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -24,6 +27,14 @@ const LANGUAGE_INSTRUCTIONS: Record<string, string> = {
   kn: "Reply in Kannada, written in Kannada script, whatever language the question is in. Keep figures in international digits with Indian grouping (e.g. 1,34,545), exactly as the knowledge base gives them.",
 };
 
+function sameHost(origin: string, url: string): boolean {
+  try {
+    return new URL(origin).host === new URL(url).host;
+  } catch {
+    return false; // "null" and other opaque origins
+  }
+}
+
 function isChatMessage(value: unknown): value is ChatMessage {
   if (!value || typeof value !== "object") return false;
   const { role, content } = value as Record<string, unknown>;
@@ -36,9 +47,31 @@ export async function POST(req: Request) {
     return new Response("The assistant isn't configured yet.", { status: 500 });
   }
 
+  // Only this site's own pages may ask: a browser on another site sends its
+  // own Origin, and fetch metadata says it's cross-site.
+  const origin = req.headers.get("origin");
+  const site = req.headers.get("sec-fetch-site");
+  if ((origin && !sameHost(origin, req.url)) || (site && site !== "same-origin")) {
+    return new Response("Forbidden.", { status: 403 });
+  }
+
+  if (Number(req.headers.get("content-length") ?? 0) > MAX_BODY_BYTES) {
+    return new Response("Request too large.", { status: 413 });
+  }
+
+  const wait = overLimit(clientKey(req));
+  if (wait) {
+    return new Response("You've asked a lot of questions in a short time — please wait a moment and try again.", {
+      status: 429,
+      headers: { "Retry-After": String(wait) },
+    });
+  }
+
   let body: unknown;
   try {
-    body = await req.json();
+    const raw = await req.text();
+    if (raw.length > MAX_BODY_BYTES) return new Response("Request too large.", { status: 413 });
+    body = JSON.parse(raw);
   } catch {
     return new Response("Invalid request body.", { status: 400 });
   }
