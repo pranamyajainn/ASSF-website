@@ -39,7 +39,7 @@ export function shapeOf(trees: readonly unknown[]): Shape {
   return { nullable, values };
 }
 
-type Ctx = { shape: Shape; uploads: Set<string>; lang: Lang };
+type Ctx = { shape: Shape; uploads: Set<string>; lang: Lang; photosLater: boolean };
 
 /** Why `value` can't stand where `current` stands, or null if it can. */
 function check(value: Json, current: unknown, path: (string | number)[], ctx: Ctx): string | null {
@@ -85,6 +85,7 @@ function check(value: Json, current: unknown, path: (string | number)[], ctx: Ct
   if (value.length > MAX_TEXT) return `${where}: text is too long`;
 
   if (isImagePath(current) || (typeof key === "string" && ["src", "image", "portrait"].includes(key) && isImagePath(value))) {
+    if (value === "" && ctx.photosLater) return null;
     if (!isImagePath(value)) return `${where}: a photo is needed`;
     const known = [...ctx.shape.values.values()].some((s) => s.has(value));
     if (!known && !(UPLOAD.test(value) && ctx.uploads.has(value))) return `${where}: unknown photo`;
@@ -112,6 +113,8 @@ export function validateOps(
   published: Record<Lang, unknown>,
   shape: Shape,
   uploads: Set<string>,
+  /** For proposals: a new item's photo may be left for the editor to add. */
+  { photosLater = false }: { photosLater?: boolean } = {},
 ): string | null {
   if (!Array.isArray(ops)) return "No changes were sent.";
   if (ops.length > MAX_OPS) return "Too many changes in one publish.";
@@ -132,7 +135,7 @@ export function validateOps(
     for (const lang of langs) {
       const current = getAt(published[lang], path);
       if (current === undefined) return `${path.join(" › ")}: this field no longer exists — reload the editor`;
-      const problem = check(value, current, path, { shape, uploads, lang });
+      const problem = check(value, current, path, { shape, uploads, lang, photosLater });
       if (problem) return problem;
     }
 

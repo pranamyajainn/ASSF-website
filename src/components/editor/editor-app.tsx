@@ -3,9 +3,10 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { localeInfo, locales, type Lang } from "@/i18n/config";
 import { fillBlanks, fillTokens, getAt, pathKey, type Edits, type Json, type Op, type Path } from "@/lib/cms/edits";
-import { describePath, isHidden, PAGES, SECTION_ORDER, schemaPath, sectionLabel, type ModuleName } from "@/lib/cms/schema";
+import { isHidden, PAGES, SECTION_ORDER, schemaPath, sectionLabel, type ModuleName } from "@/lib/cms/schema";
 import { EditorProvider, fieldId, Node, useEditor, type EditorApi } from "./fields";
-import { blankLike, changeList, problems, setField, translatedFields, withOps, type Trees } from "./model";
+import type { Proposal } from "@/lib/mcp/proposal";
+import { applyActions, blankLike, changeList, describeAt, problems, setField, translatedFields, withOps, type Action, type Trees } from "./model";
 import { Find, Panel, type Selection } from "./panel";
 import { preparePhoto } from "./photo";
 import { Preview } from "./preview";
@@ -25,9 +26,13 @@ type Props = {
   storage: "github" | "local";
   editor: { email: string; name: string };
   signOut: () => Promise<void>;
+  /** Changes an AI app prepared, from a review link (?proposal=…). */
+  proposal: Proposal | null;
+  badProposal: boolean;
 };
 
 const DRAFT_KEY = "assf-editor:draft";
+const APPLIED_KEY = "assf-editor:applied-proposals";
 const LANG_KEY = "assf-editor:lang";
 const LANG_LABEL: Record<Lang, string> = { en: "English", hi: localeInfo.hi.label, kn: localeInfo.kn.label };
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
@@ -48,6 +53,10 @@ function loadSaved(): Saved | null {
 
 const subscribeNothing = () => () => {};
 
+/** Things changed, not language versions: a designation in three languages is one change. */
+const changeCount = (actions: readonly Action[]) =>
+  new Set(actions.map((a) => JSON.stringify("set" in a ? a.set : "add" in a ? [...a.add, "+", a.at] : "remove" in a ? [...a.remove, "-", a.at] : [...a.move, a.from]))).size;
+
 /**
  * The editor keeps its unpublished draft in this browser, so it renders only
  * in the browser: on the server there is no draft to show.
@@ -67,7 +76,7 @@ export function EditorRoot(props: Props) {
  * until Review & publish. On a phone — or on request — the same content is
  * a list of pages and parts instead.
  */
-function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props) {
+function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal, badProposal }: Props) {
   const [published, setPublished] = useState<Edits>(initial);
   const [saved] = useState(loadSaved);
   const [draft, setDraft] = useState<Op[]>(() => saved?.ops ?? []);
@@ -89,7 +98,14 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
   const [listPage, setListPage] = useState<ModuleName>("home");
   const [open, setOpen] = useState<Set<string>>(new Set());
   const [focused, setFocused] = useState<string | null>(null);
-  const [dialog, setDialog] = useState<"review" | "history" | null>(null);
+  const [dialog, setDialog] = useState<"review" | "history" | "connect" | null>(null);
+  const [incoming, setIncoming] = useState<{ proposal: Proposal | null; bad: boolean; done: boolean; already: boolean }>(() => {
+    let already = false;
+    try {
+      already = !!proposal && (JSON.parse(localStorage.getItem(APPLIED_KEY) ?? "[]") as string[]).includes(proposal.id);
+    } catch {}
+    return { proposal, bad: badProposal, done: false, already };
+  });
   const [status, setStatus] = useState<Status>(() => (deployed < initial.revision ? { kind: "deploying", revision: initial.revision } : { kind: "idle" }));
 
   const setLang = (next: Lang) => {
@@ -194,10 +210,12 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
     translate: async (path) => {
       const text = getAt(current.en, path);
       if (typeof text !== "string" || !text.trim()) return;
+      const was = locales.map((l) => getAt(publishedTrees[l], path));
+      const reference = was.every((v) => typeof v === "string" && v) ? { en: was[0], hi: was[1], kn: was[2] } : null;
       const res = await fetch("/api/cms/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, reference }),
       });
       if (!res.ok) throw new Error((await res.text()) || "Translation didn't work — please try again.");
       const out = (await res.json()) as { hi: string; kn: string };
@@ -297,6 +315,20 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
   }
 
   const draftCount = useMemo(() => new Set(draft.map((o) => pathKey(o.path))).size, [draft]);
+
+  /** A review link's changes go into the draft — on the page, not yet on the site. */
+  function acceptProposal(accept: boolean) {
+    const p = incoming.proposal;
+    if (accept && p) {
+      setDraft((d) => applyActions(d, publishedTrees, p.actions));
+      try {
+        const seen = JSON.parse(localStorage.getItem(APPLIED_KEY) ?? "[]") as string[];
+        localStorage.setItem(APPLIED_KEY, JSON.stringify([...seen, p.id].slice(-50)));
+      } catch {}
+    }
+    setIncoming({ proposal: null, bad: false, done: accept, already: false });
+    window.history.replaceState(null, "", "/editor");
+  }
   const pageInfo = SITE_PAGES.find((p) => p.module === sitePage)!;
   const previewSrc = `/preview/${lang}${pageInfo.href === "/" ? "" : pageInfo.href}`;
   const selectedPath = selection && "path" in selection ? selection.path : null;
@@ -375,6 +407,45 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
           ) : null}
         </header>
 
+        {incoming.proposal && !incoming.already ? (
+          <div className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b border-orpiment/40 bg-orpiment/20 px-4 py-3 lg:px-6">
+            <p className="min-w-0 flex-1 text-[0.95rem] text-ink">
+              <b className="font-medium">{incoming.proposal.app}</b> prepared {changeCount(incoming.proposal.actions) === 1 ? "a change" : `${changeCount(incoming.proposal.actions)} changes`}
+              {" "}for you: “{incoming.proposal.summary}”. Add them to see them on the page — nothing is published until you choose.
+            </p>
+            <button type="button" onClick={() => acceptProposal(true)} className="cursor-pointer rounded-md bg-ink px-4 py-2 text-[0.92rem] text-leaf hover:bg-board">
+              Add to my changes
+            </button>
+            <button type="button" onClick={() => acceptProposal(false)} className="cursor-pointer rounded-md px-3 py-2 text-[0.9rem] text-ink-soft hover:bg-ink/5">
+              Not now
+            </button>
+          </div>
+        ) : null}
+        {incoming.proposal && incoming.already ? (
+          <p className="shrink-0 bg-white/60 px-4 py-2 text-[0.9rem] text-ink-soft lg:px-6">
+            These changes (“{incoming.proposal.summary}”) were already added.{" "}
+            <button type="button" className="cursor-pointer underline" onClick={() => acceptProposal(false)}>
+              OK
+            </button>
+          </p>
+        ) : null}
+        {incoming.done ? (
+          <p className="shrink-0 bg-emerald-900/10 px-4 py-2 text-[0.9rem] text-ink lg:px-6">
+            Added — the words are on the page now (new items appear once published). Check them, then press Review &amp; publish.{" "}
+            <button type="button" className="cursor-pointer underline" onClick={() => setIncoming((s) => ({ ...s, done: false }))}>
+              OK
+            </button>
+          </p>
+        ) : null}
+        {incoming.bad ? (
+          <p className="shrink-0 bg-cinnabar/10 px-4 py-2 text-[0.9rem] text-cinnabar-deep lg:px-6">
+            That review link has expired or isn&apos;t valid. Ask the assistant to prepare the changes again.{" "}
+            <button type="button" className="cursor-pointer underline" onClick={() => acceptProposal(false)}>
+              OK
+            </button>
+          </p>
+        ) : null}
+
         {olderDraft && draft.length ? (
           <p className="shrink-0 bg-orpiment/20 px-4 py-2 text-[0.9rem] text-ink lg:px-6">
             Your unpublished changes were started before someone else published. They&apos;re kept — check them under Review &amp; publish.
@@ -403,6 +474,7 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
                 onAddNews={() => addTo(["home", "field", "items"], "home", true)}
                 onAddTrustee={() => addTo(["trustees", "trustees"], "trustees", false)}
                 onList={() => setMode("list")}
+                onConnect={() => setDialog("connect")}
               />
             </aside>
           </div>
@@ -434,6 +506,7 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
           />
         ) : null}
         {dialog === "history" ? <History onClose={() => setDialog(null)} onRestore={restore} /> : null}
+        {dialog === "connect" ? <ConnectAi onClose={() => setDialog(null)} /> : null}
       </div>
     </EditorProvider>
   );
@@ -694,7 +767,7 @@ function Review({
             {toFix.map((p) => (
               <li key={pathKey(p.path)}>
                 <button type="button" className="cursor-pointer text-left underline decoration-cinnabar/40 underline-offset-2" onClick={() => onReveal(p.path)}>
-                  {describePath(p.path)}
+                  {describeAt(current.en, p.path)}
                 </button>{" "}
                 — {p.message}
               </li>
@@ -710,7 +783,7 @@ function Review({
             <li key={key} className="py-3">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <button type="button" className="cursor-pointer text-left font-display text-[1.02rem] hover:text-cinnabar" onClick={() => onReveal(path)}>
-                  {describePath(path)}
+                  {describeAt(current.en, path)}
                 </button>
                 <button type="button" className="cursor-pointer text-[0.85rem] text-cinnabar-deep underline decoration-cinnabar/40 underline-offset-2" onClick={() => onUndo(key)}>
                   Undo
@@ -818,3 +891,53 @@ function History({ onClose, onRestore }: { onClose: () => void; onRestore: (sha:
   );
 }
 
+/** How to reach the site from Claude or ChatGPT (the site's MCP server). */
+function ConnectAi({ onClose }: { onClose: () => void }) {
+  const url = `${window.location.origin}/api/mcp`;
+  const [copied, setCopied] = useState(false);
+  const step = "rounded-lg bg-white/60 p-4";
+  return (
+    <Dialog title="Use the site with Claude or ChatGPT" onClose={onClose}>
+      <p className="text-[0.95rem] leading-relaxed text-ink-soft">
+        Connect your AI assistant to the website, then just ask: “Add yesterday&apos;s visit to Karanja to the news”, “Rakesh ji is now Joint Secretary”, “what
+        does the site say about the Kumbhoj work?”. It reads the site and prepares the changes; it sends you a link, and you check them on the page and publish
+        here. It can never publish by itself.
+      </p>
+      <div className="mt-5 flex flex-wrap items-center gap-2">
+        <code className="min-w-0 flex-1 truncate rounded-md border border-ink/15 bg-white px-3 py-2 font-mono text-[0.88rem]">{url}</code>
+        <button
+          type="button"
+          onClick={async () => {
+            await navigator.clipboard.writeText(url).catch(() => {});
+            setCopied(true);
+          }}
+          className="cursor-pointer rounded-md bg-ink px-4 py-2 text-[0.9rem] text-leaf hover:bg-board"
+        >
+          {copied ? "Copied ✓" : "Copy address"}
+        </button>
+      </div>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className={step}>
+          <p className="font-display text-[1.1rem]">Claude</p>
+          <ol className="mt-1.5 list-decimal space-y-1 pl-5 text-[0.9rem] text-ink-soft">
+            <li>In Claude, open Settings → Connectors.</li>
+            <li>Add a custom connector and paste the address above.</li>
+            <li>Connect, sign in with your editor Google account, and press Allow.</li>
+          </ol>
+        </div>
+        <div className={step}>
+          <p className="font-display text-[1.1rem]">ChatGPT</p>
+          <ol className="mt-1.5 list-decimal space-y-1 pl-5 text-[0.9rem] text-ink-soft">
+            <li>In ChatGPT settings, open Apps &amp; Connectors and turn on developer mode (under Advanced).</li>
+            <li>Create a connector with the address above, using OAuth.</li>
+            <li>Sign in with your editor Google account and press Allow.</li>
+          </ol>
+        </div>
+      </div>
+      <p className="mt-4 text-[0.85rem] text-ink-faint">
+        Menu names change from time to time; look for “connectors” or “MCP”. Custom connectors need a paid Claude or ChatGPT plan. For Claude Code:{" "}
+        <code className="font-mono">claude mcp add --transport http assf {url}</code>
+      </p>
+    </Dialog>
+  );
+}

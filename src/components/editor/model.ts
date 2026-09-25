@@ -5,7 +5,7 @@
  */
 import { locales, type Lang } from "@/i18n/config";
 import { applyOps, clone, getAt, mergeOps, pathKey, setAt, type Json, type Op, type Path, type Scope } from "@/lib/cms/edits";
-import { ENUM_KEYS, HIDDEN_KEYS, isHidden, isImagePath, schemaPath } from "@/lib/cms/schema";
+import { ENUM_KEYS, HIDDEN_KEYS, isHidden, isImagePath, labelAt, PAGES, schemaPath, sectionLabel } from "@/lib/cms/schema";
 
 export type Trees = Record<Lang, unknown>;
 
@@ -159,4 +159,60 @@ export function searchIndex(trees: Trees): Hit[] {
   };
   for (const k of Object.keys(trees.en as object)) walk([k]);
   return hits;
+}
+
+/**
+ * A change prepared outside the editor — by an AI app over MCP — in terms
+ * the editor already speaks: set a field, or add, remove or move an item in
+ * a list (with the item written out for each edition). Applied to a draft,
+ * never straight to the site: a person reviews it on the page and publishes.
+ */
+export type Action =
+  | { set: Path; scope: Scope; value: Json }
+  | { add: Path; at: number; item: Record<Lang, Json> }
+  | { remove: Path; at: number }
+  | { move: Path; from: number; to: number };
+
+export function applyActions(draft: readonly Op[], published: Trees, actions: readonly Action[]): Op[] {
+  let next = [...draft];
+  for (const action of actions) {
+    if ("set" in action) {
+      next = setField(next, published, action.set, action.scope, action.value);
+      continue;
+    }
+    const path = "add" in action ? action.add : "remove" in action ? action.remove : action.move;
+    next = changeList(next, withOps(published, next), path, (list, lang) => {
+      if ("add" in action) list.splice(Math.max(0, Math.min(action.at, list.length)), 0, action.item[lang]);
+      else if ("remove" in action) list.splice(action.at, 1);
+      else {
+        const [item] = list.splice(action.from, 1);
+        if (item !== undefined) list.splice(action.to, 0, item);
+      }
+      return list;
+    });
+  }
+  return next;
+}
+
+/**
+ * Where a field is, as a reader would say it:
+ * "Trustees › “Shri Rakesh Kumar Jain” › Designation", not "trustees.trustees.4.rank".
+ */
+export function describeAt(tree: unknown, path: Path): string {
+  const page = PAGES.find((p) => p.module === path[0])?.title ?? String(path[0]);
+  const parts = [page];
+  if (typeof path[1] === "string") {
+    const section = sectionLabel(String(path[0]), path[1]);
+    if (section !== page) parts.push(section);
+  }
+  for (let i = 2; i < path.length; i++) {
+    const step = path[i];
+    const last = i === path.length - 1;
+    if (typeof step === "number") {
+      const value = getAt(tree, path.slice(0, i + 1));
+      parts.push(value && typeof value === "object" ? `“${itemTitle(value, step)}”` : `${last ? "Paragraph" : "Item"} ${step + 1}`);
+    } else if (last) parts.push(labelAt(path));
+    else if (typeof path[i + 1] !== "number") parts.push(labelAt(path.slice(0, i + 1)));
+  }
+  return parts.join(" › ");
 }

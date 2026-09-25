@@ -7,18 +7,21 @@
  * is the common case. It is not a global quota — a distributed flood would
  * need a shared store (Vercel KV / Upstash) or Vercel's firewall rules.
  */
-const WINDOWS = [
+type Window = { ms: number; max: number };
+
+/** The assistant's limits: a few questions a minute, sixty an hour. */
+const WINDOWS: readonly Window[] = [
   { ms: 60_000, max: 8 },
   { ms: 60 * 60_000, max: 60 },
-] as const;
+];
 
 const hits = new Map<string, number[]>();
 
 /** Records a request from `key`; returns seconds to wait if it's over a limit, else 0. */
-export function overLimit(key: string, now = Date.now()): number {
-  const longest = WINDOWS[WINDOWS.length - 1].ms;
+export function overLimit(key: string, windows: readonly Window[] = WINDOWS, now = Date.now()): number {
+  const longest = windows[windows.length - 1].ms;
   const recent = (hits.get(key) ?? []).filter((t) => now - t < longest);
-  for (const { ms, max } of WINDOWS) {
+  for (const { ms, max } of windows) {
     const inWindow = recent.filter((t) => now - t < ms);
     if (inWindow.length >= max) {
       hits.set(key, recent);

@@ -5,15 +5,19 @@ import { baseContent, publishedEdits } from "@/i18n/content";
 import { locales, type Lang } from "@/i18n/config";
 import { currentEditor } from "@/lib/cms/access";
 import { readEdits, storage } from "@/lib/cms/store";
+import { decodeProposal } from "@/lib/mcp/proposal";
 
 /**
  * The site editor. It opens on the content as it stands on GitHub (which may
  * be a publish or two ahead of what is deployed), over the three editions'
  * base content from the code.
  */
-export default async function EditorPage() {
+export default async function EditorPage({ searchParams }: { searchParams: Promise<{ proposal?: string }> }) {
+  const { proposal: token } = await searchParams;
   const editor = await currentEditor();
-  if (!editor) redirect("/editor/sign-in");
+  // Keep a review link through sign-in.
+  if (!editor) redirect(token ? `/editor/sign-in?next=${encodeURIComponent(`/editor?proposal=${token}`)}` : "/editor/sign-in");
+  const proposal = token ? decodeProposal(token) : null;
 
   if (storage === "none") {
     return (
@@ -39,7 +43,18 @@ export default async function EditorPage() {
     await signOut({ redirectTo: "/editor/sign-in" });
   }
 
-  return <EditorRoot base={base} initial={initial} deployed={publishedEdits.revision} storage={storage} editor={editor} signOut={leave} />;
+  return (
+    <EditorRoot
+      base={base}
+      initial={initial}
+      deployed={publishedEdits.revision}
+      storage={storage}
+      editor={editor}
+      signOut={leave}
+      proposal={proposal}
+      badProposal={!!token && !proposal}
+    />
+  );
 }
 
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {

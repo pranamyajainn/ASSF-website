@@ -10,12 +10,14 @@ const ERRORS: Record<string, string> = {
   Configuration: "Sign-in isn't fully set up yet. Please check back shortly.",
 };
 
-export default async function EditorSignIn({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  if (devEditor) redirect("/editor");
-  const [{ error }, session] = await Promise.all([searchParams, auth().catch(() => null)]);
+export default async function EditorSignIn({ searchParams }: { searchParams: Promise<{ error?: string; next?: string }> }) {
+  const [{ error, next: asked }, session] = await Promise.all([searchParams, auth().catch(() => null)]);
+  // Only back into the editor — never to another site.
+  const next = asked && /^\/editor(\?|$|\/)/.test(asked) ? asked : "/editor";
+  if (devEditor) redirect(next);
   const ready = !!process.env.AUTH_SECRET && !!(process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID);
   const email = session?.user?.email;
-  if (isEditorEmail(email)) redirect("/editor");
+  if (isEditorEmail(email)) redirect(next);
 
   return (
     <main className="flex min-h-dvh items-center justify-center bg-board-deep px-5 py-16">
@@ -54,7 +56,7 @@ export default async function EditorSignIn({ searchParams }: { searchParams: Pro
               <form
                 action={async () => {
                   "use server";
-                  await signIn("google", { redirectTo: "/editor" });
+                  await signIn("google", { redirectTo: next });
                 }}
               >
                 <button

@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { getAt, pathKey, type Json, type Path } from "@/lib/cms/edits";
-import { describePath, isOpenList, PAGES, schemaPath, sectionLabel } from "@/lib/cms/schema";
+import { isOpenList, PAGES, schemaPath, sectionLabel } from "@/lib/cms/schema";
 import { fieldId, Node, useEditor } from "./fields";
-import { blankLike, itemTitle, NEWEST_FIRST, searchIndex, type Trees } from "./model";
+import { blankLike, describeAt, itemTitle, NEWEST_FIRST, searchIndex, type Trees } from "./model";
 
 export type Selection = { path: Path } | { contact: true } | null;
 
@@ -41,6 +41,7 @@ export function Panel({
   onAddNews,
   onAddTrustee,
   onList,
+  onConnect,
 }: {
   selection: Selection;
   onSelect: (selection: Selection) => void;
@@ -48,6 +49,7 @@ export function Panel({
   onAddNews: () => void;
   onAddTrustee: () => void;
   onList: () => void;
+  onConnect: () => void;
 }) {
   const api = useEditor();
 
@@ -92,6 +94,7 @@ export function Panel({
             <b className="text-cinnabar">3.</b> The site updates in about two minutes. Anything can be undone from History.
           </li>
         </ol>
+        <Task title="Use it from Claude or ChatGPT" body="Ask for changes in a chat; review and publish them here" onClick={onConnect} />
         <button type="button" onClick={onList} className="cursor-pointer text-[0.9rem] text-ink-faint underline decoration-ink/25 underline-offset-2 hover:text-ink">
           See all the site&apos;s content as a list instead
         </button>
@@ -269,7 +272,7 @@ export function Find({ onFind }: { onFind: (path: Path) => void }) {
                     setQuery("");
                   }}
                 >
-                  <span className="block text-[0.75rem] text-ink-faint">{describePath(h.path)}</span>
+                  <span className="block text-[0.75rem] text-ink-faint">{describeAt(trees.en, h.path)}</span>
                   <span className="line-clamp-2 text-[0.9rem]">{h.text}</span>
                 </button>
               </li>

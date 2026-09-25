@@ -101,6 +101,25 @@ How it fits the code:
 - Photos are resized to 2,000 px and re-encoded as JPEG in the browser, which strips GPS and
   camera metadata before upload.
 
+### AI connector (MCP) — `/api/mcp`
+
+Claude, ChatGPT and any MCP client can connect to the site as a **remote MCP server** at
+`https://<domain>/api/mcp` (Streamable HTTP). People sign in with the same Google account and
+`EDITOR_EMAILS` list as the editor, through the site's own OAuth 2.1 server (discovery at
+`/.well-known/oauth-protected-resource` and `/.well-known/oauth-authorization-server`, dynamic
+client registration, PKCE). Nothing is stored: client ids, codes and tokens are signed with a key
+derived from `AUTH_SECRET` (`src/lib/mcp/jwt.ts`); rotating `AUTH_SECRET` disconnects every app,
+and removing someone from `EDITOR_EMAILS` cuts them off on their next call. Sign-ins may only
+return to claude.ai / claude.com / chatgpt.com or the person's own computer (`MCP_REDIRECT_HOSTS`
+adds more).
+
+Tools (`src/lib/mcp/tools.ts`): `get_site_overview`, `search_site`, `read_section`,
+`propose_changes`, `translate_text`, `get_publish_history`. **The AI never publishes.**
+`propose_changes` checks the changes against the content (same validation as publishing),
+translates English into Hindi and Kannada with the site's glossary, and returns a signed review
+link (`/editor?proposal=…`, valid 30 days) that opens the editor with the changes on the page.
+A person publishes. The editor's "Use it from Claude or ChatGPT" card shows people how to connect.
+
 **Before pushing code:** the editor commits to `main` too — `git pull --rebase` first. If a
 content change moves or renames something the Foundation has edited, check `edits.json`.
 

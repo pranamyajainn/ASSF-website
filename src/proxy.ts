@@ -17,7 +17,9 @@ export default auth((req) => {
   // re-check the editor allowlist themselves.
   if (pathname === "/editor" || pathname.startsWith("/editor/") || pathname.startsWith("/preview/")) {
     if (pathname === "/editor/sign-in" || isLoggedIn || devEditor) return;
-    return NextResponse.redirect(new URL("/editor/sign-in", req.nextUrl.origin));
+    const signIn = new URL("/editor/sign-in", req.nextUrl.origin);
+    if (pathname.startsWith("/editor")) signIn.searchParams.set("next", `${pathname}${req.nextUrl.search}`);
+    return NextResponse.redirect(signIn);
   }
 
   const isLoginPage = pathname === "/trustee-portal/login";

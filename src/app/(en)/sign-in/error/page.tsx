@@ -13,7 +13,8 @@ export default async function SignInError({ searchParams }: { searchParams: Prom
   const callback = jar.get("__Secure-authjs.callback-url")?.value ?? jar.get("authjs.callback-url")?.value ?? "";
   let target = "/trustee-portal/login";
   try {
-    if (new URL(decodeURIComponent(callback), "http://x").pathname.startsWith("/editor")) target = "/editor/sign-in";
+    const path = new URL(decodeURIComponent(callback), "http://x").pathname;
+    if (path.startsWith("/editor") || path.startsWith("/oauth")) target = "/editor/sign-in";
   } catch {}
   redirect(`${target}?error=${encodeURIComponent(error ?? "Default")}`);
 }
