@@ -50,14 +50,6 @@ const nextConfig: NextConfig = {
     // Optimised images are immutable per URL; keep them cached for a month.
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
-  // "/home" is the homepage too, and keeps its own address in the bar — the
-  // header's Home link uses it. Search engines are told "/" is canonical.
-  rewrites() {
-    return [
-      { source: "/home", destination: "/" },
-      { source: "/:lang(hi|kn)/home", destination: "/:lang" },
-    ];
-  },
   async headers() {
     // Photographs, films and share cards keep their names when replaced, so
     // they are cached for a day and then revalidated, not forever.
