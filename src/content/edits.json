@@ -1,16 +1,5 @@
 {
-  "revision": 1,
-  "updatedAt": "2026-09-25T14:12:11.353Z",
-  "ops": [
-    {
-      "path": [
-        "shared",
-        "pillars",
-        0,
-        "tagline"
-      ],
-      "scope": "en",
-      "value": "saving Knowledge Written by Hand"
-    }
-  ]
+  "revision": 2,
+  "updatedAt": "2026-09-25T14:15:15.725Z",
+  "ops": []
 }
