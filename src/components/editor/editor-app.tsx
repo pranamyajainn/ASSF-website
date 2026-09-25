@@ -41,7 +41,7 @@ const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 const SITE_PAGES = PAGES.filter((p) => p.module !== "shared" && p.module !== "ui");
 type SitePage = (typeof SITE_PAGES)[number]["module"];
 
-type Saved = { revision: number; ops: Op[]; split: string[]; staged: Staged };
+type Saved = { revision: number; ops: Op[]; split: string[]; staged: Staged; proposals?: string[] };
 function loadSaved(): Saved | null {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
@@ -82,6 +82,8 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
   const [draft, setDraft] = useState<Op[]>(() => saved?.ops ?? []);
   const [split, setSplit] = useState<Set<string>>(() => new Set(saved?.split ?? []));
   const [staged, setStaged] = useState<Staged>(() => saved?.staged ?? {});
+  // AI proposals added to this draft, sent with the publish so they're recorded as published.
+  const [proposalIds, setProposalIds] = useState<string[]>(() => saved?.proposals ?? []);
   const [olderDraft] = useState(() => !!saved?.ops.length && saved.revision !== initial.revision);
   const [lang, setLangState] = useState<Lang>(() => {
     try {
@@ -102,7 +104,9 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
   const [incoming, setIncoming] = useState<{ proposal: Proposal | null; bad: boolean; done: boolean; already: boolean }>(() => {
     let already = false;
     try {
-      already = !!proposal && (JSON.parse(localStorage.getItem(APPLIED_KEY) ?? "[]") as string[]).includes(proposal.id);
+      already =
+        !!proposal &&
+        ((initial.applied ?? []).includes(proposal.id) || (JSON.parse(localStorage.getItem(APPLIED_KEY) ?? "[]") as string[]).includes(proposal.id));
     } catch {}
     return { proposal, bad: badProposal, done: false, already };
   });
@@ -146,11 +150,14 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
   // The draft survives a reload or a closed tab, in this browser only.
   useEffect(() => {
     try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({ revision: published.revision, ops: draft, split: [...split], staged } satisfies Saved));
+      localStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({ revision: published.revision, ops: draft, split: [...split], staged, proposals: proposalIds } satisfies Saved),
+      );
     } catch {
       // Storage full or blocked: the draft still lives until the tab closes.
     }
-  }, [draft, split, staged, published.revision]);
+  }, [draft, split, staged, published.revision, proposalIds]);
 
   // After publishing, wait for the live site to show it.
   useEffect(() => {
@@ -275,7 +282,7 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
       const res = await fetch("/api/cms/publish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ baseRevision: published.revision, ops: draft, images, note }),
+        body: JSON.stringify({ baseRevision: published.revision, ops: draft, images, note, proposals: proposalIds }),
       });
       if (res.status === 409) {
         const data = (await res.json().catch(() => null)) as { error?: string } | null;
@@ -290,6 +297,7 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
       setPublished(data.edits);
       setDraft([]);
       setSplit(new Set());
+      setProposalIds([]);
       setDialog(null);
       setSelection(null);
       setStatus(storage === "local" ? { kind: "live", revision: data.edits.revision } : { kind: "deploying", revision: data.edits.revision });
@@ -321,6 +329,7 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
     const p = incoming.proposal;
     if (accept && p) {
       setDraft((d) => applyActions(d, publishedTrees, p.actions));
+      setProposalIds((ids) => (ids.includes(p.id) ? ids : [...ids, p.id]));
       try {
         const seen = JSON.parse(localStorage.getItem(APPLIED_KEY) ?? "[]") as string[];
         localStorage.setItem(APPLIED_KEY, JSON.stringify([...seen, p.id].slice(-50)));
@@ -423,7 +432,7 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
         ) : null}
         {incoming.proposal && incoming.already ? (
           <p className="shrink-0 bg-white/60 px-4 py-2 text-[0.9rem] text-ink-soft lg:px-6">
-            These changes (“{incoming.proposal.summary}”) were already added.{" "}
+            These changes (“{incoming.proposal.summary}”) were already added or published.{" "}
             <button type="button" className="cursor-pointer underline" onClick={() => acceptProposal(false)}>
               OK
             </button>
@@ -494,6 +503,7 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
               if (window.confirm("Discard all unpublished changes? This can't be undone.")) {
                 setDraft([]);
                 setSplit(new Set());
+                setProposalIds([]);
                 setDialog(null);
                 setSelection(null);
               }
@@ -900,8 +910,8 @@ function ConnectAi({ onClose }: { onClose: () => void }) {
     <Dialog title="Use the site with Claude or ChatGPT" onClose={onClose}>
       <p className="text-[0.95rem] leading-relaxed text-ink-soft">
         Connect your AI assistant to the website, then just ask: “Add yesterday&apos;s visit to Karanja to the news”, “Rakesh ji is now Joint Secretary”, “what
-        does the site say about the Kumbhoj work?”. It reads the site and prepares the changes; it sends you a link, and you check them on the page and publish
-        here. It can never publish by itself.
+        does the site say about the Kumbhoj work?”. It reads the site, prepares the changes and shows you what will change. It publishes only when you confirm in
+        the chat — or open its link to see the changes on the page and publish here. “Undo that” puts the site back.
       </p>
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <code className="min-w-0 flex-1 truncate rounded-md border border-ink/15 bg-white px-3 py-2 font-mono text-[0.88rem]">{url}</code>

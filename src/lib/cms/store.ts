@@ -30,6 +30,11 @@ export const storage: "github" | "local" | "none" = token ? "github" : process.e
 
 export class Conflict extends Error {}
 
+/** The applied-proposal record after publishing `ids`: newest last, the latest hundred kept. */
+export function withApplied(previous: readonly string[] | undefined, ids: readonly string[]): string[] {
+  return [...(previous ?? []), ...ids.filter((id) => !(previous ?? []).includes(id))].slice(-100);
+}
+
 async function github<T>(path: string, init: RequestInit & { raw?: boolean } = {}): Promise<T> {
   const res = await fetch(`https://api.github.com/repos/${repo}${path}`, {
     ...init,
@@ -48,7 +53,12 @@ async function github<T>(path: string, init: RequestInit & { raw?: boolean } = {
 
 function parseEdits(text: string): Edits {
   const data = JSON.parse(text) as Partial<Edits>;
-  return { revision: data.revision ?? 0, updatedAt: data.updatedAt ?? null, ops: Array.isArray(data.ops) ? data.ops : [] };
+  return {
+    revision: data.revision ?? 0,
+    updatedAt: data.updatedAt ?? null,
+    ops: Array.isArray(data.ops) ? data.ops : [],
+    applied: Array.isArray(data.applied) ? data.applied.filter((id): id is string => typeof id === "string") : [],
+  };
 }
 
 async function headSha(): Promise<string> {

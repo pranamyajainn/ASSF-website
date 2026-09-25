@@ -3,7 +3,7 @@ import { locales, type Lang } from "@/i18n/config";
 import { editorRequest } from "@/lib/cms/access";
 import { mergeOps, type Edits, type Op } from "@/lib/cms/edits";
 import { PAGES } from "@/lib/cms/schema";
-import { Conflict, readEdits, storage, withRetry, writeEdits } from "@/lib/cms/store";
+import { Conflict, readEdits, storage, withApplied, withRetry, writeEdits } from "@/lib/cms/store";
 import { shapeOf, validateOps } from "@/lib/cms/validate";
 
 export const runtime = "nodejs";
@@ -18,7 +18,7 @@ class Stale extends Error {
   }
 }
 
-type Body = { baseRevision?: unknown; ops?: unknown; images?: unknown; note?: unknown };
+type Body = { baseRevision?: unknown; ops?: unknown; images?: unknown; note?: unknown; proposals?: unknown };
 
 /**
  * Publishes the editor's changes: checked against the content as it stands
@@ -41,6 +41,8 @@ export async function POST(req: Request) {
   const baseRevision = typeof body.baseRevision === "number" ? body.baseRevision : -1;
   const ops = body.ops as Op[];
   const note = typeof body.note === "string" ? body.note.replace(/\s+/g, " ").trim().slice(0, 140) : "";
+  // AI-prepared proposals this draft includes, recorded so they can't be published again from a chat.
+  const proposals = (Array.isArray(body.proposals) ? body.proposals : []).filter((id): id is string => typeof id === "string" && /^[\w-]{8,64}$/.test(id)).slice(0, 20);
   const images = (Array.isArray(body.images) ? body.images : []).filter(
     (i): i is { path: string; blob: string | null } =>
       !!i && typeof i.path === "string" && UPLOAD.test(i.path) && (storage === "local" || (typeof i.blob === "string" && BLOB.test(i.blob))),
@@ -58,7 +60,12 @@ export async function POST(req: Request) {
       const problem = validateOps(ops, published, shape, new Set(images.map((i) => i.path)));
       if (problem) return new Response(problem, { status: 400 });
 
-      const next: Edits = { revision: head.revision + 1, updatedAt: new Date().toISOString(), ops: mergeOps(head.ops, ops) };
+      const next: Edits = {
+        revision: head.revision + 1,
+        updatedAt: new Date().toISOString(),
+        ops: mergeOps(head.ops, ops),
+        applied: withApplied(head.applied, proposals),
+      };
       // Only photographs the published edits actually use are committed.
       const text = JSON.stringify(next.ops);
       const used = images.filter((i) => text.includes(JSON.stringify(i.path)) && i.blob) as { path: string; blob: string }[];

@@ -128,8 +128,8 @@ export default async function Authorize({ searchParams }: { searchParams: Promis
       <ul className="mt-4 space-y-2 text-[0.95rem] text-board-ink/85">
         <li>✓ Read the site&apos;s pages, in English, हिन्दी and ಕನ್ನಡ</li>
         <li>✓ Search the site and translate text</li>
-        <li>✓ Prepare changes for you to review in the site editor</li>
-        <li className="text-board-soft">✗ It can&apos;t publish anything — you do that, in the editor</li>
+        <li>✓ Prepare changes, and show you what will change</li>
+        <li>✓ Publish them — only after you confirm in the chat. Every publish can be undone.</li>
       </ul>
       <Consent decide={decide} />
       <p className="mt-4 text-xs leading-relaxed text-board-ink/45">

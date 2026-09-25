@@ -2,7 +2,7 @@ import "server-only";
 import { applyActions, blankLike, describeAt, itemTitle, NEWEST_FIRST, searchIndex, translatedFields, type Action, type Trees } from "@/components/editor/model";
 import { locales, localeInfo, type Lang } from "@/i18n/config";
 import { baseContent, editedContent, publishedEdits } from "@/i18n/content";
-import { getAt, type Edits, type Json, type Path, type Scope } from "@/lib/cms/edits";
+import { getAt, mergeOps, type Edits, type Json, type Path, type Scope } from "@/lib/cms/edits";
 import {
   COLLECTIONS,
   ENUM_KEYS,
@@ -16,16 +16,17 @@ import {
   SECTION_ORDER,
   sectionLabel,
 } from "@/lib/cms/schema";
-import { history, readEdits, storage } from "@/lib/cms/store";
+import { history, readEdits, storage, withApplied, withRetry, writeEdits } from "@/lib/cms/store";
 import { translate, type Reference } from "@/lib/cms/translate";
 import { shapeOf, validateOps } from "@/lib/cms/validate";
-import { encodeProposal, MAX_TOKEN } from "./proposal";
+import { decodeProposal, encodeProposal, MAX_TOKEN } from "./proposal";
 
 /**
  * What an AI app can do with the site over MCP: learn its shape, search it,
- * read a section, translate, see what was published — and prepare changes,
- * which come back as a review link for a person to check on the page and
- * publish in the editor. Nothing here writes to the site.
+ * read a section, translate, see what was published; prepare changes (which
+ * come back as a review link, and a summary to show the person); and — once
+ * the person has confirmed them in the chat — publish exactly those prepared
+ * changes, or undo the latest publish.
  */
 
 export type ToolContext = { email: string; app: string; origin: string };
@@ -55,9 +56,10 @@ async function latestEdits(): Promise<Edits> {
   return edits;
 }
 
+const treesFor = (edits: Edits): Trees => Object.fromEntries(locales.map((l) => [l, editedContent(l, edits)])) as Trees;
+
 async function published(): Promise<Trees> {
-  const edits = await latestEdits();
-  return Object.fromEntries(locales.map((l) => [l, editedContent(l, edits)])) as Trees;
+  return treesFor(await latestEdits());
 }
 
 /** "trustees.trustees.4.rank" ⇄ ["trustees", "trustees", 4, "rank"] */
@@ -122,7 +124,8 @@ const overview: Tool = {
       pages,
       lists_that_can_grow: [...COLLECTIONS].map((c) => c.replace(/\[\]/g, ".<n>")),
       rules: [
-        "Everything you prepare is a proposal: propose_changes returns a link, and a person reviews the changes on the page and publishes them in the site editor. Always give the person that link.",
+        "Changes are prepared first: propose_changes returns a summary and a review link. Show the person what will change and ask whether to publish. Only when they clearly confirm, call publish_changes with the review link — never without that confirmation. They can also open the link and publish from the site editor.",
+        "undo_last_publish reverses the most recent publish, if the person asks.",
         "Read before you write: use read_section or search_site to find the exact field paths and current wording.",
         "Never invent facts. Figures, names, dates, places and prices must come from the person or from the site itself. If something isn't known, ask.",
         "Text in {curly brackets} (e.g. {folioPrice}) is filled in automatically — keep it exactly. Prices themselves are shared.folioPrice and shared.granthaPrice.",
@@ -530,7 +533,8 @@ const propose: Tool = {
     console.info("MCP proposal", { editor: ctx.email, app: ctx.app, actions: actions.length });
     return [
       `Prepared: ${summary}`,
-      "Nothing is published yet. Open this link to see the changes on the page, adjust anything, and publish:",
+      "Nothing is published yet. Show the person the changes below and ask whether to publish them.",
+      "If they confirm, call publish_changes with this review link. They can also open it to see the changes on the page and publish from the site editor:",
       link,
       "",
       "Changes:",
@@ -541,9 +545,102 @@ const propose: Tool = {
   },
 };
 
-export const TOOLS: Tool[] = [overview, search, read, propose, translateTool, historyTool];
+/* ------------------------------------------------------------ publishing */
+
+const pageLinks = (paths: Path[], origin: string) =>
+  [...new Set(paths.map((p) => String(p[0])))]
+    .map((m) => PAGES.find((p) => p.module === m))
+    .filter((p): p is (typeof PAGES)[number] => !!p && onSite(p.module))
+    .map((p) => `${p.title}: ${origin}${p.href === "/" ? "" : p.href}`);
+
+const publishTool: Tool = {
+  name: "publish_changes",
+  title: "Publish prepared changes",
+  description: [
+    "Publish changes that propose_changes prepared, to the live website — exactly those changes, nothing else.",
+    "Only call this after the person has seen what will change and clearly confirmed, in this conversation, that they want it published. Never publish on your own initiative.",
+    "Pass the review link propose_changes returned. The site updates in about two minutes; undo_last_publish reverses it. Changes that need a new photo can't be published from a chat — they're published from the editor.",
+  ].join("\n"),
+  inputSchema: {
+    type: "object",
+    properties: { proposal: { type: "string", description: "The review link propose_changes returned (…/editor?proposal=…)." } },
+    required: ["proposal"],
+    additionalProperties: false,
+  },
+  annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
+  async run(args, ctx) {
+    if (storage === "none") throw new ToolError("Publishing isn't connected on this site yet.");
+    const raw = String(args.proposal ?? "").trim();
+    let token: string | null = raw;
+    try {
+      if (raw.includes("proposal=")) token = new URL(raw, ctx.origin).searchParams.get("proposal");
+    } catch {}
+    const proposal = decodeProposal(token);
+    if (!proposal) {
+      throw new ToolError("That review link isn't valid — it may have been copied incompletely, or be more than 30 days old. Prepare the changes again with propose_changes.");
+    }
+    const link = `${ctx.origin}/editor?proposal=${token}`;
+    const revision = await withRetry(async () => {
+      const { edits: head, commit } = await readEdits();
+      if (head.applied?.includes(proposal.id)) throw new ToolError("These changes have already been published.");
+      const trees = treesFor(head);
+      const draft = applyActions([], trees, proposal.actions);
+      const problem = validateOps(draft, trees, shapeOf([...Object.values(base()), ...Object.values(trees)]), new Set());
+      if (problem) {
+        throw new ToolError(
+          problem.includes("photo")
+            ? `This can't be published from the chat: it adds something that needs a photo, and photos are added in the site editor. Open ${link}, add the photo, and publish there.`
+            : `These changes no longer fit the site as it is now (${problem}). Prepare them again with propose_changes.`,
+        );
+      }
+      const next: Edits = {
+        revision: head.revision + 1,
+        updatedAt: new Date().toISOString(),
+        ops: mergeOps(head.ops, draft),
+        applied: withApplied(head.applied, [proposal.id]),
+      };
+      await writeEdits(next, [], `Site edit: ${proposal.summary}\n\nPublished from ${ctx.app} through the site's AI connector, confirmed by an editor.`, commit);
+      return next.revision;
+    });
+    headCache = null;
+    console.info("MCP publish", { editor: ctx.email, app: ctx.app, revision, proposal: proposal.id });
+    const paths = proposal.actions.map((a) => ("set" in a ? a.set : "add" in a ? a.add : "remove" in a ? a.remove : a.move));
+    return [
+      `Published: ${proposal.summary}`,
+      storage === "local" ? "Written to this computer's copy of the site (local mode)." : "The live site shows it in about two minutes.",
+      ...pageLinks(paths, ctx.origin).map((l) => `• ${l}`),
+      "To reverse it, use undo_last_publish — or History in the site editor.",
+    ].join("\n");
+  },
+};
+
+const undoTool: Tool = {
+  name: "undo_last_publish",
+  title: "Undo the latest publish",
+  description:
+    "Put the website back to how it was before the most recent publish (from a chat or from the editor). Only when the person asks for it. The undo is itself a publish, listed in History.",
+  inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
+  async run(_args, ctx) {
+    if (storage !== "github") throw new ToolError("Undo needs the site's publishing history, which isn't connected here.");
+    const publishes = await history();
+    if (publishes.length < 2) throw new ToolError("There's no earlier version to go back to.");
+    const [latest, previous] = publishes;
+    const what = latest.message.startsWith("Site edit: ") ? latest.message.split("\n")[0].slice(11) : "the latest update";
+    await withRetry(async () => {
+      const [{ edits: head, commit }, { edits: before }] = await Promise.all([readEdits(), readEdits(previous.sha)]);
+      const next: Edits = { revision: head.revision + 1, updatedAt: new Date().toISOString(), ops: before.ops, applied: head.applied };
+      await writeEdits(next, [], `Site edit: undid “${what}”\n\nFrom ${ctx.app} through the site's AI connector, confirmed by an editor.`, commit);
+    });
+    headCache = null;
+    console.info("MCP undo", { editor: ctx.email, app: ctx.app, undone: latest.sha });
+    return `Undone: “${what}”. The live site goes back to how it was before it in about two minutes.`;
+  },
+};
+
+export const TOOLS: Tool[] = [overview, search, read, propose, publishTool, undoTool, translateTool, historyTool];
 
 export const INSTRUCTIONS = `This server edits the website of Acharya Shanti Sagar Foundation (a Jain charitable trust in Bengaluru), in English, Hindi and Kannada.
 Start with get_site_overview. Read (read_section / search_site) before proposing changes, and use field paths exactly as returned.
-propose_changes never publishes: it returns a review link; always give it to the person — they check the changes on the page and publish in the site editor.
+Changes are prepared with propose_changes, which returns a summary and a review link. Show the person what will change and ask. Only when they clearly confirm, publish with publish_changes (passing the review link); never publish without that confirmation. undo_last_publish reverses the latest publish when asked.
 Never invent figures, names, dates or prices; ask the person when something isn't known. Keep {tokens} such as {folioPrice} as they are.`;

@@ -20,7 +20,8 @@ export async function POST(req: Request) {
   try {
     return await withRetry(async () => {
       const [{ edits: head, commit }, { edits: old }] = await Promise.all([readEdits(), readEdits(sha)]);
-      const next: Edits = { revision: head.revision + 1, updatedAt: new Date().toISOString(), ops: old.ops };
+      // The record of published proposals carries forward: restoring doesn't make one publishable again.
+      const next: Edits = { revision: head.revision + 1, updatedAt: new Date().toISOString(), ops: old.ops, applied: head.applied };
       const when = typeof date === "string" ? new Date(date).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }) : sha.slice(0, 7);
       const written = await writeEdits(next, [], `Site edit: restored the version of ${when}\n\nPublished from the site editor.`, commit);
       console.info("CMS restore", { revision: next.revision, from: sha, commit: written, editor: editor.email });

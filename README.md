@@ -114,11 +114,16 @@ return to claude.ai / claude.com / chatgpt.com or the person's own computer (`MC
 adds more).
 
 Tools (`src/lib/mcp/tools.ts`): `get_site_overview`, `search_site`, `read_section`,
-`propose_changes`, `translate_text`, `get_publish_history`. **The AI never publishes.**
-`propose_changes` checks the changes against the content (same validation as publishing),
-translates English into Hindi and Kannada with the site's glossary, and returns a signed review
-link (`/editor?proposal=…`, valid 30 days) that opens the editor with the changes on the page.
-A person publishes. The editor's "Use it from Claude or ChatGPT" card shows people how to connect.
+`propose_changes`, `publish_changes`, `undo_last_publish`, `translate_text`,
+`get_publish_history`. `propose_changes` checks the changes against the content (same
+validation as publishing), translates English into Hindi and Kannada with the site's glossary,
+and returns a summary plus a signed review link (`/editor?proposal=…`, valid 30 days).
+**`publish_changes` publishes exactly that proposal — only after the person confirms in the
+chat** (the tools tell the AI so, and both write tools are marked destructive, so clients ask
+before running them). Each proposal publishes once (`applied` in `edits.json`), whether from a
+chat or the editor; a change needing a new photo must be published from the editor.
+`undo_last_publish` restores the version before the latest publish. The editor's "Use it from
+Claude or ChatGPT" card shows people how to connect.
 
 **Before pushing code:** the editor commits to `main` too — `git pull --rebase` first. If a
 content change moves or renames something the Foundation has edited, check `edits.json`.

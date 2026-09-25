@@ -28,7 +28,13 @@ export type Json = string | number | boolean | null | Json[] | { [key: string]: 
 export type Path = (string | number)[];
 export type Scope = Lang | "all";
 export type Op = { path: Path; scope: Scope; value: Json };
-export type Edits = { revision: number; updatedAt: string | null; ops: Op[] };
+export type Edits = {
+  revision: number;
+  updatedAt: string | null;
+  ops: Op[];
+  /** Ids of AI-prepared proposals already published (the latest hundred), so none is published twice. */
+  applied?: string[];
+};
 
 export const emptyEdits: Edits = { revision: 0, updatedAt: null, ops: [] };
 
