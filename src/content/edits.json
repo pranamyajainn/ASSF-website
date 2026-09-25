@@ -1,6 +1,6 @@
 {
-  "revision": 3,
-  "updatedAt": "2026-09-25T14:17:00.899Z",
+  "revision": 4,
+  "updatedAt": "2026-09-25T14:17:56.819Z",
   "ops": [
     {
       "path": [
@@ -11,7 +11,7 @@
         "text"
       ],
       "scope": "en",
-      "value": "Wisdom."
+      "value": "Preserving Wisdom."
     }
   ]
 }
