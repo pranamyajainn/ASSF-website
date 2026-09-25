@@ -1,17 +1,5 @@
 {
-  "revision": 5,
-  "updatedAt": "2026-09-25T17:31:00.041Z",
-  "ops": [
-    {
-      "path": [
-        "home",
-        "hero",
-        "lines",
-        0,
-        "text"
-      ],
-      "scope": "en",
-      "value": "Saving Wisdom."
-    }
-  ]
+  "revision": 6,
+  "updatedAt": "2026-09-25T17:33:32.673Z",
+  "ops": []
 }
