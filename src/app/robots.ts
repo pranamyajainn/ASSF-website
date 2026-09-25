@@ -12,7 +12,7 @@ import { indexable, siteUrl } from "@/lib/site";
 export default function robots(): MetadataRoute.Robots {
   if (!indexable) return { rules: { userAgent: "*", allow: "/" } };
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/trustee-portal", "/editor", "/sign-in"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/trustee-portal", "/editor", "/preview", "/sign-in"] },
     sitemap: new URL("/sitemap.xml", siteUrl).href,
     host: siteUrl.origin,
   };

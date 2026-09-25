@@ -159,6 +159,24 @@ const LABELS: Record<string, string> = {
   secondary: "Second button",
 };
 
+/** Names that depend on where a field sits, not just what it's called. */
+const PATH_LABELS: Record<string, string> = {
+  "trustees.trustees[].body": "Short description (on the card)",
+  "trustees.advisors[].body": "Short description (on the card)",
+  "trustees.trustees[].bio": "Full profile (under “Read full profile”)",
+  "trustees.advisors[].bio": "Full profile (under “Read full profile”)",
+  "home.field.items[].body": "What happened",
+  "home.field.items[].title": "Headline",
+  "home.field.items[].date": "Date (as it should appear)",
+  "home.ledger.metrics[].note": "Note under the figure",
+  "home.ledger.metrics[].label": "What the figure counts",
+};
+
+export function labelAt(path: Path): string {
+  const key = path[path.length - 1];
+  return PATH_LABELS[schemaPath(path)] ?? labelFor(key);
+}
+
 /** "communityTeaser" → "Community teaser". */
 export function humanize(key: string): string {
   const words = key.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").toLowerCase();

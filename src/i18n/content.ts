@@ -1,4 +1,5 @@
 import "server-only";
+import { cache as perRequest } from "react";
 import * as shared from "@/content/shared";
 import * as home from "@/content/home";
 import * as about from "@/content/about";
@@ -9,6 +10,7 @@ import * as impact from "@/content/impact";
 import * as trustees from "@/content/trustees";
 import editsFile from "@/content/edits.json";
 import { applyOps, clone, fillBlanks, fillTokens, type Edits } from "@/lib/cms/edits";
+import { tagTree } from "@/lib/cms/stega";
 import { localizeHref, type Lang } from "./config";
 import { getLang } from "./get-lang";
 import { ui } from "./ui";
@@ -124,11 +126,28 @@ export function resolveContent(lang: Lang): Content {
   return content;
 }
 
+/**
+ * Whether this request is rendering the site editor's preview, where every
+ * piece of text carries an invisible tag naming its field (lib/cms/stega.ts).
+ * Set by the preview page before anything below it asks for content.
+ */
+export const previewRequest = perRequest(() => ({ tagged: false }));
+
+const taggedCache = new Map<Lang, Content>();
+function taggedContent(lang: Lang): Content {
+  let content = taggedCache.get(lang);
+  if (!content) {
+    content = tagTree(resolveContent(lang)) as Content;
+    taggedCache.set(lang, content);
+  }
+  return content;
+}
+
 /** The current edition's content, plus a link helper bound to it. */
 export async function getContent() {
   const lang = await getLang();
   return {
-    ...resolveContent(lang),
+    ...(previewRequest().tagged ? taggedContent(lang) : resolveContent(lang)),
     lang,
     href: (path: string) => localizeHref(path, lang),
   };

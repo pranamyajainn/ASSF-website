@@ -78,6 +78,13 @@ press **Publish**, which commits `src/content/edits.json` (and any new photos un
 `public/images/uploads/`) to `main`. Vercel deploys it like any other commit, so the site
 updates in a minute or two, and **History** can restore any earlier publish.
 
+On a computer the editor is the site itself: pages open on the left (served by `/preview/…`,
+signed-in editors only), anything on them can be clicked, and the right-hand panel shows just
+that thing — a trustee, a photo, a figure — with changes showing on the page as they're typed.
+Editing is one language at a time; after changing English, **Translate for me** fills the
+Hindi and Kannada by machine translation (`/api/cms/translate`, the assistant's Groq model) for
+review. On a phone, or via "All content as a list", the same content is a list of pages and parts.
+
 How it fits the code:
 
 - The TypeScript content (`src/content/*.ts`, `src/i18n/{hi,kn}.ts`) stays the source. The
@@ -88,6 +95,9 @@ How it fits the code:
   (hidden), which lists can grow (news, trustees, photo albums…), and plain names for fields.
 - Every publish is validated on the server (`src/lib/cms/validate.ts`): existing paths only,
   the same kind of value, no wiring changed, photos from the site or this upload.
+- The preview tags every piece of text with its field using invisible characters
+  (`src/lib/cms/stega.ts`) — only on `/preview`, never on the public pages — which is how a
+  click on the page finds its field.
 - Photos are resized to 2,000 px and re-encoded as JPEG in the browser, which strips GPS and
   camera metadata before upload.
 

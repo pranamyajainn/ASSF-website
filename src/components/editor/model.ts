@@ -104,11 +104,12 @@ export const NEWEST_FIRST = new Set(["home.field.items"]);
 
 /** What an item in a list is called: its name, title or heading, or its number. */
 export function itemTitle(item: unknown, index: number): string {
-  if (typeof item === "string") return item.slice(0, 80) || `Paragraph ${index + 1}`;
+  const clip = (s: string) => (s.length > 60 ? `${s.slice(0, 57).trimEnd()}…` : s);
+  if (typeof item === "string") return clip(item) || `Paragraph ${index + 1}`;
   if (item && typeof item === "object") {
     const o = item as Record<string, unknown>;
     for (const k of ["name", "title", "heading", "label", "place", "caption", "text", "alt", "tab"]) {
-      if (typeof o[k] === "string" && o[k]) return (o[k] as string).slice(0, 80);
+      if (typeof o[k] === "string" && o[k]) return clip(o[k] as string);
     }
   }
   return `Item ${index + 1}`;

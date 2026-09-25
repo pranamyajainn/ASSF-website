@@ -2,11 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { localeInfo, locales, type Lang } from "@/i18n/config";
-import { getAt, pathKey, type Edits, type Json, type Op, type Path } from "@/lib/cms/edits";
+import { fillBlanks, fillTokens, getAt, pathKey, type Edits, type Json, type Op, type Path } from "@/lib/cms/edits";
 import { describePath, isHidden, PAGES, SECTION_ORDER, schemaPath, sectionLabel, type ModuleName } from "@/lib/cms/schema";
-import { EditorProvider, fieldId, Node, type EditorApi } from "./fields";
-import { changeList, problems, searchIndex, setField, translatedFields, withOps, type Trees } from "./model";
+import { EditorProvider, fieldId, Node, useEditor, type EditorApi } from "./fields";
+import { blankLike, changeList, problems, setField, translatedFields, withOps, type Trees } from "./model";
+import { Find, Panel, type Selection } from "./panel";
 import { preparePhoto } from "./photo";
+import { Preview } from "./preview";
 
 type Staged = Record<string, { blob: string | null; preview: string }>;
 type Status =
@@ -26,8 +28,13 @@ type Props = {
 };
 
 const DRAFT_KEY = "assf-editor:draft";
+const LANG_KEY = "assf-editor:lang";
 const LANG_LABEL: Record<Lang, string> = { en: "English", hi: localeInfo.hi.label, kn: localeInfo.kn.label };
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+
+/** The pages that can be shown and clicked on. */
+const SITE_PAGES = PAGES.filter((p) => p.module !== "shared" && p.module !== "ui");
+type SitePage = (typeof SITE_PAGES)[number]["module"];
 
 type Saved = { revision: number; ops: Op[]; split: string[]; staged: Staged };
 function loadSaved(): Saved | null {
@@ -53,6 +60,13 @@ export function EditorRoot(props: Props) {
   return <EditorApp {...props} />;
 }
 
+/**
+ * The site editor. On a computer it is the site itself, on the left, where
+ * anything can be clicked; and on the right, only what was clicked. Changes
+ * show on the page as they're typed, and nothing reaches the public site
+ * until Review & publish. On a phone — or on request — the same content is
+ * a list of pages and parts instead.
+ */
 function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props) {
   const [published, setPublished] = useState<Edits>(initial);
   const [saved] = useState(loadSaved);
@@ -60,11 +74,30 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
   const [split, setSplit] = useState<Set<string>>(() => new Set(saved?.split ?? []));
   const [staged, setStaged] = useState<Staged>(() => saved?.staged ?? {});
   const [olderDraft] = useState(() => !!saved?.ops.length && saved.revision !== initial.revision);
-  const [page, setPage] = useState<ModuleName>("home");
+  const [lang, setLangState] = useState<Lang>(() => {
+    try {
+      const value = localStorage.getItem(LANG_KEY);
+      return value === "hi" || value === "kn" ? value : "en";
+    } catch {
+      return "en";
+    }
+  });
+  const [mode, setMode] = useState<"page" | "list">(() => (window.matchMedia("(min-width: 1024px)").matches ? "page" : "list"));
+  const [sitePage, setSitePage] = useState<SitePage>("home");
+  const [selection, setSelection] = useState<Selection>(null);
+  const [scrollTo, setScrollTo] = useState<{ path: Path; nonce: number } | null>(null);
+  const [listPage, setListPage] = useState<ModuleName>("home");
   const [open, setOpen] = useState<Set<string>>(new Set());
   const [focused, setFocused] = useState<string | null>(null);
-  const [panel, setPanel] = useState<"review" | "history" | null>(null);
+  const [dialog, setDialog] = useState<"review" | "history" | null>(null);
   const [status, setStatus] = useState<Status>(() => (deployed < initial.revision ? { kind: "deploying", revision: initial.revision } : { kind: "idle" }));
+
+  const setLang = (next: Lang) => {
+    setLangState(next);
+    try {
+      localStorage.setItem(LANG_KEY, next);
+    } catch {}
+  };
 
   const publishedTrees = useMemo(() => withOps(base, published.ops), [base, published.ops]);
   const current = useMemo(() => withOps(publishedTrees, draft), [publishedTrees, draft]);
@@ -78,9 +111,21 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
       if (Array.isArray(node)) node.forEach((v, i) => walk(v, [...path, i]));
       else if (node && typeof node === "object") for (const [k, v] of Object.entries(node)) walk(v, [...path, k]);
     };
-    for (const lang of locales) walk(base[lang], []);
+    for (const l of locales) walk(base[l], []);
     return { numeric, nullable };
   }, [base]);
+
+  // What the page shows: an edition with blanks filled from English and prices filled in.
+  const asShown = (trees: Trees) => {
+    const tree = lang === "en" ? trees.en : fillBlanks(trees[lang], trees.en);
+    const shared = (trees.en as { shared: { folioPrice: number; granthaPrice: number } }).shared;
+    return fillTokens(tree, {
+      folioPrice: shared.folioPrice.toLocaleString("en-IN"),
+      granthaPrice: shared.granthaPrice.toLocaleString("en-IN"),
+    });
+  };
+  const shownTree = useMemo(() => asShown(current), [current, lang]); // eslint-disable-line react-hooks/exhaustive-deps
+  const renderedTree = useMemo(() => asShown(publishedTrees), [publishedTrees, lang]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // The draft survives a reload or a closed tab, in this browser only.
   useEffect(() => {
@@ -114,13 +159,14 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
     };
   }, [status]);
 
-  // Bring a field found by search into view.
+  // In the list, bring a field found by search into view.
   useEffect(() => {
-    if (!focused) return;
+    if (!focused || mode !== "list") return;
     document.getElementById(fieldId(JSON.parse(focused) as Path))?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [focused, page]);
+  }, [focused, listPage, mode]);
 
   const api: EditorApi = {
+    lang,
     base,
     published: publishedTrees,
     current,
@@ -145,6 +191,18 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
       setStaged((s) => ({ ...s, [path]: { blob, preview: photo.preview } }));
       return { path, width: photo.width, height: photo.height };
     },
+    translate: async (path) => {
+      const text = getAt(current.en, path);
+      if (typeof text !== "string" || !text.trim()) return;
+      const res = await fetch("/api/cms/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error((await res.text()) || "Translation didn't work — please try again.");
+      const out = (await res.json()) as { hi: string; kn: string };
+      setDraft((d) => setField(setField(d, publishedTrees, path, "hi", out.hi), publishedTrees, path, "kn", out.kn));
+    },
     isOpen: (path) => open.has(pathKey(path)),
     toggle: (path, value) =>
       setOpen((s) => {
@@ -154,11 +212,20 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
         else next.delete(key);
         return next;
       }),
-    focused,
+    focused: selection && "path" in selection ? pathKey(selection.path) : focused,
   };
 
+  /** Shows a field: on its page in the preview, or in the list. */
   function reveal(path: Path) {
-    setPage(path[0] as ModuleName);
+    const target = path[0] as ModuleName;
+    if (mode === "page") {
+      const onPage = SITE_PAGES.some((p) => p.module === target);
+      if (onPage) setSitePage(target as SitePage);
+      setSelection({ path });
+      setScrollTo({ path, nonce: Date.now() });
+      return;
+    }
+    setListPage(target);
     setOpen((s) => {
       const next = new Set(s);
       if (path.length === 2) next.add(pathKey([path[0], "_"]));
@@ -166,6 +233,18 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
       return next;
     });
     setFocused(pathKey(path));
+  }
+
+  function addTo(listPath: Path, page: SitePage, atStart: boolean) {
+    const list = getAt(current.en, listPath) as Json[];
+    const index = atStart ? 0 : list.length;
+    api.changeList(listPath, (l) => {
+      const item = blankLike((atStart ? l[0] : l[l.length - 1]) as Json);
+      return atStart ? [item, ...l] : [...l, item];
+    });
+    setSitePage(page);
+    setSelection({ path: [...listPath, index] });
+    setScrollTo({ path: [...listPath, atStart ? 0 : Math.max(0, list.length - 1)], nonce: Date.now() });
   }
 
   async function publish(note: string) {
@@ -193,7 +272,8 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
       setPublished(data.edits);
       setDraft([]);
       setSplit(new Set());
-      setPanel(null);
+      setDialog(null);
+      setSelection(null);
       setStatus(storage === "local" ? { kind: "live", revision: data.edits.revision } : { kind: "deploying", revision: data.edits.revision });
     } catch {
       setStatus({ kind: "error", message: "Couldn't reach the site. Check the connection and try again." });
@@ -212,44 +292,55 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
     }
     const data = (await res.json()) as { edits: Edits };
     setPublished(data.edits);
-    setPanel(null);
+    setDialog(null);
     setStatus({ kind: "deploying", revision: data.edits.revision });
   }
 
-  const pageInfo = PAGES.find((p) => p.module === page)!;
-  const moduleValue = getAt(current.en, [page]) as Record<string, unknown>;
-  const order = SECTION_ORDER[page] ?? [];
-  const keys = Object.keys(moduleValue)
-    .filter((k) => !isHidden([page, k]))
-    .sort((a, b) => (order.indexOf(a) + 1 || 999) - (order.indexOf(b) + 1 || 999));
-  const leaves = keys.filter((k) => getAt(current.en, [page, k]) === null || typeof getAt(current.en, [page, k]) !== "object");
-  const groups = keys.filter((k) => !leaves.includes(k));
-  const changedIn = (module: string) => new Set(draft.filter((o) => o.path[0] === module).map((o) => pathKey(o.path))).size;
   const draftCount = useMemo(() => new Set(draft.map((o) => pathKey(o.path))).size, [draft]);
+  const pageInfo = SITE_PAGES.find((p) => p.module === sitePage)!;
+  const previewSrc = `/preview/${lang}${pageInfo.href === "/" ? "" : pageInfo.href}`;
+  const selectedPath = selection && "path" in selection ? selection.path : null;
 
   return (
     <EditorProvider value={api}>
-      <div className="min-h-dvh bg-leaf text-ink">
-        <header className="sticky top-0 z-30 border-b border-black/30 bg-board-deep text-board-ink">
-          <div className="mx-auto flex max-w-[112rem] flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 lg:px-8">
+      <div className={`bg-leaf text-ink ${mode === "page" ? "flex h-dvh flex-col overflow-hidden" : "min-h-dvh"}`}>
+        <header className="sticky top-0 z-30 shrink-0 border-b border-black/30 bg-board-deep text-board-ink">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2.5 lg:px-6">
             <div className="flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element -- the site's own mark */}
               <img src="/icon.png" alt="" className="size-8" />
-              <div className="leading-tight">
-                <p className="font-display text-[1.1rem]">Site editor</p>
-                <p className="font-mono text-[0.72rem] text-board-soft">Acharya Shanti Sagar Foundation</p>
-              </div>
+              <p className="font-display text-[1.1rem] leading-tight">Site editor</p>
             </div>
-            <StatusPill status={status} count={draftCount} storage={storage} onRetry={() => setPanel("review")} />
-            <div className="ml-auto flex flex-wrap items-center gap-2">
+            <div role="group" aria-label="Language" className="flex items-center gap-1 rounded-full bg-white/8 p-1 text-[0.9rem]">
+              {locales.map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  aria-pressed={lang === l}
+                  onClick={() => setLang(l)}
+                  className={`cursor-pointer rounded-full px-3 py-1 transition-colors ${lang === l ? "bg-leaf text-ink" : "text-board-ink/80 hover:bg-white/10"} ${l === "kn" ? "font-kannada" : ""}`}
+                >
+                  {LANG_LABEL[l]}
+                </button>
+              ))}
+            </div>
+            <StatusPill status={status} count={draftCount} storage={storage} onRetry={() => setDialog("review")} />
+            <div className="ml-auto flex flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setMode(mode === "page" ? "list" : "page")}
+                className="hidden cursor-pointer rounded-md px-3 py-2 text-[0.9rem] text-board-ink/85 hover:bg-white/10 lg:block"
+              >
+                {mode === "page" ? "All content as a list" : "Edit on the page"}
+              </button>
               {storage === "github" ? (
-                <button type="button" onClick={() => setPanel("history")} className="cursor-pointer rounded-md px-3 py-2 text-[0.92rem] text-board-ink/85 hover:bg-white/10">
+                <button type="button" onClick={() => setDialog("history")} className="cursor-pointer rounded-md px-3 py-2 text-[0.9rem] text-board-ink/85 hover:bg-white/10">
                   History
                 </button>
               ) : null}
               <button
                 type="button"
-                onClick={() => setPanel("review")}
+                onClick={() => setDialog("review")}
                 disabled={!draft.length || status.kind === "publishing"}
                 className="cursor-pointer rounded-md bg-cinnabar px-4 py-2 text-[0.95rem] text-leaf transition-colors hover:bg-cinnabar-deep disabled:cursor-default disabled:bg-white/10 disabled:text-board-ink/40"
               >
@@ -262,129 +353,202 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut }: Props)
               </form>
             </div>
           </div>
+          {mode === "page" ? (
+            <nav aria-label="Pages" className="flex gap-1 overflow-x-auto border-t border-white/10 px-3 py-1.5 lg:px-5">
+              {SITE_PAGES.map((p) => (
+                <button
+                  key={p.module}
+                  type="button"
+                  aria-current={sitePage === p.module ? "page" : undefined}
+                  onClick={() => {
+                    setSitePage(p.module);
+                    setSelection(null);
+                  }}
+                  className={`shrink-0 cursor-pointer rounded-md px-3 py-1.5 text-[0.9rem] transition-colors ${
+                    sitePage === p.module ? "bg-white/15 text-board-ink" : "text-board-soft hover:bg-white/8 hover:text-board-ink"
+                  }`}
+                >
+                  {p.title}
+                </button>
+              ))}
+            </nav>
+          ) : null}
         </header>
 
         {olderDraft && draft.length ? (
-          <p className="mx-auto mt-4 max-w-[112rem] px-4 text-[0.92rem] text-cinnabar-deep lg:px-8">
-            Your unpublished changes were started before someone published. They&apos;re kept — check them under Review before publishing.
+          <p className="shrink-0 bg-orpiment/20 px-4 py-2 text-[0.9rem] text-ink lg:px-6">
+            Your unpublished changes were started before someone else published. They&apos;re kept — check them under Review &amp; publish.
           </p>
         ) : null}
 
-        <div className="mx-auto grid max-w-[112rem] grid-cols-[minmax(0,1fr)] gap-6 px-4 py-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-10 lg:px-8">
-          <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
-            <Search trees={current} onPick={reveal} />
-            <nav aria-label="Pages" className="mt-5">
-              <ul className="flex gap-1.5 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:pb-0">
-                {PAGES.map((p) => (
-                  <li key={p.module} className="shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPage(p.module);
-                        setFocused(null);
-                      }}
-                      aria-current={page === p.module ? "page" : undefined}
-                      className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-[0.98rem] transition-colors ${
-                        page === p.module ? "bg-board text-board-ink" : "text-ink hover:bg-ink/5"
-                      }`}
-                    >
-                      {p.title}
-                      {changedIn(p.module) ? (
-                        <span className={`rounded-full px-2 font-mono text-[0.72rem] ${page === p.module ? "bg-cinnabar text-leaf" : "bg-cinnabar/15 text-cinnabar-deep"}`}>
-                          {changedIn(p.module)}
-                        </span>
-                      ) : null}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            <p className="mt-6 hidden text-[0.85rem] leading-relaxed text-ink-faint lg:block">
-              Changes stay in this browser until you publish them. Publishing updates the site in a minute or two, and every publish can be undone from History.
-            </p>
-          </aside>
-
-          <main id="main" className="min-w-0">
-            <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-              <h1 className="font-display text-[clamp(1.8rem,1.4rem+1.2vw,2.5rem)] leading-tight">{pageInfo.title}</h1>
-              {page !== "shared" && page !== "ui" ? (
-                <p className="flex gap-3 text-[0.9rem]">
-                  {locales.map((l) => (
-                    <a
-                      key={l}
-                      href={`${localeInfo[l].prefix}${pageInfo.href === "/" && l !== "en" ? "" : pageInfo.href}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-cinnabar-deep underline decoration-cinnabar/40 underline-offset-2 hover:text-cinnabar"
-                    >
-                      View{l === "en" ? " page" : ""} in {LANG_LABEL[l]} ↗
-                    </a>
-                  ))}
-                </p>
-              ) : null}
+        {mode === "page" ? (
+          <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_27rem]">
+            <div className="min-h-0 border-r border-ink/15">
+              <Preview
+                src={previewSrc}
+                module={sitePage}
+                shown={shownTree}
+                rendered={renderedTree}
+                previews={api.previews}
+                selected={selectedPath}
+                scrollTo={scrollTo}
+                onPick={(path) => setSelection({ path })}
+              />
             </div>
+            <aside className="min-h-0 overflow-y-auto bg-leaf">
+              <Panel
+                selection={selection}
+                onSelect={setSelection}
+                onFind={reveal}
+                onAddNews={() => addTo(["home", "field", "items"], "home", true)}
+                onAddTrustee={() => addTo(["trustees", "trustees"], "trustees", false)}
+                onList={() => setMode("list")}
+              />
+            </aside>
+          </div>
+        ) : (
+          <ListView page={listPage} onPage={setListPage} onFind={reveal} changedIn={(m) => new Set(draft.filter((o) => o.path[0] === m).map((o) => pathKey(o.path))).size} />
+        )}
 
-            <div className="space-y-3">
-              {leaves.length ? (
-                <Section
-                  title={page === "shared" ? "Prices" : "General"}
-                  subtitle=""
-                  open={api.isOpen([page, "_"])}
-                  onToggle={() => api.toggle([page, "_"])}
-                  changed={leaves.some((k) => api.changed([page, k]))}
-                >
-                  {leaves.map((k) => (
-                    <Node key={k} path={[page, k]} />
-                  ))}
-                </Section>
-              ) : null}
-              {groups.map((k) => {
-                const value = getAt(current.en, [page, k]) as Record<string, unknown>;
-                const subtitle = ["heading", "title", "label", "eyebrow"].map((f) => value?.[f]).find((v) => typeof v === "string") as string | undefined;
-                return (
-                  <Section
-                    key={k}
-                    title={sectionLabel(page, k)}
-                    subtitle={subtitle ?? ""}
-                    open={api.isOpen([page, k])}
-                    onToggle={() => api.toggle([page, k])}
-                    changed={api.changed([page, k])}
-                  >
-                    <Node path={[page, k]} />
-                  </Section>
-                );
-              })}
-            </div>
-          </main>
-        </div>
-
-        {panel === "review" ? (
+        {dialog === "review" ? (
           <Review
             draft={draft}
             published={publishedTrees}
             current={current}
             status={status}
-            onClose={() => setPanel(null)}
+            onClose={() => setDialog(null)}
             onUndo={(key) => setDraft((d) => d.filter((o) => pathKey(o.path) !== key))}
             onDiscard={() => {
               if (window.confirm("Discard all unpublished changes? This can't be undone.")) {
                 setDraft([]);
                 setSplit(new Set());
-                setPanel(null);
+                setDialog(null);
+                setSelection(null);
               }
             }}
             onReveal={(path) => {
-              setPanel(null);
+              setDialog(null);
               reveal(path);
             }}
             onPublish={publish}
           />
         ) : null}
-        {panel === "history" ? <History onClose={() => setPanel(null)} onRestore={restore} /> : null}
+        {dialog === "history" ? <History onClose={() => setDialog(null)} onRestore={restore} /> : null}
       </div>
     </EditorProvider>
   );
+}
 
+/** All of the content, page by page and part by part — for phones, and for what isn't on a page. */
+function ListView({
+  page,
+  onPage,
+  onFind,
+  changedIn,
+}: {
+  page: ModuleName;
+  onPage: (page: ModuleName) => void;
+  onFind: (path: Path) => void;
+  changedIn: (module: string) => number;
+}) {
+  const [more, setMore] = useState(false);
+  return (
+    <div className="mx-auto grid max-w-[100rem] grid-cols-[minmax(0,1fr)] gap-6 px-4 py-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-10 lg:px-8">
+      <aside className="min-w-0 lg:sticky lg:top-20 lg:self-start">
+        <Find onFind={onFind} />
+        <nav aria-label="Pages" className="mt-5">
+          <ul className="flex gap-1.5 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:pb-0">
+            {PAGES.filter((p) => more || p.module !== "ui").map((p) => (
+              <li key={p.module} className="shrink-0">
+                <button
+                  type="button"
+                  onClick={() => onPage(p.module)}
+                  aria-current={page === p.module ? "page" : undefined}
+                  className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-[0.98rem] transition-colors ${
+                    page === p.module ? "bg-board text-board-ink" : "text-ink hover:bg-ink/5"
+                  }`}
+                >
+                  {p.title}
+                  {changedIn(p.module) ? (
+                    <span className={`rounded-full px-2 font-mono text-[0.72rem] ${page === p.module ? "bg-cinnabar text-leaf" : "bg-cinnabar/15 text-cinnabar-deep"}`}>
+                      {changedIn(p.module)}
+                    </span>
+                  ) : null}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <label className="mt-4 hidden cursor-pointer items-center gap-2 px-3 text-[0.85rem] text-ink-faint lg:flex">
+          <input type="checkbox" checked={more} onChange={(e) => setMore(e.target.checked)} />
+          Show buttons &amp; labels too
+        </label>
+      </aside>
+      <main id="main" className="min-w-0">
+        <PageSections module={page} />
+      </main>
+    </div>
+  );
+}
+
+function PageSections({ module }: { module: ModuleName }) {
+  const api = useEditor();
+  const pageInfo = PAGES.find((p) => p.module === module)!;
+  const moduleValue = getAt(api.current.en, [module]) as Record<string, unknown>;
+  const order = SECTION_ORDER[module] ?? [];
+  const keys = Object.keys(moduleValue)
+    .filter((k) => !isHidden([module, k]))
+    .sort((a, b) => (order.indexOf(a) + 1 || 999) - (order.indexOf(b) + 1 || 999));
+  const leaves = keys.filter((k) => getAt(api.current.en, [module, k]) === null || typeof getAt(api.current.en, [module, k]) !== "object");
+  const groups = keys.filter((k) => !leaves.includes(k));
+  return (
+    <>
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <h1 className="font-display text-[clamp(1.8rem,1.4rem+1.2vw,2.5rem)] leading-tight">{pageInfo.title}</h1>
+        {module !== "shared" && module !== "ui" ? (
+          <a
+            href={`${localeInfo[api.lang === "all" ? "en" : api.lang].prefix}${pageInfo.href === "/" && api.lang !== "en" ? "" : pageInfo.href}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-[0.9rem] text-cinnabar-deep underline decoration-cinnabar/40 underline-offset-2 hover:text-cinnabar"
+          >
+            Open this page on the site ↗
+          </a>
+        ) : null}
+      </div>
+      <div className="space-y-3">
+        {leaves.length ? (
+          <Section
+            title={module === "shared" ? "Prices" : "General"}
+            subtitle=""
+            open={api.isOpen([module, "_"])}
+            onToggle={() => api.toggle([module, "_"])}
+            changed={leaves.some((k) => api.changed([module, k]))}
+          >
+            {leaves.map((k) => (
+              <Node key={k} path={[module, k]} />
+            ))}
+          </Section>
+        ) : null}
+        {groups.map((k) => {
+          const value = getAt(api.current.en, [module, k]) as Record<string, unknown>;
+          const subtitle = ["heading", "title", "label", "eyebrow"].map((f) => value?.[f]).find((v) => typeof v === "string") as string | undefined;
+          return (
+            <Section
+              key={k}
+              title={sectionLabel(module, k)}
+              subtitle={subtitle ?? ""}
+              open={api.isOpen([module, k])}
+              onToggle={() => api.toggle([module, k])}
+              changed={api.changed([module, k])}
+            >
+              <Node path={[module, k]} />
+            </Section>
+          );
+        })}
+      </div>
+    </>
+  );
 }
 
 function Section({
@@ -418,6 +582,7 @@ function Section({
     </section>
   );
 }
+
 
 function StatusPill({ status, count, storage, onRetry }: { status: Status; count: number; storage: string; onRetry: () => void }) {
   let text: ReactNode;
@@ -459,50 +624,6 @@ function StatusPill({ status, count, storage, onRetry }: { status: Status; count
   );
 }
 
-function Search({ trees, onPick }: { trees: Trees; onPick: (path: Path) => void }) {
-  const [query, setQuery] = useState("");
-  const index = useMemo(() => (query.trim().length >= 2 ? searchIndex(trees) : []), [trees, query]);
-  const q = query.trim().toLowerCase();
-  const hits = q.length >= 2 ? index.filter((h) => h.text.toLowerCase().includes(q)).slice(0, 40) : [];
-  return (
-    <div className="relative">
-      <label className="block">
-        <span className="mb-1 block font-mono text-[0.75rem] uppercase tracking-[0.06em] text-ink-faint">Find text on the site</span>
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="e.g. a typo, a name, a figure"
-          className="w-full rounded-md border border-ink/20 bg-white/80 px-3 py-2 outline-none focus:border-cinnabar"
-        />
-      </label>
-      {q.length >= 2 ? (
-        <ul className="absolute inset-x-0 top-full z-20 mt-1 max-h-[60vh] overflow-auto rounded-md border border-ink/15 bg-white shadow-lg">
-          {hits.length ? (
-            hits.map((h) => (
-              <li key={pathKey(h.path)}>
-                <button
-                  type="button"
-                  className="block w-full cursor-pointer border-b border-ink/5 px-3 py-2 text-left hover:bg-leaf"
-                  onClick={() => {
-                    onPick(h.path);
-                    setQuery("");
-                  }}
-                >
-                  <span className="block font-mono text-[0.72rem] text-ink-faint">{describePath(h.path)}</span>
-                  <span className="line-clamp-2 text-[0.9rem]">{h.text}</span>
-                </button>
-              </li>
-            ))
-          ) : (
-            <li className="px-3 py-2 text-[0.9rem] text-ink-faint">Nothing on the site matches.</li>
-          )}
-        </ul>
-      ) : null}
-    </div>
-  );
-}
-
 function Dialog({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -528,9 +649,11 @@ function Dialog({ title, onClose, children }: { title: string; onClose: () => vo
   );
 }
 
-const short = (v: unknown) => {
+/** A value as the review list shows it: short, with prices filled in. */
+const short = (v: unknown, prices?: Record<string, string>) => {
   if (v === null || v === undefined || v === "") return "—";
-  const text = typeof v === "string" ? v : typeof v === "number" ? v.toLocaleString("en-IN") : Array.isArray(v) ? `${v.length} items` : "…";
+  let text = typeof v === "string" ? v : typeof v === "number" ? v.toLocaleString("en-IN") : Array.isArray(v) ? `${v.length} items` : "…";
+  if (prices) text = text.replace(/\{(\w+)\}/g, (m, k: string) => prices[k] ?? m);
   return text.length > 140 ? `${text.slice(0, 140)}…` : text;
 };
 
@@ -557,6 +680,8 @@ function Review({
 }) {
   const [note, setNote] = useState("");
   const toFix = problems(draft);
+  const shared = (current.en as { shared: { folioPrice: number; granthaPrice: number } }).shared;
+  const prices = { folioPrice: shared.folioPrice.toLocaleString("en-IN"), granthaPrice: shared.granthaPrice.toLocaleString("en-IN") };
   const groups = new Map<string, Op[]>();
   for (const op of draft) groups.set(pathKey(op.path), [...(groups.get(pathKey(op.path)) ?? []), op]);
   const busy = status.kind === "publishing";
@@ -603,9 +728,9 @@ function Review({
                       <div key={op.scope} className="grid gap-x-3 sm:grid-cols-[7rem_minmax(0,1fr)]">
                         <dt className="font-mono text-[0.75rem] text-ink-faint">{op.scope === "all" ? "All languages" : LANG_LABEL[op.scope]}</dt>
                         <dd lang={lang} className={lang === "kn" ? "font-kannada" : ""}>
-                          <span className="text-ink-faint line-through decoration-ink/30">{short(getAt(published[lang], path))}</span>
+                          <span className="text-ink-faint line-through decoration-ink/30">{short(getAt(published[lang], path), prices)}</span>
                           <span className="mx-1.5 text-cinnabar">→</span>
-                          <span>{short(op.value as Json)}</span>
+                          <span>{short(op.value as Json, prices)}</span>
                         </dd>
                       </div>
                     );

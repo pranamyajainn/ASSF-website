@@ -3,10 +3,12 @@
 import { createContext, useContext, useId, useRef, useState, type ReactNode } from "react";
 import { localeInfo, locales, type Lang } from "@/i18n/config";
 import { getAt, pathKey, type Json, type Path, type Scope } from "@/lib/cms/edits";
-import { ENUM_KEYS, isHidden, isImagePath, isLongText, isMediaPath, isOpenList, labelFor, schemaPath } from "@/lib/cms/schema";
+import { ENUM_KEYS, isHidden, isImagePath, isLongText, isMediaPath, isOpenList, labelAt, labelFor, schemaPath } from "@/lib/cms/schema";
 import { blankLike, enumOptions, itemTitle, NEWEST_FIRST, type Trees } from "./model";
 
 export type EditorApi = {
+  /** The edition being edited, or "all" to see the three side by side. */
+  lang: Lang | "all";
   base: Trees;
   published: Trees;
   current: Trees;
@@ -21,6 +23,8 @@ export type EditorApi = {
   changeList: (path: Path, change: (list: Json[], lang: Lang) => Json[]) => void;
   previews: Record<string, string>;
   upload: (file: File) => Promise<{ path: string; width: number; height: number }>;
+  /** Fills a field's Hindi and Kannada from its English, by machine translation. */
+  translate: (path: Path) => Promise<void>;
   isOpen: (path: Path) => boolean;
   toggle: (path: Path, open?: boolean) => void;
   focused: string | null;
@@ -28,13 +32,28 @@ export type EditorApi = {
 
 const Ctx = createContext<EditorApi | null>(null);
 export const EditorProvider = Ctx.Provider;
-function useEditor(): EditorApi {
+export function useEditor(): EditorApi {
   const api = useContext(Ctx);
   if (!api) throw new Error("EditorProvider missing");
   return api;
 }
 
 export const fieldId = (path: Path) => `f:${pathKey(path)}`;
+
+/**
+ * Whether a field sits in a list that has gained or lost items (a new news
+ * entry shifts every entry after it). There, "edited" and "put back the
+ * original" would compare a field with a different item's, so they're left out.
+ */
+function inReshapedList(api: EditorApi, path: Path, against: Trees): boolean {
+  for (let i = 1; i < path.length; i++) {
+    if (typeof path[i] !== "number") continue;
+    const now = getAt(api.current.en, path.slice(0, i));
+    const then = getAt(against.en, path.slice(0, i));
+    if (!Array.isArray(now) || !Array.isArray(then) || now.length !== then.length) return true;
+  }
+  return false;
+}
 
 const LANG_LABEL: Record<Lang, string> = { en: "English", hi: localeInfo.hi.label, kn: localeInfo.kn.label };
 
@@ -104,15 +123,17 @@ function FieldShell({
   hint,
   children,
   actions,
+  after,
 }: {
   path: Path;
   label: string;
   hint?: ReactNode;
   children: ReactNode;
   actions?: ReactNode;
+  after?: ReactNode;
 }) {
   const api = useEditor();
-  const changed = api.changed(path);
+  const changed = api.changed(path) && !inReshapedList(api, path, api.published);
   const focused = api.focused === pathKey(path);
   return (
     <div
@@ -124,14 +145,50 @@ function FieldShell({
         className={`absolute inset-y-3 left-0 w-[3px] rounded-full ${changed ? "bg-cinnabar" : "bg-transparent"}`}
       />
       <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <span className="font-mono text-[0.78rem] uppercase tracking-[0.06em] text-ink-faint">
+        <span className="text-[0.95rem] font-medium text-ink">
           {label}
-          {changed ? <span className="ml-2 normal-case tracking-normal text-cinnabar">· changed</span> : null}
+          {changed ? <span className="ml-2 rounded-full bg-cinnabar/12 px-2 py-0.5 text-[0.75rem] font-normal text-cinnabar-deep">edited</span> : null}
         </span>
         {actions ? <span className="flex flex-wrap gap-x-4 text-[0.82rem]">{actions}</span> : null}
       </div>
       {children}
       {hint ? <p className="mt-1.5 text-[0.82rem] leading-snug text-ink-faint">{hint}</p> : null}
+      {after}
+    </div>
+  );
+}
+
+/**
+ * After the English of a translated field changes: the Hindi and Kannada
+ * still say the old thing, so offer to bring them up to date in one step.
+ */
+function TranslateOffer({ path, behind }: { path: Path; behind: boolean }) {
+  const api = useEditor();
+  const [state, setState] = useState<{ busy: boolean; error: string | null }>({ busy: false, error: null });
+  if (!behind) {
+    return <p className="mt-2 text-[0.85rem] text-emerald-800">✓ हिन्दी and ಕನ್ನಡ updated too. Switch the language at the top to read them.</p>;
+  }
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-md bg-orpiment/15 px-3 py-2 text-[0.88rem] text-ink-soft">
+      <span>The हिन्दी and ಕನ್ನಡ pages still say the old words.</span>
+      <button
+        type="button"
+        disabled={state.busy}
+        onClick={async () => {
+          setState({ busy: true, error: null });
+          try {
+            await api.translate(path);
+            setState({ busy: false, error: null });
+          } catch (err) {
+            setState({ busy: false, error: err instanceof Error ? err.message : "Translation didn't work." });
+          }
+        }}
+        className="cursor-pointer rounded-md bg-ink px-3 py-1 text-leaf transition-colors hover:bg-cinnabar-deep disabled:opacity-60"
+      >
+        {state.busy ? "Translating…" : "Translate for me"}
+      </button>
+      <span className="w-full text-[0.78rem] text-ink-faint">Automatic translation — worth a quick check by someone who reads Hindi and Kannada.</span>
+      {state.error ? <span className="w-full text-cinnabar-deep">{state.error}</span> : null}
     </div>
   );
 }
@@ -149,57 +206,73 @@ function TextField({ path, label }: { path: Path; label: string }) {
   const long = values.some((v) => isLongText(key, asText(v)));
   const separate =
     api.translated.has(schemaPath(path)) || api.split.has(pathKey(path)) || values.some((v) => v !== values[0]);
-  const differsFromOriginal = bases[0] !== undefined && locales.some((_, i) => values[i] !== bases[i]);
   const tokens = values.some((v) => asText(v).includes("{"));
+  const hint = tokens ? "Words in {curly brackets} fill themselves in — for example {folioPrice} becomes the price. Leave them as they are." : undefined;
 
-  const restore = differsFromOriginal ? (
-    <button
-      type="button"
-      className={linkButton}
-      onClick={() => locales.forEach((l, i) => api.setField(path, l, bases[i] as Json))}
-    >
-      Restore original
-    </button>
-  ) : null;
-  const hint = tokens ? "Words in {braces} are filled in automatically (e.g. {folioPrice} is the price set under Site-wide)." : undefined;
-
-  if (!separate) {
+  // One edition at a time: the usual way to edit.
+  if (api.lang !== "all") {
+    const lang = api.lang;
+    const i = locales.indexOf(lang);
+    // Text written once for all three (a name, a place) stays shared when
+    // edited in English; in Hindi or Kannada it becomes that edition's own.
+    const scope: Scope = !separate && lang === "en" ? "all" : lang;
+    const original = bases[i];
+    const edited = original !== undefined && values[i] !== original && !inReshapedList(api, path, api.base);
+    const published = locales.map((l) => getAt(api.published[l], path));
+    const englishChanged =
+      lang === "en" && separate && asText(values[0]).trim() !== "" && (values[0] !== published[0] || inReshapedList(api, path, api.published));
+    const othersBehind = [1, 2].every((j) => !asText(values[j]) || (values[j] === published[j] && !inReshapedList(api, path, api.published)));
     return (
       <FieldShell
         path={path}
         label={label}
         hint={hint}
+        after={englishChanged ? <TranslateOffer path={path} behind={othersBehind} /> : null}
         actions={
-          <>
-            <button type="button" className={linkButton} onClick={() => api.splitField(path)}>
-              Write separately per language
+          edited ? (
+            <button type="button" className={linkButton} onClick={() => api.setField(path, scope, original as Json)}>
+              Put back the original
             </button>
-            {restore}
-          </>
+          ) : null
         }
       >
-        <TextInput label={label} value={asText(values[0])} long={long} onCommit={(v) => api.setField(path, "all", v)} />
-        <p className="mt-1 text-[0.78rem] text-ink-faint">Same in English, हिन्दी and ಕನ್ನಡ.</p>
+        <TextInput
+          label={label}
+          lang={lang}
+          value={asText(values[i])}
+          long={long}
+          placeholder={lang === "en" ? "" : "Empty — the English shows here until this is written"}
+          onCommit={(v) => api.setField(path, scope, v)}
+        />
       </FieldShell>
     );
   }
+
+  // All three side by side.
   return (
-    <FieldShell path={path} label={label} hint={hint} actions={restore}>
-      <div className="grid gap-3 lg:grid-cols-3">
-        {locales.map((lang, i) => (
-          <label key={lang} className="block">
-            <span className="mb-1 block text-[0.8rem] text-ink-soft">{LANG_LABEL[lang]}</span>
-            <TextInput
-              label={`${label} — ${LANG_LABEL[lang]}`}
-              lang={lang}
-              value={asText(values[i])}
-              long={long}
-              placeholder={lang === "en" ? "" : "Leave empty to show the English"}
-              onCommit={(v) => api.setField(path, lang, v)}
-            />
-          </label>
-        ))}
-      </div>
+    <FieldShell path={path} label={label} hint={hint}>
+      {separate ? (
+        <div className="grid gap-3 lg:grid-cols-3">
+          {locales.map((lang, i) => (
+            <label key={lang} className="block">
+              <span className="mb-1 block text-[0.8rem] text-ink-soft">{LANG_LABEL[lang]}</span>
+              <TextInput
+                label={`${label} — ${LANG_LABEL[lang]}`}
+                lang={lang}
+                value={asText(values[i])}
+                long={long}
+                placeholder={lang === "en" ? "" : "Empty — the English shows here"}
+                onCommit={(v) => api.setField(path, lang, v)}
+              />
+            </label>
+          ))}
+        </div>
+      ) : (
+        <>
+          <TextInput label={label} value={asText(values[0])} long={long} onCommit={(v) => api.setField(path, "all", v)} />
+          <p className="mt-1 text-[0.8rem] text-ink-faint">The same in all three languages.</p>
+        </>
+      )}
     </FieldShell>
   );
 }
@@ -334,7 +407,7 @@ function Leaf({ path }: { path: Path }) {
   const label =
     typeof key === "number"
       ? `${typeof parent === "string" && ["paragraphs", "bio", "body", "statement"].includes(parent) ? "Paragraph" : "Item"} ${key + 1}`
-      : labelFor(key);
+      : labelAt(path);
   const value = getAt(api.current.en, path);
   const schema = schemaPath(path);
 
@@ -421,13 +494,13 @@ function List({ path }: { path: Path }) {
   const controls = (i: number) =>
     open ? (
       <span className="flex shrink-0 gap-1.5">
-        <button type="button" className={iconButton} aria-label="Move up" disabled={i === 0} onClick={() => move(i, i - 1)}>
+        <button type="button" className={iconButton} aria-label="Move up" title="Move up" disabled={i === 0} onClick={() => move(i, i - 1)}>
           ↑
         </button>
-        <button type="button" className={iconButton} aria-label="Move down" disabled={i === list.length - 1} onClick={() => move(i, i + 1)}>
+        <button type="button" className={iconButton} aria-label="Move down" title="Move down" disabled={i === list.length - 1} onClick={() => move(i, i + 1)}>
           ↓
         </button>
-        <button type="button" className={iconButton} aria-label="Remove" onClick={() => remove(i)}>
+        <button type="button" className={iconButton} aria-label="Remove" title="Remove" onClick={() => remove(i)}>
           ✕
         </button>
       </span>
@@ -436,7 +509,7 @@ function List({ path }: { path: Path }) {
   return (
     <div className="my-2">
       <p className="mb-2 font-display text-[1.02rem] text-ink">
-        {labelFor(path[path.length - 1])}
+        {labelAt(path)}
         <span className="ml-2 font-mono text-[0.75rem] text-ink-faint">{list.length}</span>
       </p>
       <ol className="space-y-2">
@@ -485,11 +558,24 @@ function List({ path }: { path: Path }) {
           onClick={add}
           className="mt-2 inline-flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-cinnabar/50 px-3.5 py-2 text-[0.92rem] text-cinnabar-deep transition-colors hover:border-cinnabar hover:bg-white/60"
         >
-          + {strings ? "Add a paragraph" : newestFirst ? "Add a new entry at the top" : "Add another"}
+          + {strings ? "Add a paragraph" : newestFirst ? "Add a new update (it goes at the top)" : `Add ${addNoun(path)}`}
         </button>
       ) : null}
     </div>
   );
+}
+
+/** "a trustee", "a photo"… for the add button. */
+function addNoun(path: Path): string {
+  const schema = schemaPath(path);
+  if (schema.endsWith("trustees.trustees")) return "a trustee";
+  if (schema.endsWith("trustees.advisors")) return "an advisor";
+  if (schema.endsWith("board.members")) return "a board member";
+  if (schema.endsWith("camps")) return "a health camp";
+  if (schema.endsWith("stats")) return "a figure";
+  if (/images|album|upClose\.items|illuminated\.items/.test(schema)) return "a photo";
+  if (schema.endsWith("voices.items")) return "a visitor's words";
+  return "another";
 }
 
 /** Any part of the content: a list, a group of fields, or a single field. */

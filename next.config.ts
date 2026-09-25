@@ -20,7 +20,8 @@ const csp = [
   `font-src 'self'${preview ? " https://vercel.live https://assets.vercel.com" : ""}`,
   "media-src 'self'",
   `connect-src 'self'${dev ? " ws:" : ""}${preview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
-  `frame-src https://www.youtube-nocookie.com${preview ? " https://vercel.live" : ""}`,
+  // 'self': the site editor shows the site's own pages in a frame.
+  `frame-src 'self' https://www.youtube-nocookie.com${preview ? " https://vercel.live" : ""}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self' https://accounts.google.com",
@@ -38,6 +39,13 @@ const security = [
 ];
 
 const noindex = { key: "X-Robots-Tag", value: "noindex, nofollow" };
+
+/** The editor's preview may be framed — by the site itself, and nothing else. */
+const framedBySelf = [
+  { key: "Content-Security-Policy", value: csp.replace("frame-ancestors 'none'", "frame-ancestors 'self'") },
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+  noindex,
+];
 
 const nextConfig: NextConfig = {
   // One 404 for every unmatched address, across both root layouts (see
@@ -59,6 +67,7 @@ const nextConfig: NextConfig = {
       { source: "/trustee-portal/:path*", headers: [noindex] },
       { source: "/editor/:path*", headers: [noindex] },
       { source: "/editor", headers: [noindex] },
+      { source: "/preview/:path*", headers: framedBySelf },
       { source: "/api/:path*", headers: [noindex] },
       { source: "/images/:path*", headers: [media] },
       { source: "/videos/:path*", headers: [media] },
