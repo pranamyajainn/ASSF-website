@@ -10,7 +10,7 @@
  * in Sept 2026 (prices, donor acknowledgement, institution names, on-site
  * labs) are applied where they belong.
  */
-import { folioPrice, granthaPrice, org, type Pending } from "./shared";
+import { org, type Pending } from "./shared";
 
 /**
  * The headline is the Foundation's approved one ("Final Homepage Content",
@@ -295,7 +295,8 @@ export const join = {
 
 export const adopt = {
   heading: "Adopting a folio",
-  body: `Conserving one folio costs ₹${folioPrice}; each donor receives a donation receipt and a letter of thanks. Fund a whole grantha — about 100 folios, ₹${granthaPrice.toLocaleString("en-IN")} — and your name is written on the cloth it is wrapped in.`,
+  // {folioPrice} and {granthaPrice} are filled in from shared.ts (and the site editor's Prices).
+  body: "Conserving one folio costs ₹{folioPrice}; each donor receives a donation receipt and a letter of thanks. Fund a whole grantha — about 100 folios, ₹{granthaPrice} — and your name is written on the cloth it is wrapped in.",
   link: { label: "Bank transfer details", href: "#give" },
   wall: {
     /** Leaves stay blank until real folio records exist. */

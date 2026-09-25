@@ -1,10 +1,9 @@
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { Heading, Leaf, PageHero, PersonGrid, Prose } from "@/components/site/primitives";
-import { getContent } from "@/i18n/content";
+import { getContent, resolveContent } from "@/i18n/content";
 import { pageMetadata } from "@/i18n/metadata";
 import { fill } from "@/i18n/ui";
-import { trustees as sourceTrustees } from "@/content/trustees";
 
 export async function generateMetadata() {
   const { trustees } = await getContent();
@@ -21,7 +20,8 @@ export default async function TrusteesPage() {
   const { ui } = content;
   const { advisors, pageHero, trustees } = content.trustees;
   const t = content.ui.trustees;
-  // Grouped by the English rank, so the grouping holds in every edition.
+  // Grouped by the English rank (as edited), so the grouping holds in every edition.
+  const sourceTrustees = resolveContent("en").trustees.trustees;
   const officeBearers = trustees.filter((_, i) => sourceTrustees[i].rank !== "Founder Trustee");
   const founders = trustees.filter((_, i) => sourceTrustees[i].rank === "Founder Trustee");
 

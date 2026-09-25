@@ -9,12 +9,16 @@
  * answers carry the site's own facts and, as far as a reply allows, its
  * wording.
  *
- * Everything comes from the same `content/*` modules the pages render, so
- * the assistant cannot drift from what the site says.
+ * Everything comes from the same resolved content the pages render —
+ * including the site editor's changes — so the assistant cannot drift from
+ * what the site says.
  */
-import { org, pillars } from "@/content/shared";
-import * as home from "@/content/home";
+import { resolveContent } from "@/i18n/content";
 import type { Passage } from "./assistant-corpus";
+
+// The English edition as published — with the site editor's changes.
+const { shared, home } = resolveContent("en");
+const { org, pillars } = shared;
 
 const core = `ORGANISATION
 ${org.nameLatin} (${org.nameDeva}) — "${org.tagline}", ${org.brandLine}. Charitable trust, est. ${org.founded}, reg. ${org.registration}. Office: ${org.office}. Contact: ${org.phone}, ${org.email}.

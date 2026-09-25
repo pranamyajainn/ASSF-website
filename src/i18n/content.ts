@@ -7,6 +7,8 @@ import * as rural from "@/content/rural-infrastructure";
 import * as community from "@/content/community-services";
 import * as impact from "@/content/impact";
 import * as trustees from "@/content/trustees";
+import editsFile from "@/content/edits.json";
+import { applyOps, clone, fillBlanks, fillTokens, type Edits } from "@/lib/cms/edits";
 import { localizeHref, type Lang } from "./config";
 import { getLang } from "./get-lang";
 import { ui } from "./ui";
@@ -86,13 +88,37 @@ function localizeLinks(value: unknown, lang: Lang): unknown {
   return value;
 }
 
+/** What the Foundation has changed in the site editor (see lib/cms/edits.ts). */
+export const publishedEdits = editsFile as Edits;
+
+/**
+ * An edition before the site editor's changes, links not yet localised —
+ * the base the editor shows and validates against.
+ */
+export function baseContent(lang: Lang): Content {
+  return clone(lang === "en" ? source : (overlay(source, translations[lang]) as Content));
+}
+
+/** An edition with a given set of edits applied, before tokens and links. */
+export function editedContent(lang: Lang, edits: Edits = publishedEdits): Content {
+  const tree = baseContent(lang);
+  applyOps(tree, edits.ops, lang);
+  return tree;
+}
+
 const cache = new Map<Lang, Content>();
 
 export function resolveContent(lang: Lang): Content {
   let content = cache.get(lang);
   if (!content) {
-    const merged = lang === "en" ? source : overlay(source, translations[lang]);
-    content = localizeLinks(merged, lang) as Content;
+    const own = editedContent(lang);
+    const edited = (lang === "en" ? own : fillBlanks(own, editedContent("en"))) as Content;
+    const { folioPrice, granthaPrice } = edited.shared;
+    const filled = fillTokens(edited, {
+      folioPrice: folioPrice.toLocaleString("en-IN"),
+      granthaPrice: granthaPrice.toLocaleString("en-IN"),
+    });
+    content = localizeLinks(filled, lang) as Content;
     cache.set(lang, content);
   }
   return content;

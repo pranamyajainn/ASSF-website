@@ -7,10 +7,19 @@
  */
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { devEditor } from "@/lib/cms/editors";
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const { pathname } = req.nextUrl;
+
+  // The site editor: the same optimistic redirect; the editor's page and API
+  // re-check the editor allowlist themselves.
+  if (pathname === "/editor" || pathname.startsWith("/editor/")) {
+    if (pathname === "/editor/sign-in" || isLoggedIn || devEditor) return;
+    return NextResponse.redirect(new URL("/editor/sign-in", req.nextUrl.origin));
+  }
+
   const isLoginPage = pathname === "/trustee-portal/login";
 
   if (!isLoggedIn && !isLoginPage) {
@@ -25,5 +34,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/trustee-portal/:path*"],
+  matcher: ["/trustee-portal/:path*", "/editor", "/editor/:path*"],
 };

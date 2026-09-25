@@ -2,13 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { requireTrusteeSession } from "@/lib/trustee-session";
 import { signOut } from "@/auth";
-import { org } from "@/content/shared";
-import { streams } from "@/content/impact";
-import { ledger, sites, standing } from "@/content/home";
-import { projects as ruralProjects } from "@/content/rural-infrastructure";
-import { healthcare, education, relief } from "@/content/community-services";
-import { trustees, advisors } from "@/content/trustees";
+import { resolveContent } from "@/i18n/content";
 import { Meter, PortalSection, ReportCard, StatTile, StatusRow } from "@/components/portal/primitives";
+
+// The English edition as published, with the site editor's changes.
+const {
+  shared: { org },
+  impact: { streams },
+  home: { ledger, sites, standing },
+  rural: { projects: ruralProjects },
+  community: { healthcare, education, relief },
+  trustees: { trustees, advisors },
+} = resolveContent("en");
 
 export const metadata = {
   title: `Trustee Portal — ${org.nameLatin}`,

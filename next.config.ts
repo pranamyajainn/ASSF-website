@@ -57,6 +57,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/:path*", headers: indexable ? security : [...security, noindex] },
       { source: "/trustee-portal/:path*", headers: [noindex] },
+      { source: "/editor/:path*", headers: [noindex] },
+      { source: "/editor", headers: [noindex] },
       { source: "/api/:path*", headers: [noindex] },
       { source: "/images/:path*", headers: [media] },
       { source: "/videos/:path*", headers: [media] },
