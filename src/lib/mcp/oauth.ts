@@ -35,12 +35,31 @@ const REDIRECT_HOSTS = new Set([
     .filter(Boolean),
 ]);
 
+const isLoopback = (url: URL) => url.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
+
 export function redirectAllowed(uri: string): boolean {
   try {
     const url = new URL(uri);
     if (url.hash) return false;
-    if (url.protocol === "http:") return url.hostname === "localhost" || url.hostname === "127.0.0.1";
+    if (url.protocol === "http:") return isLoopback(url);
     return url.protocol === "https:" && [...REDIRECT_HOSTS].some((h) => url.hostname === h || url.hostname.endsWith(`.${h}`));
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Whether a sign-in may return to `requested`, given an address the client
+ * registered. Exactly the same — or, for an app on the person's own computer
+ * (Codex, Claude Code), the same loopback address and path on whatever port
+ * it happens to be listening on (RFC 8252 §7.3).
+ */
+export function redirectMatches(registered: string, requested: string): boolean {
+  if (registered === requested) return true;
+  try {
+    const a = new URL(registered);
+    const b = new URL(requested);
+    return isLoopback(a) && isLoopback(b) && a.hostname === b.hostname && a.pathname === b.pathname && a.search === b.search;
   } catch {
     return false;
   }

@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { auth, signIn, signOut } from "@/auth";
 import { GoogleMark } from "@/components/portal/google-mark";
 import { currentEditor } from "@/lib/cms/access";
-import { issueCode, lookupClient, redirectAllowed } from "@/lib/mcp/oauth";
+import { issueCode, lookupClient, redirectAllowed, redirectMatches } from "@/lib/mcp/oauth";
 import { Consent } from "./consent";
 
 export const metadata = { title: "Connect an AI assistant — Acharya Shanti Sagar Foundation", robots: { index: false, follow: false } };
@@ -21,13 +21,14 @@ type Params = {
 async function check(p: Params) {
   const client = p.client_id ? await lookupClient(p.client_id) : null;
   if (!client) return { problem: "This app isn't registered with the site. Remove the connector and add it again." } as const;
-  if (!p.redirect_uri || !client.redirectUris.includes(p.redirect_uri) || !redirectAllowed(p.redirect_uri)) {
+  const requested = p.redirect_uri;
+  if (!requested || !client.redirectUris.some((r) => redirectMatches(r, requested)) || !redirectAllowed(requested)) {
     return { problem: "This app asked to be sent somewhere the site doesn't allow." } as const;
   }
   if (p.response_type !== "code" || !p.code_challenge || p.code_challenge_method !== "S256") {
     return { problem: "This app's sign-in request is incomplete (it must use PKCE)." } as const;
   }
-  return { client, redirect: p.redirect_uri } as const;
+  return { client, redirect: requested } as const;
 }
 
 function answer(redirect: string, values: Record<string, string | undefined>) {
