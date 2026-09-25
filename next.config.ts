@@ -8,11 +8,12 @@ const nextConfig: NextConfig = {
     // Optimised images are immutable per URL; keep them cached for a month.
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
-  // "/home" is how people say the homepage; send it there, in each edition.
-  redirects() {
+  // "/home" is the homepage too, and keeps its own address in the bar — the
+  // header's Home link uses it. Search engines are told "/" is canonical.
+  rewrites() {
     return [
-      { source: "/home", destination: "/", permanent: true },
-      { source: "/:lang(hi|kn)/home", destination: "/:lang", permanent: true },
+      { source: "/home", destination: "/" },
+      { source: "/:lang(hi|kn)/home", destination: "/:lang" },
     ];
   },
 };

@@ -91,7 +91,7 @@ export async function Footer() {
         <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-8 pb-28 pt-10 sm:pb-32">
           <nav aria-label={t.nav}>
             <ul className="flex flex-wrap gap-x-7 gap-y-3">
-              {[{ label: t.home, href: href("/") }, ...nav].map((item) => (
+              {[{ label: t.home, href: href("/home") }, ...nav].map((item) => (
                 <li key={item.label}>
                   <Link
                     href={item.href}

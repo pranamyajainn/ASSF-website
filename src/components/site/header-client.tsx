@@ -53,6 +53,7 @@ export function HeaderClient({
   t,
   edition,
   homeHref,
+  homePageHref,
   joinHref,
 }: {
   lang: Lang;
@@ -64,6 +65,8 @@ export function HeaderClient({
   t: UI["header"];
   edition: UI["edition"];
   homeHref: string;
+  /** The Home link's own address, "/home" — the same page as the logo's "/". */
+  homePageHref: string;
   joinHref: string;
 }) {
   const clean = useSyncExternalStore(subscribeClean, readClean, readCleanOnServer);
@@ -163,8 +166,9 @@ export function HeaderClient({
               {/* Home first, so the reader always sees which page they are on:
                   the current one is underlined in red. */}
               <ul className="flex items-center gap-6 2xl:gap-7">
-                {[{ label: t.homeLink, href: homeHref }, ...nav].map((item) => {
-                  const current = pathname === item.href;
+                {[{ label: t.homeLink, href: homePageHref }, ...nav].map((item) => {
+                  const current =
+                    pathname === item.href || (item.href === homePageHref && pathname === homeHref);
                   return (
                     <li key={item.href}>
                       <Link
@@ -187,6 +191,7 @@ export function HeaderClient({
             <MobileNav
               nav={nav}
               homeHref={homeHref}
+              homePageHref={homePageHref}
               joinHref={joinHref}
               phone={phone}
               t={t}

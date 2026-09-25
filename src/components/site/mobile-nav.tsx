@@ -16,6 +16,7 @@ import type { UI } from "@/i18n/ui";
 export function MobileNav({
   nav,
   homeHref,
+  homePageHref,
   joinHref,
   phone,
   t,
@@ -24,6 +25,7 @@ export function MobileNav({
   lang: string;
   nav: readonly { label: string; href: string }[];
   homeHref: string;
+  homePageHref: string;
   joinHref: string;
   phone: string;
   t: UI["header"];
@@ -89,8 +91,8 @@ export function MobileNav({
           </div>
 
           <ol className="mt-8 border-t border-board-ink/15">
-            {[{ label: t.homeLink, href: homeHref }, ...nav].map((item, i) => {
-              const current = pathname === item.href;
+            {[{ label: t.homeLink, href: homePageHref }, ...nav].map((item, i) => {
+              const current = pathname === item.href || (item.href === homePageHref && pathname === homeHref);
               return (
                 <li key={item.href} className="border-b border-board-ink/15">
                   <Link

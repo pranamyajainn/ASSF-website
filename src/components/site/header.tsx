@@ -18,6 +18,7 @@ export async function Header() {
       t={ui.header}
       edition={ui.edition}
       homeHref={href("/")}
+      homePageHref={href("/home")}
       joinHref={href("/#join")}
     />
   );
