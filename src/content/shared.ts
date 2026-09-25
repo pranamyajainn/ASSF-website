@@ -34,8 +34,9 @@ export const org = {
   },
 } as const;
 
-export const folioPrice = 414;
-export const tributePrice = 9938;
+/** Confirmed by the Foundation (Sept 2026): one folio, and one full grantha of about 100 folios. */
+export const folioPrice = 370;
+export const granthaPrice = 37000;
 
 export const nav = [
   { label: "About", href: "/about" },

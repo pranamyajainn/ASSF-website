@@ -8,6 +8,13 @@ const nextConfig: NextConfig = {
     // Optimised images are immutable per URL; keep them cached for a month.
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
+  // "/home" is how people say the homepage; send it there, in each edition.
+  redirects() {
+    return [
+      { source: "/home", destination: "/", permanent: true },
+      { source: "/:lang(hi|kn)/home", destination: "/:lang", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

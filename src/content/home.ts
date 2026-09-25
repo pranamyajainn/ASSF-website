@@ -6,10 +6,11 @@
  * (Sept 2026) — see docs/ASSF Website context/. Figures are the ones those
  * documents state; anything they don't supply stays `Pending` rather than
  * guessed. Known source discrepancies are flagged in place with
- * `EditorialNote` rather than silently resolved — see `altName` on `sites`
- * and the notes on `lineage` and `standing`.
+ * `EditorialNote` rather than silently resolved. Answers the Foundation gave
+ * in Sept 2026 (prices, donor acknowledgement, institution names, on-site
+ * labs) are applied where they belong.
  */
-import { folioPrice, org, tributePrice, type Pending } from "./shared";
+import { folioPrice, granthaPrice, org, type Pending } from "./shared";
 
 /**
  * The headline is the Foundation's approved one ("Final Homepage Content",
@@ -84,15 +85,14 @@ export const mission = {
   lede: "Manuscripts do not announce when they are dying. The deterioration is quiet — a crack in a palm leaf, a folio that crumbles at the edge, ink that fades to nothing over a season.",
   paragraphs: [
     "The collections the Foundation cares for are written on two materials. A tadpatra is a palm leaf, incised with a stylus and inked; it grows brittle, cracks and splits. Handmade paper tears, stains and weakens, often unevenly from one folio to the next. Most of what has been conserved so far was paper; most of what the survey found still waiting is palm leaf.",
-    "The Foundation surveys collections held by bhandars, mandirs, mathas and traditional institutions, treats folio by folio at the custodian's own site, and digitises what it treats. Conservation is free to the custodian, and the manuscripts never change hands.",
   ],
   /** How the work is done, in three steps — simpler than a paragraph. */
   steps: [
     { title: "Survey", body: "Collections in bhandars, mandirs, mathas and institutions are visited and recorded." },
-    { title: "Treat", body: "Folio by folio, at the custodian's own site." },
+    { title: "Treat", body: "Folio by folio, in a conservation lab set up at the custodian's own location." },
     { title: "Digitise", body: "A digital record, so the original need not be handled again." },
   ],
-  note: "Conservation is free to the custodian, and the manuscripts never change hands.",
+  note: "The Foundation puts all its resources to work to save the ancient knowledge kept in mathas and libraries.",
   gloss: {
     label: "What the Foundation's field survey found",
     text: "Brittle palm leaves breaking at touch, insects consuming pages, moisture causing deterioration, ink fading beyond legibility, fragile bindings failing.",
@@ -175,18 +175,16 @@ export const sites = {
       end: "2024-09",
       figures: { manuscripts: "1,399", folios: "1,06,277" },
       footnote: "Conserved and fully digitised, February 2022 – September 2024.",
-      altName: "Also recorded elsewhere as Anekant Shodh Peeth Granthalaya — flagged for the Foundation to confirm.",
     },
     {
       name: "Karanja Lad",
-      institution: "Mahaveer Gurukul Ashram",
+      institution: "Shri Mahaveer Brahmacharyashram Gurukul Ashram",
       place: "Washim district, Maharashtra",
       status: "Completed",
       start: "2024-10",
       end: "2025-08",
       figures: { manuscripts: "221", folios: "28,268" },
       footnote: "Conserved October 2024 – August 2025. A further 866 folios have since been entrusted to the Foundation for the next phase.",
-      altName: "Also recorded elsewhere as Shri Mahaveer Brahmacharyashram — flagged for the Foundation to confirm.",
     },
     {
       name: "Shravanabelagola",
@@ -274,7 +272,7 @@ export const join = {
   ways: [
     {
       title: "Hold manuscripts?",
-      body: "Ask for a survey. It costs the custodian nothing, and the manuscripts never leave your premises.",
+      body: "Ask for a survey of your collection. For a collection of around 1,000 shastras, the conservation lab is set up at your own premises.",
       link: { label: "Ask us to survey your collection", href: "#survey" },
     },
     {
@@ -297,21 +295,14 @@ export const join = {
 
 export const adopt = {
   heading: "Adopting a folio",
-  body: `Conserving one folio costs ₹${folioPrice}. If you fund one, you receive the image of that folio, its archive record, and — if you want it — a permanent credit in that record. Dedications in memory of, or in honour of, a family member are recorded the same way, including tribute gifts of ₹${tributePrice.toLocaleString("en-IN")}.`,
+  body: `Conserving one folio costs ₹${folioPrice}; each donor receives a donation receipt and a letter of thanks. Fund a whole grantha — about 100 folios, ₹${granthaPrice.toLocaleString("en-IN")} — and your name is written on the cloth it is wrapped in.`,
   link: { label: "Bank transfer details", href: "#give" },
-  ranksLabel: "Giving ranks, in the Foundation's own vocabulary",
-  ranks: [
-    { deva: "उद्भव", latin: "Udbhav" },
-    { deva: "उदीयमान", latin: "Udiyman" },
-    { deva: "वैभव", latin: "Vaibhav" },
-    { deva: "परम संरक्षक", latin: "Param Sanrakshak" },
-    { deva: "परम शिरोमणि", latin: "Param Shiromani", highest: true },
-  ] as { deva: string; latin: string; highest?: boolean }[],
-  thresholdNote: "threshold awaiting Foundation",
   wall: {
     /** Leaves stay blank until real folio records exist. */
     filled: 0,
-    note: "An adopted folio is marked with a red slip at its edge. None has been adopted yet.",
+    note: "A whole grantha's donor is named on the cloth that wraps it.",
+    /** Written on the wrapping cloth in the drawing — where a donor's name goes. */
+    clothLabel: "your name",
   },
 } as const;
 
@@ -388,7 +379,7 @@ export const voices = {
         key: "maharaj-ji",
         kind: "A blessing, recorded at Karanja",
         name: "Muni Shri 108 Subrat Sagar Ji Maharaj",
-        role: "At the Mahavir Digambar Jain Gurukul, Karanja Lad",
+        role: "At Shri Mahaveer Brahmacharyashram Gurukul Ashram, Karanja Lad",
         lang: "hi",
         quote: "आप भी इस तरह के जीर्णोद्धार को कराएँ, जिससे ग्रंथ सैकड़ों साल के लिए पुनर्जीवित हो जाएँ।",
         translation: "Have this kind of restoration done too, so that the granthas come back to life for hundreds of years.",
@@ -459,20 +450,6 @@ export const lineage = {
     "The Foundation carries the name and upholds the tradition of Acharya Shri 108 Shanti Sagar Ji Maharaj, the first Acharya of the twentieth-century Digambar revival — the figure whose teachings shaped ASSF's founding philosophy.",
     "India Post issued a ₹5 commemorative stamp and first-day cover in his honour. The centenaries of his Muni Deeksha and of his Acharya Pad Pratishthapana are the occasion for the current conservation programme.",
   ],
-  /**
-   * Tributes on his death in 1955, from the Jain Gazette's "Homage Number",
-   * as reproduced on the Foundation's earlier website. Quoted verbatim;
-   * `translation` is filled only by the Hindi and Kannada editions.
-   */
-  tributes: {
-    label: "Homage, 1955",
-    items: [
-      { quote: "In the death of Acharya Shanti Sagar Maharaj, India has lost a great man, a great Tapasvi and a great Rishi.", name: "Dr. S. Radhakrishnan", role: "Vice-President of India", translation: "" },
-      { quote: "I had known Acharya Shanti Sagar Maharaj. He was a profound scholar and a great ascetic of modern India.", name: "Shri K. M. Munshi", role: "Governor, Uttar Pradesh", translation: "" },
-      { quote: "Saints give their message not so much through words as through the life they live.", name: "Shri Ajit Prasad Jain", role: "Union Minister for Food and Agriculture", translation: "" },
-    ],
-    source: "From the Jain Gazette's Homage Number, 1955, as reproduced on the Foundation's earlier website.",
-  },
   /** The line carried on the Foundation's own banner beside his portrait. */
   epigraph: "क्रिया करनी चाहिए तब अपना कार्य सिद्ध होता है।",
   /** Settled from the Foundation's own sources: the first-day cover's postmark (13-11-2024) and its news post of the release. */
@@ -535,7 +512,7 @@ export const field = {
 
 export const survey = {
   heading: "Do you hold palm-leaf or paper manuscripts?",
-  body: "Bhandars, mandirs, mathas and families hold folios that are deteriorating now — the Foundation's own survey of Karnataka, Maharashtra and Tamil Nadu found far more than has yet been treated. A survey costs the custodian nothing and the manuscripts never leave your premises. Send photographs from a phone, or call.",
+  body: "Bhandars, mandirs, mathas and families hold folios that are deteriorating now — the Foundation's own survey of Karnataka, Maharashtra and Tamil Nadu found far more than has yet been treated. Where a collection runs to around 1,000 shastras (70,000–1,00,000 pages), the conservation lab is set up at the custodian's own location, so the manuscripts never leave it. Send photographs from a phone, or call.",
   callLabel: "Call the Foundation",
   primary: {
     label: "Ask us to survey your collection",

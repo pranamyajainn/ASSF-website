@@ -72,8 +72,8 @@ export const ui = {
     spreadLabel: "Rural · Community",
     standingHeading: "Standing",
     standingStates: { recognised: "recognised", verify: "to verify", pending: "pending" },
-    bundleLabel: "The bundle",
-    bundleAria: "A palm-leaf manuscript bundle between painted wooden covers, bound with a cord, its leaves fanned open. No leaf yet carries the red slip that marks an adopted folio.",
+    bundleLabel: "A grantha, wrapped",
+    bundleAria: "A palm-leaf manuscript bundle between painted wooden covers, bound with a cord and resting on the red cloth it is wrapped in; a label on the cloth marks where a donor's name is written.",
   },
   about: {
     heroLabel: "About",

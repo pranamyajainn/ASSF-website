@@ -674,14 +674,27 @@ html[data-clean] [data-ornament] {
   transition-delay: calc(var(--i) * 55ms + 200ms);
 }
 
-.pothi-slip {
-  position: absolute;
-  right: -0.5rem;
-  top: 18%;
-  height: 64%;
-  width: 0.7rem;
-  border-radius: 1px;
-  background: var(--color-cinnabar);
+/* The red cloth a bundle is wrapped in, spread beneath it in perspective. */
+.pothi-cloth {
+  clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%);
+  background:
+    var(--weave),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-cloth) 85%, #000) 0%,
+      var(--color-cloth) 40%,
+      color-mix(in oklab, var(--color-cinnabar) 70%, var(--color-cloth)) 100%
+    );
+}
+
+/* Where a whole grantha's donor is named: a cream label stitched on the cloth. */
+.pothi-label {
+  background: var(--color-leaf);
+  color: var(--color-cloth);
+  border: 1px dashed color-mix(in oklab, var(--color-cloth) 55%, transparent);
+  outline: 3px solid var(--color-leaf);
+  box-shadow: 0 2px 5px rgb(20 12 4 / 0.35);
+  rotate: -2deg;
 }
 
 .pothi-cover {

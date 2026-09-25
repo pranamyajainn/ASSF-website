@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import {
   Button,
   Container,
@@ -19,7 +18,7 @@ import { scriptLang } from "@/lib/deva";
  * Join the work. Giving is one way in among several, never the loudest thing
  * on the page: the four ways sit as equals in one register, custodians
  * first. Folio adoption follows as a quieter sub-section — its price stated
- * once, in a sentence, and the giving ranks and folio bundle set small.
+ * once, in a sentence, beside the folio bundle on its wrapping cloth.
  */
 export async function Join() {
   const { home, ui } = await getContent();
@@ -59,39 +58,11 @@ export async function Join() {
           <InlineLink href={adopt.link.href} className="mt-5">
             {adopt.link.label}
           </InlineLink>
-
-          <p className="mt-12 font-mono text-register text-ink-faint">
-            {adopt.ranksLabel}; <span className="text-cinnabar">{adopt.thresholdNote}</span>
-          </p>
-          <ol className="mt-4">
-            {adopt.ranks.map((rank, i) => (
-              <li
-                key={rank.latin}
-                className="border-b border-ink/15 py-2.5"
-                style={{ paddingLeft: `calc(${i} * min(1.5rem, 4vw))` } as CSSProperties}
-              >
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span
-                    lang="hi"
-                    className={`font-display text-[1.25rem] leading-tight ${
-                      rank.highest ? "text-cinnabar" : "text-ink"
-                    }`}
-                  >
-                    {rank.deva}
-                  </span>
-                  <span className="font-mono text-register text-ink-faint">{rank.latin}</span>
-                  <span className="ml-auto">
-                    <Pending width="2.5rem" />
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ol>
         </div>
 
         <div className="lg:pt-2">
           <p className="font-mono text-register text-ink-faint">{ui.home.bundleLabel}</p>
-          <FolioWall filled={adopt.wall.filled} label={ui.home.bundleAria} note={adopt.wall.note} />
+          <FolioWall label={ui.home.bundleAria} note={adopt.wall.note} clothLabel={adopt.wall.clothLabel} />
         </div>
       </div>
     </Leaf>
@@ -144,27 +115,6 @@ export async function Lineage() {
               {lineage.epigraph}
             </p>
           </blockquote>
-
-          <div className="mt-12 border-t border-ink/20 pt-6">
-            <p className="font-mono text-register text-cinnabar">{lineage.tributes.label}</p>
-            <ul className="mt-5 grid gap-x-10 gap-y-8 md:grid-cols-3">
-              {lineage.tributes.items.map((t) => (
-                <li key={t.name}>
-                  <blockquote lang="en" className="relative font-display text-[1.15rem] leading-snug text-ink">
-                    <span aria-hidden="true" className="absolute -left-[0.55em] top-0 text-cinnabar">“</span>
-                    {t.quote}
-                    <span aria-hidden="true" className="text-cinnabar">”</span>
-                  </blockquote>
-                  {t.translation ? <p className="mt-2 text-[0.98rem] leading-snug text-ink-soft">{t.translation}</p> : null}
-                  <p className="mt-3 font-mono text-register text-ink-soft">
-                    <span className="text-ink">— {t.name}</span>
-                    <span className="block">{t.role}</span>
-                  </p>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-6 font-mono text-register text-ink-faint">{lineage.tributes.source}</p>
-          </div>
 
           {lineage.note ? <EditorialNote className="mt-10">{lineage.note}</EditorialNote> : null}
 

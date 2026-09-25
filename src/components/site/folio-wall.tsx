@@ -12,15 +12,15 @@ const LEAVES = 16;
  * slackens and the leaves fan open around it, one after another — the way
  * a bundle is opened to be read.
  *
- * An adopted folio will carry a red slip at its edge, as a reader marks a
- * leaf. None has been adopted yet, and the bundle says so rather than
- * inventing a tally.
+ * It rests on the red cloth a bundle is wrapped in, and the cloth carries a
+ * label: a whole grantha's donor is named on its wrapping cloth, which is
+ * what the Foundation gives in thanks.
  *
  * If the bundle is already on screen when this mounts (a direct link to
  * #adopt, or slow JavaScript) it opens at once. Under reduced motion it
  * rests open, without moving.
  */
-export function FolioWall({ filled, label, note }: { filled: number; label: string; note: string }) {
+export function FolioWall({ label, note, clothLabel }: { label: string; note: string; clothLabel: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
 
@@ -54,8 +54,17 @@ export function FolioWall({ filled, label, note }: { filled: number; label: stri
         data-open={open ? "" : undefined}
         className="pothi relative mx-auto aspect-[16/9] w-full"
       >
+        {/* The wrapping cloth, spread under the bundle, with the donor's label. */}
+        <span aria-hidden="true" className="pothi-cloth absolute inset-x-0 bottom-0 h-[20%]" />
+        <span
+          aria-hidden="true"
+          className="pothi-label absolute bottom-[1.5%] right-[8%] px-3 py-0.5 font-display text-[clamp(0.8rem,0.7rem+0.4vw,1rem)]"
+        >
+          {clothLabel}
+        </span>
+
         {/* Lower cover. */}
-        <span aria-hidden="true" className="pothi-cover absolute bottom-[7%] left-[2%] right-[2%] h-[7%]" />
+        <span aria-hidden="true" className="pothi-cover absolute bottom-[13%] left-[2%] right-[2%] h-[7%]" />
 
         {Array.from({ length: LEAVES }, (_, i) => (
           <span
@@ -66,25 +75,23 @@ export function FolioWall({ filled, label, note }: { filled: number; label: stri
               {
                 "--i": i,
                 "--k": LEAVES - 1 - i,
-                bottom: `calc(14% + ${i} * 2.3%)`,
+                bottom: `calc(20% + ${i} * 2.2%)`,
                 "--tone": `${(i * 37) % 11}%`,
               } as CSSProperties
             }
-          >
-            {i < filled ? <span className="pothi-slip" /> : null}
-          </span>
+          />
         ))}
 
         {/* Upper cover, painted. */}
         <span
           aria-hidden="true"
           className="pothi-cover pothi-cover-top absolute left-[2%] right-[2%] h-[7%]"
-          style={{ bottom: `calc(14% + ${LEAVES} * 2.3% + 1%)` }}
+          style={{ bottom: `calc(20% + ${LEAVES} * 2.2% + 1%)` }}
         />
 
         {/* The cord through the string-hole, and its tassel. */}
-        <span data-ornament aria-hidden="true" className="pothi-cord absolute bottom-[3%] left-[29.6%] top-[30%] w-[2px]" />
-        <span data-ornament aria-hidden="true" className="pothi-tassel absolute bottom-0 left-[28.4%] h-[9%] w-[2.4%]" />
+        <span data-ornament aria-hidden="true" className="pothi-cord absolute bottom-[9%] left-[29.6%] top-[30%] w-[2px]" />
+        <span data-ornament aria-hidden="true" className="pothi-tassel absolute bottom-[3%] left-[28.4%] h-[9%] w-[2.4%]" />
       </div>
 
       <figcaption className="mt-5 flex items-start gap-3 font-mono text-register text-ink-soft">

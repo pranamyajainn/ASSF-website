@@ -21,7 +21,7 @@ ${org.nameLatin} (${org.nameDeva}) — "${org.tagline}", ${org.brandLine}. Chari
 Pillars: ${pillars.map((p) => `${p.label} — ${p.body}`).join(" | ")}
 Headline figures: ${home.ledger.metrics.map((m) => `${m.label}: ${m.value ?? "not yet published"}`).join("; ")}.
 Sites: ${home.sites.items.map((s) => `${s.name} (${s.institution}), ${s.status.toLowerCase()}`).join("; ")}.
-Still pending (say so if asked, never imply otherwise): 12A/80G, CSR-1, NGO Darpan, FCRA, audited financials. The planned Community Empowerment Scheme (loans, skills) has not launched.
+Still pending (say so if asked, never imply otherwise): 12A/80G, CSR-1, NGO Darpan, FCRA, audited financials.
 Spellings for Hindi/Kannada answers: आचार्य शांति सागर फाउंडेशन / ಆಚಾರ್ಯ ಶಾಂತಿ ಸಾಗರ ಫೌಂಡೇಶನ್; आचार्य श्री 108 शांति सागर जी महाराज / ಆಚಾರ್ಯ ಶ್ರೀ 108 ಶಾಂತಿ ಸಾಗರ ಮಹಾರಾಜರು; ताड़पत्र / ತಾಳೆಗರಿ (palm leaf); सल्लेखना / ಸಲ್ಲೇಖನ.`;
 
 const rules = `You are the assistant on the website of ${org.nameLatin} (ASSF), a Jain charitable trust that conserves palm-leaf and handwritten paper manuscripts, builds rural infrastructure and runs community services, carrying forward the tradition of Acharya Shri 108 Shanti Sagar Ji Maharaj.

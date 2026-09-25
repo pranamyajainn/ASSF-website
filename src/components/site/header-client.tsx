@@ -160,8 +160,10 @@ export function HeaderClient({
             </Link>
 
             <nav aria-label={t.primary} className="ml-auto hidden xl:block">
-              <ul className="flex items-center gap-7">
-                {nav.map((item) => {
+              {/* Home first, so the reader always sees which page they are on:
+                  the current one is underlined in red. */}
+              <ul className="flex items-center gap-6 2xl:gap-7">
+                {[{ label: t.homeLink, href: homeHref }, ...nav].map((item) => {
                   const current = pathname === item.href;
                   return (
                     <li key={item.href}>
