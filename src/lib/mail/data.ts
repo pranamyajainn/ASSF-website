@@ -21,7 +21,7 @@ export const GROUPS = [
   { id: "trustees", name: "Trustees" },
 ] as const;
 
-function key(): Buffer {
+export function key(): Buffer {
   const secret = process.env.MAIL_DATA_KEY || process.env.AUTH_SECRET;
   if (!secret) throw new Error("No key for the mailing list (AUTH_SECRET is not set).");
   return Buffer.from(hkdfSync("sha256", secret, "assf-mail", "assf-mail-data-v1", 32));

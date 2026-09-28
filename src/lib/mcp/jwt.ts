@@ -11,7 +11,7 @@ import { createHash, createHmac, hkdfSync, timingSafeEqual } from "node:crypto";
  * Each kind of token carries its own `typ`, and verification insists on it,
  * so a token of one kind can never be used as another.
  */
-export type TokenType = "client" | "code" | "access" | "refresh" | "proposal" | "unsubscribe";
+export type TokenType = "client" | "code" | "access" | "refresh" | "proposal" | "unsubscribe" | "file";
 
 const b64 = (data: Buffer | string) => Buffer.from(data).toString("base64url");
 

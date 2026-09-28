@@ -21,7 +21,7 @@ type Data = {
   org: Email["org"];
   me: string;
 };
-type Attachment = { name: string; type: string; data: string; size: number };
+type Attachment = { name: string; type: string; data: string; size: number; link?: string };
 
 const DRAFT_KEY = "assf-editor:mail-draft";
 const BATCH = 20;
@@ -147,6 +147,57 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
   );
 
   const ready = draft.subject.trim() && draft.body.trim();
+  const whatsappText = (link?: string) =>
+    `*${draft.subject}*\n\n${draft.body}${attachment && link ? `\n\n📎 ${attachment.name}: ${link}` : ""}`;
+  const file = useMemo(
+    () => (attachment ? new File([Uint8Array.from(atob(attachment.data), (c) => c.charCodeAt(0))], attachment.name, { type: attachment.type }) : null),
+    [attachment?.data, attachment?.name, attachment?.type], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  // Phones (and Safari) can hand the file itself to WhatsApp through the share menu.
+  const canShareFile = !!file && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] });
+
+  /**
+   * WhatsApp links carry words only, so an attached report is kept privately
+   * and its link goes into the message (once per file).
+   */
+  async function shareOnWhatsApp() {
+    // Open the window now, while the click still counts, and point it at WhatsApp once the link is ready.
+    const win = window.open("", "_blank");
+    let link = attachment?.link;
+    try {
+      if (attachment && !link) {
+        setStatus({ kind: "busy", text: "Preparing a link to the file…" });
+        const res = await fetch("/api/cms/mail/file", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: attachment.name, type: attachment.type, data: attachment.data }),
+        });
+        if (!res.ok) throw new Error((await res.text()) || "The file couldn't be prepared.");
+        link = ((await res.json()) as { url: string }).url;
+        setAttachment({ ...attachment, link });
+      }
+      const url = `https://wa.me/?text=${encodeURIComponent(whatsappText(link))}`;
+      if (win) {
+        win.opener = null;
+        win.location.href = url;
+      } else window.location.href = url;
+      setStatus({ kind: "done", text: attachment ? "Opened WhatsApp — the message carries a link to the file (valid for 90 days)." : "Opened WhatsApp." });
+    } catch (err) {
+      win?.close();
+      setStatus({ kind: "error", text: err instanceof Error ? err.message : "Couldn't open WhatsApp." });
+    }
+  }
+
+  async function shareWithFile() {
+    if (!file) return;
+    try {
+      await navigator.share({ files: [file], title: draft.subject, text: whatsappText() });
+      setStatus({ kind: "done", text: "Shared." });
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
+      setStatus({ kind: "error", text: "This device couldn't share the file — use Share on WhatsApp instead." });
+    }
+  }
   const post = async (payload: object) => {
     const res = await fetch("/api/cms/mail/send", {
       method: "POST",
@@ -331,17 +382,30 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
           >
             Send to {recipients.length} {recipients.length === 1 ? "person" : "people"}
           </button>
-          <a
-            href={ready ? `https://wa.me/?text=${encodeURIComponent(`*${draft.subject}*\n\n${draft.body}`)}` : undefined}
-            target="_blank"
-            rel="noreferrer"
-            aria-disabled={!ready}
-            className={`${button} border border-emerald-800/40 bg-white/80 text-emerald-900 hover:bg-emerald-50 ${ready ? "" : "pointer-events-none opacity-50"}`}
+          <button
+            type="button"
+            disabled={!ready || status.kind === "busy"}
+            onClick={shareOnWhatsApp}
+            className={`${button} border border-emerald-800/40 bg-white/80 text-emerald-900 hover:bg-emerald-50`}
           >
             Share on WhatsApp
-          </a>
+          </button>
+          {canShareFile ? (
+            <button
+              type="button"
+              disabled={!ready || status.kind === "busy"}
+              onClick={shareWithFile}
+              className={`${button} border border-emerald-800/40 bg-white/80 text-emerald-900 hover:bg-emerald-50`}
+            >
+              Share with the file attached
+            </button>
+          ) : null}
         </div>
-        {attachment ? <p className="text-[0.82rem] text-ink-faint">WhatsApp shares the words; attach the report to the WhatsApp message yourself.</p> : null}
+        {attachment ? (
+          <p className="text-[0.82rem] text-ink-faint">
+            On WhatsApp the report travels as a secure link in the message{canShareFile ? " — or use “Share with the file attached” to send the file itself" : ""}.
+          </p>
+        ) : null}
         {status.text ? (
           <p role="status" className={`text-[0.95rem] ${status.kind === "error" ? "text-cinnabar-deep" : status.kind === "done" ? "text-emerald-800" : "text-ink-soft"}`}>
             {status.text}
