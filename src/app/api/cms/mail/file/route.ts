@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 export async function POST(req: Request) {
   const editor = await editorRequest(req);
   if (editor instanceof Response) return editor;
-  const b = (await req.json().catch(() => null)) as { name?: unknown; type?: unknown; data?: unknown } | null;
+  const b = (await req.json().catch(() => null)) as { name?: unknown; type?: unknown; data?: unknown; title?: unknown } | null;
   if (typeof b?.data !== "string") return new Response("No file sent.", { status: 400 });
   const bytes = Buffer.from(b.data, "base64");
   const type = String(b.type ?? "");
@@ -18,7 +18,8 @@ export async function POST(req: Request) {
   const name = String(b.name ?? "report").replace(/[^\w.\- ()]/g, "_").slice(0, 100);
   try {
     const site = process.env.NODE_ENV === "development" ? originOf(req) : siteUrl.origin;
-    const url = await saveFile(bytes, name, type, site);
+    const title = typeof b.title === "string" && b.title.trim() ? b.title.replace(/\s+/g, " ").trim().slice(0, 140) : "A report from the Foundation";
+    const url = await saveFile(bytes, name, type, title, site);
     console.info("Shared file", { editor: editor.email, name, bytes: bytes.length });
     return Response.json({ url });
   } catch (err) {

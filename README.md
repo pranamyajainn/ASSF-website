@@ -134,8 +134,9 @@ Trustees), writes a subject and plain text — laid out in the site's style auto
 (`src/lib/mail/render.ts`) — optionally attaches a report (PDF/Word/photo, 3 MB), sends a test to
 itself, then sends in batches of 20 through its own Gmail/Workspace account (SMTP, nodemailer).
 "Share on WhatsApp" opens the same words in WhatsApp for a group; WhatsApp links can't carry files,
-so an attached report travels as a secure link (`/files/…`: the file encrypted on the `cms-data`
-branch, the link signed, valid 90 days). On phones and Safari, "Share with the file attached" hands
+so an attached report travels as a short link (`/r/<12 characters>`: the file encrypted on the
+`cms-data` branch, valid 90 days) that opens a small page in the Foundation's look — which WhatsApp
+shows as a proper preview card — with "Open the report". (Older `/files/…` links keep working.) On phones and Safari, "Share with the file attached" hands
 the file itself to WhatsApp through the device's share menu.
 
 - The list lives **encrypted** (AES-256-GCM) in `mail.enc.json` on the `cms-data` branch, which

@@ -21,7 +21,7 @@ type Data = {
   org: Email["org"];
   me: string;
 };
-type Attachment = { name: string; type: string; data: string; size: number; link?: string };
+type Attachment = { name: string; type: string; data: string; size: number; link?: string; linkTitle?: string };
 
 const DRAFT_KEY = "assf-editor:mail-draft";
 const BATCH = 20;
@@ -147,8 +147,13 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
   );
 
   const ready = draft.subject.trim() && draft.body.trim();
+  /**
+   * The WhatsApp message: bold title (WhatsApp's *…* breaks on inner spaces
+   * at the edges, so it's trimmed), the words, the report's short link, and
+   * the Foundation's name. No emoji — some phones mangle them in share links.
+   */
   const whatsappText = (link?: string) =>
-    `*${draft.subject}*\n\n${draft.body}${attachment && link ? `\n\n📎 ${attachment.name}: ${link}` : ""}`;
+    [`*${draft.subject.trim()}*`, draft.body.trim(), link ? `View the report:\n${link}` : "", "— Acharya Shanti Sagar Foundation"].filter(Boolean).join("\n\n");
   const file = useMemo(
     () => (attachment ? new File([Uint8Array.from(atob(attachment.data), (c) => c.charCodeAt(0))], attachment.name, { type: attachment.type }) : null),
     [attachment?.data, attachment?.name, attachment?.type], // eslint-disable-line react-hooks/exhaustive-deps
@@ -163,25 +168,26 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
   async function shareOnWhatsApp() {
     // Open the window now, while the click still counts, and point it at WhatsApp once the link is ready.
     const win = window.open("", "_blank");
-    let link = attachment?.link;
+    // A link made under another title would preview with the old title: make a fresh one.
+    let link = attachment?.linkTitle === draft.subject.trim() ? attachment?.link : undefined;
     try {
       if (attachment && !link) {
         setStatus({ kind: "busy", text: "Preparing a link to the file…" });
         const res = await fetch("/api/cms/mail/file", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: attachment.name, type: attachment.type, data: attachment.data }),
+          body: JSON.stringify({ name: attachment.name, type: attachment.type, data: attachment.data, title: draft.subject.trim() }),
         });
         if (!res.ok) throw new Error((await res.text()) || "The file couldn't be prepared.");
         link = ((await res.json()) as { url: string }).url;
-        setAttachment({ ...attachment, link });
+        setAttachment({ ...attachment, link, linkTitle: draft.subject.trim() });
       }
       const url = `https://wa.me/?text=${encodeURIComponent(whatsappText(link))}`;
       if (win) {
         win.opener = null;
         win.location.href = url;
       } else window.location.href = url;
-      setStatus({ kind: "done", text: attachment ? "Opened WhatsApp — the message carries a link to the file (valid for 90 days)." : "Opened WhatsApp." });
+      setStatus({ kind: "done", text: attachment ? "Opened WhatsApp — the message links to the report, shown as the Foundation's card (valid for 90 days)." : "Opened WhatsApp." });
     } catch (err) {
       win?.close();
       setStatus({ kind: "error", text: err instanceof Error ? err.message : "Couldn't open WhatsApp." });
@@ -403,7 +409,7 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
         </div>
         {attachment ? (
           <p className="text-[0.82rem] text-ink-faint">
-            On WhatsApp the report travels as a secure link in the message{canShareFile ? " — or use “Share with the file attached” to send the file itself" : ""}.
+            On WhatsApp the report travels as a short link that shows the Foundation&apos;s card{canShareFile ? " — or use “Share with the file attached” to send the file itself" : ""}.
           </p>
         ) : null}
         {status.text ? (
