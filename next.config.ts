@@ -69,6 +69,7 @@ const nextConfig: NextConfig = {
       { source: "/editor", headers: [noindex] },
       { source: "/preview/:path*", headers: framedBySelf },
       { source: "/oauth/:path*", headers: [noindex] },
+      { source: "/unsubscribe", headers: [noindex] },
       { source: "/api/:path*", headers: [noindex] },
       { source: "/images/:path*", headers: [media] },
       { source: "/videos/:path*", headers: [media] },

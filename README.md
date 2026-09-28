@@ -48,6 +48,8 @@ Pushing `main` deploys to Vercel (project `assf-website`).
 | `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | The trustee portal's Google sign-in. Authorised redirect URI in Google Cloud: `https://<domain>/api/auth/callback/google`. |
 | `EDITOR_EMAILS` | The site editor: Google accounts allowed to edit, comma-separated. |
 | `CMS_GITHUB_TOKEN` | The site editor: a fine-grained GitHub token for this repository only, with **Contents: Read and write**. Publishing commits with it. |
+| `SMTP_USER`, `SMTP_PASS` | Email updates: the Foundation's Gmail / Google Workspace address and a 16-letter **app password** for it (Google Account → Security → 2-Step Verification → App passwords). Optional: `MAIL_FROM_NAME`, `SMTP_HOST`/`SMTP_PORT` for another provider, `SMTP_DAILY_LIMIT`. |
+| `MAIL_DATA_KEY` | Optional. Encrypts the mailing list; defaults to a key derived from `AUTH_SECRET`. Set it to the old `AUTH_SECRET` before rotating that secret, or the list becomes unreadable. |
 | `NEXT_PUBLIC_SITE_URL` | Optional. Only if the canonical address should differ from Vercel's production domain (e.g. to prefer `https://www.…`). |
 
 **Indexing.** The site tells search engines to stay away (`X-Robots-Tag: noindex`) everywhere
@@ -124,6 +126,22 @@ before running them). Each proposal publishes once (`applied` in `edits.json`), 
 chat or the editor; a change needing a new photo must be published from the editor.
 `undo_last_publish` restores the version before the latest publish. The editor's "Use it from
 Claude or ChatGPT" card shows people how to connect.
+
+### Email updates (newsletters, reports to trustees)
+
+In the editor, **✉ Email updates**: the Foundation keeps its list of people (groups: Newsletter,
+Trustees), writes a subject and plain text — laid out in the site's style automatically
+(`src/lib/mail/render.ts`) — optionally attaches a report (PDF/Word/photo, 3 MB), sends a test to
+itself, then sends in batches of 20 through its own Gmail/Workspace account (SMTP, nodemailer).
+"Share on WhatsApp" opens the same words in WhatsApp for a group.
+
+- The list lives **encrypted** (AES-256-GCM) in `mail.enc.json` on the `cms-data` branch, which
+  holds no site and never deploys (`vercel.json`) — the repository is public, and addresses must
+  not be readable there. Locally, `.cms-data/` (git-ignored); without SMTP credentials `next dev`
+  writes messages to `.cms-data/outbox.jsonl` instead of sending.
+- Every message has a personal unsubscribe link (`/unsubscribe`) and one-click unsubscribe headers
+  (`/api/unsubscribe`, RFC 8058). Someone who unsubscribes stays unsubscribed even if added again.
+- Only people on the list can be sent to; Gmail allows about 500 a day, Workspace about 2,000.
 
 **Before pushing code:** the editor commits to `main` too — `git pull --rebase` first. If a
 content change moves or renames something the Foundation has edited, check `edits.json`.

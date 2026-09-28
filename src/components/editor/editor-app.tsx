@@ -9,6 +9,7 @@ import type { Proposal } from "@/lib/mcp/proposal";
 import { applyActions, blankLike, changeList, describeAt, problems, setField, translatedFields, withOps, type Action, type Trees } from "./model";
 import { Find, Panel, type Selection } from "./panel";
 import { preparePhoto } from "./photo";
+import { MailView } from "./mail";
 import { Preview } from "./preview";
 
 type Staged = Record<string, { blob: string | null; preview: string }>;
@@ -93,7 +94,8 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
       return "en";
     }
   });
-  const [mode, setMode] = useState<"page" | "list">(() => (window.matchMedia("(min-width: 1024px)").matches ? "page" : "list"));
+  const wide = () => window.matchMedia("(min-width: 1024px)").matches;
+  const [mode, setMode] = useState<"page" | "list" | "mail">(() => (wide() ? "page" : "list"));
   const [sitePage, setSitePage] = useState<SitePage>("home");
   const [selection, setSelection] = useState<Selection>(null);
   const [scrollTo, setScrollTo] = useState<{ path: Path; nonce: number } | null>(null);
@@ -369,11 +371,21 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
             <div className="ml-auto flex flex-wrap items-center gap-1.5">
               <button
                 type="button"
-                onClick={() => setMode(mode === "page" ? "list" : "page")}
-                className="hidden cursor-pointer rounded-md px-3 py-2 text-[0.9rem] text-board-ink/85 hover:bg-white/10 lg:block"
+                onClick={() => setMode(mode === "mail" ? (wide() ? "page" : "list") : "mail")}
+                aria-pressed={mode === "mail"}
+                className={`cursor-pointer rounded-md px-3 py-2 text-[0.9rem] ${mode === "mail" ? "bg-white/15 text-board-ink" : "text-board-ink/85 hover:bg-white/10"}`}
               >
-                {mode === "page" ? "All content as a list" : "Edit on the page"}
+                {mode === "mail" ? "← Back to the site" : "✉ Email updates"}
               </button>
+              {mode !== "mail" ? (
+                <button
+                  type="button"
+                  onClick={() => setMode(mode === "page" ? "list" : "page")}
+                  className="hidden cursor-pointer rounded-md px-3 py-2 text-[0.9rem] text-board-ink/85 hover:bg-white/10 lg:block"
+                >
+                  {mode === "page" ? "All content as a list" : "Edit on the page"}
+                </button>
+              ) : null}
               {storage === "github" ? (
                 <button type="button" onClick={() => setDialog("history")} className="cursor-pointer rounded-md px-3 py-2 text-[0.9rem] text-board-ink/85 hover:bg-white/10">
                   History
@@ -487,6 +499,8 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
               />
             </aside>
           </div>
+        ) : mode === "mail" ? (
+          <MailView />
         ) : (
           <ListView page={listPage} onPage={setListPage} onFind={reveal} changedIn={(m) => new Set(draft.filter((o) => o.path[0] === m).map((o) => pathKey(o.path))).size} />
         )}

@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# the site editor's local mailing data and outbox (next dev only)
+/.cms-data/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

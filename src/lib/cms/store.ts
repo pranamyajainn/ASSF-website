@@ -165,6 +165,66 @@ export async function history(): Promise<Publish[]> {
   return commits.map((c) => ({ sha: c.sha, message: c.commit.message, date: c.commit.committer.date }));
 }
 
+/**
+ * A private file kept on its own branch (`cms-data`), apart from the site:
+ * the mailing list, for one. The branch has no site on it and Vercel doesn't
+ * deploy it (vercel.json); the repository is public, so what's written here
+ * must already be encrypted (see lib/mail/data.ts). Locally, a file in
+ * .cms-data/ (git-ignored).
+ */
+const DATA_BRANCH = process.env.CMS_DATA_BRANCH ?? "cms-data";
+
+export async function readDataFile(path: string): Promise<{ text: string | null; head: string | null }> {
+  if (storage === "github") {
+    let head: string;
+    try {
+      head = (await github<{ object: { sha: string } }>(`/git/ref/heads/${DATA_BRANCH}`)).object.sha;
+    } catch (err) {
+      if (err instanceof Error && err.message.startsWith("GitHub 404")) return { text: null, head: null };
+      throw err;
+    }
+    try {
+      return { text: await github<string>(`/contents/${path}?ref=${head}`, { raw: true }), head };
+    } catch (err) {
+      if (err instanceof Error && err.message.startsWith("GitHub 404")) return { text: null, head };
+      throw err;
+    }
+  }
+  if (storage === "local") {
+    try {
+      return { text: await readFile(join(process.cwd(), ".cms-data", path), "utf8"), head: null };
+    } catch {
+      return { text: null, head: null };
+    }
+  }
+  throw new Error("The site editor isn't connected to storage.");
+}
+
+/** Writes a data file on top of `head` (null: the branch doesn't exist yet, so it's started). */
+export async function writeDataFile(path: string, text: string, message: string, head: string | null): Promise<void> {
+  if (storage === "local") {
+    const file = join(process.cwd(), ".cms-data", path);
+    await mkdir(dirname(file), { recursive: true });
+    await writeFile(file, text);
+    return;
+  }
+  if (storage !== "github") throw new Error("The site editor isn't connected to storage.");
+  const base = head ? await github<{ tree: { sha: string } }>(`/git/commits/${head}`) : null;
+  const tree = await github<{ sha: string }>(`/git/trees`, {
+    method: "POST",
+    body: JSON.stringify({ ...(base ? { base_tree: base.tree.sha } : {}), tree: [{ path, mode: "100644", type: "blob", content: text }] }),
+  });
+  const commit = await github<{ sha: string }>(`/git/commits`, {
+    method: "POST",
+    body: JSON.stringify({ message, tree: tree.sha, parents: head ? [head] : [] }),
+  });
+  if (head) {
+    await github(`/git/refs/heads/${DATA_BRANCH}`, { method: "PATCH", body: JSON.stringify({ sha: commit.sha, force: false }) });
+  } else {
+    await github(`/git/refs`, { method: "POST", body: JSON.stringify({ ref: `refs/heads/${DATA_BRANCH}`, sha: commit.sha }) });
+  }
+}
+
 /** Retries `publish` from a fresh head when the branch moved underneath it. */
 export async function withRetry<T>(publish: () => Promise<T>, attempts = 3): Promise<T> {
   for (let i = 1; ; i++) {
