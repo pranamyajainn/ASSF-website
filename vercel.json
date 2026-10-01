@@ -4,5 +4,11 @@
     "deploymentEnabled": {
       "cms-data": false
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/daily",
+      "schedule": "30 0 * * *"
+    }
+  ]
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { renderEmail, type Email } from "@/lib/mail/render";
+import { ComingUp } from "./coming-up";
 
 /**
  * Email updates: the Foundation writes to the people it chooses — the
@@ -115,6 +116,8 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
   const [choosing, setChoosing] = useState(draft.people.length > 0);
   const [filter, setFilter] = useState("");
   const [status, setStatus] = useState<{ kind: "idle" | "busy" | "done" | "error"; text: string }>({ kind: "idle", text: "" });
+  const [tomorrow] = useState(() => new Date(Date.now() + 86_400_000).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }));
+  const [later, setLater] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -255,6 +258,34 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
     }
   }
 
+  /** Sends on the morning of a later day, from the daily job — to the list as it is by then. */
+  async function schedule() {
+    if (!later) return;
+    setStatus({ kind: "busy", text: "Scheduling…" });
+    const res = await fetch("/api/cms/schedule", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        kind: "email",
+        date: later,
+        subject: draft.subject,
+        body: draft.body,
+        groups: draft.groups,
+        people: draft.people,
+        attachment: attachment ? { name: attachment.name, type: attachment.type, data: attachment.data } : null,
+      }),
+    }).catch(() => null);
+    if (!res?.ok) {
+      setStatus({ kind: "error", text: (await res?.text().catch(() => "")) || "Couldn't schedule it — check the connection and try again." });
+      return;
+    }
+    const day = new Date(later).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
+    setStatus({ kind: "done", text: `Scheduled ✓ — it goes out early on ${day}, to everyone in ${audience} then. Cancel it under Sent.` });
+    setDraft({ ...draft, subject: "", body: "" });
+    setAttachment(null);
+    setLater(null);
+  }
+
   const toggleGroup = (id: string) =>
     setDraft((d) => ({ ...d, groups: d.groups.includes(id) ? d.groups.filter((g) => g !== id) : [...d.groups, id] }));
 
@@ -380,14 +411,43 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
           <button type="button" disabled={!ready || status.kind === "busy" || data.mode === "none"} onClick={test} className={`${button} border border-ink/25 bg-white/80 hover:border-cinnabar`}>
             Send me a test
           </button>
-          <button
-            type="button"
-            disabled={!ready || !recipients.length || status.kind === "busy" || data.mode === "none"}
-            onClick={sendAll}
-            className={`${button} bg-cinnabar text-leaf hover:bg-cinnabar-deep`}
-          >
-            Send to {recipients.length} {recipients.length === 1 ? "person" : "people"}
-          </button>
+          {later ? (
+            <span className="flex flex-wrap items-center gap-2">
+              <input
+                type="date"
+                value={later}
+                min={tomorrow}
+                onChange={(e) => setLater(e.target.value)}
+                aria-label="The day it's sent"
+                className="rounded-md border border-ink/20 bg-white/85 px-3 py-1.5 outline-none focus:border-cinnabar"
+              />
+              <button
+                type="button"
+                disabled={!ready || !recipients.length || status.kind === "busy" || !(later >= tomorrow)}
+                onClick={schedule}
+                className={`${button} bg-cinnabar text-leaf hover:bg-cinnabar-deep`}
+              >
+                Send on {new Date(later).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+              </button>
+              <button type="button" onClick={() => setLater(null)} className="cursor-pointer text-[0.88rem] text-ink-soft underline">
+                Send now instead
+              </button>
+            </span>
+          ) : (
+            <>
+              <button
+                type="button"
+                disabled={!ready || !recipients.length || status.kind === "busy" || data.mode === "none"}
+                onClick={sendAll}
+                className={`${button} bg-cinnabar text-leaf hover:bg-cinnabar-deep`}
+              >
+                Send to {recipients.length} {recipients.length === 1 ? "person" : "people"}
+              </button>
+              <button type="button" onClick={() => setLater(tomorrow)} className={`${button} border border-ink/25 bg-white/80 hover:border-cinnabar`}>
+                Send later…
+              </button>
+            </>
+          )}
           <button
             type="button"
             disabled={!ready || status.kind === "busy"}
@@ -566,7 +626,15 @@ function People({ data, onSaved }: { data: Data; onSaved: (contacts: Contact[]) 
 }
 
 function SentList({ sent }: { sent: Sent[] }) {
-  if (!sent.length) return <p className="rounded-md bg-white/50 px-4 py-6 text-center text-ink-faint">Nothing sent yet.</p>;
+  return (
+    <>
+      <ComingUp kind="email" />
+      {sent.length ? <SentItems sent={sent} /> : <p className="rounded-md bg-white/50 px-4 py-6 text-center text-ink-faint">Nothing sent yet.</p>}
+    </>
+  );
+}
+
+function SentItems({ sent }: { sent: Sent[] }) {
   return (
     <ul className="divide-y divide-ink/10 rounded-md border border-ink/12 bg-white/50">
       {sent.map((s) => (

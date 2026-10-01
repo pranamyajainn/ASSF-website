@@ -11,6 +11,7 @@ import { Find, Panel, type Selection } from "./panel";
 import { preparePhoto } from "./photo";
 import { MailView } from "./mail";
 import { InsightsView } from "./insights";
+import { ComingUp } from "./coming-up";
 import { Preview } from "./preview";
 
 type Staged = Record<string, { blob: string | null; preview: string }>;
@@ -19,6 +20,7 @@ type Status =
   | { kind: "publishing" }
   | { kind: "deploying"; revision: number }
   | { kind: "live"; revision: number }
+  | { kind: "scheduled"; date: string }
   | { kind: "error"; message: string; stale?: boolean };
 
 type Props = {
@@ -278,12 +280,31 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
     setScrollTo({ path: [...listPath, atStart ? 0 : Math.max(0, list.length - 1)], nonce: Date.now() });
   }
 
-  async function publish(note: string) {
+  async function publish(note: string, date?: string) {
     const text = JSON.stringify(draft);
     const images = Object.entries(staged)
       .filter(([path]) => text.includes(JSON.stringify(path)))
       .map(([path, s]) => ({ path, blob: s.blob }));
     setStatus({ kind: "publishing" });
+    if (date) {
+      // On a later day: kept until then, and published by the daily job that morning.
+      const res = await fetch("/api/cms/schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: "site", ops: draft, images, note, proposals: proposalIds, date }),
+      }).catch(() => null);
+      if (!res?.ok) {
+        setStatus({ kind: "error", message: (await res?.text().catch(() => "")) || "Couldn't reach the site. Check the connection and try again." });
+        return;
+      }
+      setDraft([]);
+      setSplit(new Set());
+      setProposalIds([]);
+      setDialog(null);
+      setSelection(null);
+      setStatus({ kind: "scheduled", date });
+      return;
+    }
     try {
       const res = await fetch("/api/cms/publish", {
         method: "POST",
@@ -407,11 +428,9 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
                   {mode === "page" ? "All content as a list" : "Edit on the page"}
                 </button>
               ) : null}
-              {storage === "github" ? (
-                <button type="button" onClick={() => setDialog("history")} className="cursor-pointer rounded-md px-3 py-2 text-[0.9rem] text-board-ink/85 hover:bg-white/10">
-                  History
-                </button>
-              ) : null}
+              <button type="button" onClick={() => setDialog("history")} className="cursor-pointer rounded-md px-3 py-2 text-[0.9rem] text-board-ink/85 hover:bg-white/10">
+                History
+              </button>
               <div className="relative">
                 <button
                   type="button"
@@ -789,6 +808,10 @@ function StatusPill({ status, count, storage, onRetry }: { status: Status; count
   let text: ReactNode;
   let tone = "bg-white/10 text-board-ink/85";
   if (status.kind === "publishing") text = "Publishing…";
+  else if (status.kind === "scheduled" && !count) {
+    text = `Scheduled ✓ — goes live on the morning of ${new Date(status.date).toLocaleDateString("en-IN", { day: "numeric", month: "long" })}`;
+    tone = "bg-emerald-900/60 text-emerald-50";
+  }
   else if (status.kind === "deploying") text = "Published — the site updates in a minute or two…";
   else if (status.kind === "live" && !count) {
     text = (
@@ -877,9 +900,12 @@ function Review({
   onUndo: (key: string) => void;
   onDiscard: () => void;
   onReveal: (path: Path) => void;
-  onPublish: (note: string) => void;
+  onPublish: (note: string, date?: string) => void;
 }) {
   const [note, setNote] = useState("");
+  const [later, setLater] = useState(false);
+  const [tomorrow] = useState(() => new Date(Date.now() + 86_400_000).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }));
+  const [date, setDate] = useState(tomorrow);
   const toFix = problems(draft);
   const shared = (current.en as { shared: { folioPrice: number; granthaPrice: number } }).shared;
   const prices = { folioPrice: shared.folioPrice.toLocaleString("en-IN"), granthaPrice: shared.granthaPrice.toLocaleString("en-IN") };
@@ -954,6 +980,34 @@ function Review({
             className="w-full rounded-md border border-ink/20 bg-white/80 px-3 py-2 outline-none focus:border-cinnabar"
           />
         </label>
+        <fieldset className="mt-4">
+          <legend className="mb-1.5 font-mono text-[0.75rem] uppercase tracking-[0.06em] text-ink-faint">When</legend>
+          <div className="flex flex-wrap items-center gap-2 text-[0.92rem]">
+            <label className={`flex cursor-pointer items-center gap-2 rounded-full border px-3.5 py-1.5 ${!later ? "border-board bg-board text-board-ink" : "border-ink/20 bg-white/70"}`}>
+              <input type="radio" name="when" className="sr-only" checked={!later} onChange={() => setLater(false)} />
+              Now
+            </label>
+            <label className={`flex cursor-pointer items-center gap-2 rounded-full border px-3.5 py-1.5 ${later ? "border-board bg-board text-board-ink" : "border-ink/20 bg-white/70"}`}>
+              <input type="radio" name="when" className="sr-only" checked={later} onChange={() => setLater(true)} />
+              On a later day
+            </label>
+            {later ? (
+              <input
+                type="date"
+                value={date}
+                min={tomorrow}
+                onChange={(e) => setDate(e.target.value)}
+                aria-label="The day it goes live"
+                className="rounded-md border border-ink/20 bg-white/80 px-3 py-1.5 outline-none focus:border-cinnabar"
+              />
+            ) : null}
+          </div>
+          {later ? (
+            <p className="mt-1.5 text-[0.85rem] text-ink-faint">
+              It goes live early that morning (about 6 a.m.). It&apos;s checked again then against the site as it is, and can be cancelled from History until then.
+            </p>
+          ) : null}
+        </fieldset>
         {status.kind === "error" ? <p className="mt-3 text-[0.92rem] text-cinnabar-deep">{status.message}</p> : null}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <button type="button" onClick={onDiscard} className="cursor-pointer text-[0.9rem] text-ink-soft underline decoration-ink/30 underline-offset-2 hover:text-cinnabar">
@@ -961,11 +1015,17 @@ function Review({
           </button>
           <button
             type="button"
-            disabled={busy || !!toFix.length}
-            onClick={() => onPublish(note)}
+            disabled={busy || !!toFix.length || (later && !(date >= tomorrow))}
+            onClick={() => onPublish(note, later ? date : undefined)}
             className="cursor-pointer rounded-md bg-cinnabar px-5 py-2.5 text-leaf transition-colors hover:bg-cinnabar-deep disabled:cursor-default disabled:opacity-50"
           >
-            {busy ? "Publishing…" : "Publish to the site"}
+            {busy
+              ? later
+                ? "Scheduling…"
+                : "Publishing…"
+              : later
+                ? `Publish on ${new Date(date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`
+                : "Publish to the site"}
           </button>
         </div>
       </div>
@@ -984,6 +1044,7 @@ function History({ onClose, onRestore }: { onClose: () => void; onRestore: (sha:
   const when = (date: string) => new Date(date).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" });
   return (
     <Dialog title="History" onClose={onClose}>
+      <ComingUp kind="site" />
       <p className="mb-4 text-[0.92rem] text-ink-soft">
         Every publish is kept. Restoring brings the site back to how it was after that publish — as a new publish, so it can be undone too.
       </p>
