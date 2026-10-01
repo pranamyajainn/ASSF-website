@@ -355,6 +355,15 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
           </p>
         </div>
 
+        <DraftForMe
+          kind={draft.groups.includes("trustees") && !draft.groups.includes("newsletter") ? "trustees" : "newsletter"}
+          onDraft={(subject, body) => {
+            if ((draft.subject.trim() || draft.body.trim()) && !window.confirm("Replace what you've written with the AI's draft?")) return false;
+            setDraft({ ...draft, subject, body });
+            return true;
+          }}
+        />
+
         <label className="block">
           <span className="mb-1 block font-display text-[1.1rem]">Subject</span>
           <input value={draft.subject} onChange={(e) => setDraft({ ...draft, subject: e.target.value })} placeholder="e.g. Conservation at Shravanabelagola — September update" className={field} />
@@ -483,6 +492,104 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
         <p className="mb-2 font-display text-[1.1rem]">How it arrives</p>
         <iframe title="The email, as it arrives" srcDoc={preview} sandbox="" className="h-[44rem] w-full rounded-md border border-ink/15 bg-white" />
         {data.sender ? <p className="mt-2 text-[0.85rem] text-ink-faint">Sent from {data.sender}; replies go to {data.org.email}.</p> : null}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * An AI first draft, from what the site knows: its figures, its news, what
+ * changed since the last email and — for trustees — what visitors asked.
+ * Gaps the Foundation must fill come back in [square brackets].
+ */
+function DraftForMe({ kind: suggested, onDraft }: { kind: "newsletter" | "trustees"; onDraft: (subject: string, body: string) => boolean }) {
+  const [open, setOpen] = useState(false);
+  const [kind, setKind] = useState(suggested);
+  const [lang, setLang] = useState<"en" | "hi" | "kn">("en");
+  const [notes, setNotes] = useState("");
+  const [state, setState] = useState<{ busy: boolean; text: string; error: boolean }>({ busy: false, text: "", error: false });
+  const chip = (on: boolean) => `cursor-pointer rounded-full border px-3 py-1 text-[0.88rem] ${on ? "border-board bg-board text-board-ink" : "border-ink/20 bg-white/70 hover:border-cinnabar"}`;
+
+  async function write() {
+    setState({ busy: true, text: "Reading the site and writing…", error: false });
+    const res = await fetch("/api/cms/mail/draft", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kind, lang, notes }),
+    }).catch(() => null);
+    if (!res?.ok) {
+      setState({ busy: false, text: (await res?.text().catch(() => "")) || "The draft couldn't be written — try again.", error: true });
+      return;
+    }
+    const { subject, body } = (await res.json()) as { subject: string; body: string };
+    if (!onDraft(subject, body)) {
+      setState({ busy: false, text: "", error: false });
+      return;
+    }
+    const gaps = (body.match(/\[[^\]]+\]/g) ?? []).length;
+    setState({
+      busy: false,
+      text: `Drafted below${gaps ? ` — fill in the ${gaps} gap${gaps === 1 ? "" : "s"} in [square brackets]` : ""}. Read it through: you're the one sending it.`,
+      error: false,
+    });
+    setOpen(false);
+  }
+
+  if (!open) {
+    return (
+      <div>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-cinnabar/50 bg-white/50 px-3.5 py-2 text-[0.92rem] text-cinnabar-deep hover:bg-white/80"
+        >
+          Draft it for me <span className="border border-current px-1 py-px font-mono text-[0.64rem] leading-none tracking-[0.08em]">AI</span>
+        </button>
+        {state.text ? <p className={`mt-2 text-[0.88rem] ${state.error ? "text-cinnabar-deep" : "text-emerald-800"}`}>{state.text}</p> : null}
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-3 rounded-lg border border-cinnabar/30 bg-white/60 p-4">
+      <p className="text-[0.9rem] text-ink-soft">
+        The AI writes a first draft from what the website knows — its figures and news, what changed since your last email
+        {kind === "trustees" ? ", and what visitors asked the assistant" : ""}. It never invents facts: anything only you know is left as a [gap].
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        <button type="button" aria-pressed={kind === "newsletter"} onClick={() => setKind("newsletter")} className={chip(kind === "newsletter")}>
+          Newsletter
+        </button>
+        <button type="button" aria-pressed={kind === "trustees"} onClick={() => setKind("trustees")} className={chip(kind === "trustees")}>
+          Update for the trustees
+        </button>
+        <span className="mx-1 h-4 w-px bg-ink/15" aria-hidden="true" />
+        {(
+          [
+            ["en", "English"],
+            ["hi", "हिन्दी"],
+            ["kn", "ಕನ್ನಡ"],
+          ] as const
+        ).map(([id, label]) => (
+          <button key={id} type="button" aria-pressed={lang === id} onClick={() => setLang(id)} className={`${chip(lang === id)} ${id === "kn" ? "font-kannada" : ""}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <textarea
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+        rows={3}
+        placeholder="Anything to include? e.g. “The health camp at Karanja is on 14 November” (optional)"
+        className={field}
+      />
+      <div className="flex flex-wrap items-center gap-3">
+        <button type="button" disabled={state.busy} onClick={write} className={`${button} bg-ink text-leaf hover:bg-board`}>
+          {state.busy ? "Writing…" : "Write the draft"}
+        </button>
+        <button type="button" onClick={() => setOpen(false)} className="cursor-pointer text-[0.88rem] text-ink-soft underline">
+          Cancel
+        </button>
+        {state.text ? <span className={`text-[0.88rem] ${state.error ? "text-cinnabar-deep" : "text-ink-soft"}`}>{state.text}</span> : null}
       </div>
     </div>
   );
