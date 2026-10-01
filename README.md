@@ -50,6 +50,7 @@ Pushing `main` deploys to Vercel (project `assf-website`).
 | `CMS_GITHUB_TOKEN` | The site editor: a fine-grained GitHub token for this repository only, with **Contents: Read and write**. Publishing commits with it. |
 | `SMTP_USER`, `SMTP_PASS` | Email updates: the Foundation's Gmail / Google Workspace address and a 16-letter **app password** for it (Google Account → Security → 2-Step Verification → App passwords). Optional: `MAIL_FROM_NAME`, `SMTP_HOST`/`SMTP_PORT` for another provider, `SMTP_DAILY_LIMIT`. |
 | `MAIL_DATA_KEY` | Optional. Encrypts the mailing list; defaults to a key derived from `AUTH_SECRET`. Set it to the old `AUTH_SECRET` before rotating that secret, or the list becomes unreadable. |
+| `CRON_SECRET` | The daily job (`/api/cron/daily`, `vercel.json` → `crons`): Vercel sends it, and the job refuses calls without it. Any long random string. |
 | `NEXT_PUBLIC_SITE_URL` | Optional. Only if the canonical address should differ from Vercel's production domain (e.g. to prefer `https://www.…`). |
 
 **Indexing.** The site tells search engines to stay away (`X-Robots-Tag: noindex`) everywhere
@@ -68,8 +69,31 @@ node scripts/share-cards.mjs http://localhost:3000
 ```
 
 **Security.** `next.config.ts` sets a Content-Security-Policy (only the YouTube film and Google
-sign-in are allowed off-site), frame, referrer and permissions headers. The assistant accepts
-requests only from the site's own pages, caps request size, and rate-limits each visitor.
+sign-in are allowed off-site), frame, referrer and permissions headers (the microphone only for
+the site itself, for spoken questions). The assistant accepts requests only from the site's own
+pages, caps request size, and rate-limits each visitor.
+
+**Voice.** Visitors can ask the assistant out loud: the recording goes to Whisper on Groq
+(`/api/chat/voice`, the same `GROQ_API_KEY`), comes back as text in the edition's script, and is
+answered like a typed question, then read aloud. Recordings aren't kept; quiet recordings and
+Whisper's guesses at silence are discarded. "Listen" in the masthead reads any page aloud with the
+device's own Hindi, Kannada or English voice (`src/lib/speech.ts`), marking each passage — offered
+only where the device has a voice for that language. A link ending in `#ask` opens the site with
+the assistant ready (the QR cards use it).
+
+**Visitor questions.** Each question and answer is kept — not who asked, and visitors are told so
+under the assistant — one encrypted line per question in a day file under `questions/` on the
+`cms-data` branch (`src/lib/insights/questions.ts`), for the editor's **Insights**. The daily job
+removes them after a year.
+
+**Daily job.** `/api/cron/daily`, about 6 a.m. India time: publishes scheduled changes and sends
+scheduled emails that are due (`src/lib/cms/schedule.ts`), and prunes old visitor questions.
+Locally, `curl "localhost:3000/api/cron/daily?now=2026-10-05"` runs it as of that morning.
+
+**Site watch.** `.github/workflows/site-watch.yml` opens the main pages, the editor sign-in and
+the connector metadata every half hour; if any fails twice it opens a `site-down` issue (GitHub
+emails the watchers) and closes it when the site answers again. Set the repository variable
+`SITE_URL` to watch another address.
 
 ## Site editor (`/editor`)
 
@@ -102,6 +126,25 @@ How it fits the code:
   click on the page finds its field.
 - Photos are resized to 2,000 px and re-encoded as JPEG in the browser, which strips GPS and
   camera metadata before upload.
+- **Publish on a later day:** Review & publish can pick a day. The change is kept (encrypted, its
+  new photos held on `cms-data` so GitHub keeps them) and the daily job publishes it that
+  morning, after checking it again against the site as it is then. History lists what's coming
+  up, with Cancel.
+
+**Insights** (top bar): *Visitors' questions* counts what visitors asked (by language, spoken or
+typed, from which page, and how many the assistant had to send to the Foundation's email or phone
+because the site doesn't say), and **Group the questions** has the AI sort them into themes with
+what the site could add — the "answered / not on the site" mark is counted from what the
+assistant actually did, not judged. *Site check* (`src/components/editor/health.ts`) lists Hindi
+or Kannada left behind when the English was changed, editions falling back to English, photos
+without a description, links and photos that don't open (checked live; other websites via
+`/api/cms/links`), and facts still "awaiting Foundation" — each with a **Fix** that opens the
+field.
+
+**More** (top bar): **Print QR cards** (`/editor/qr`) — A6 table cards or A4 posters for a page or
+the assistant, in one language or all three side by side; **Download a backup**
+(`/api/cms/backup`) — a zip of the published site in all three languages, the editor's changes,
+the mailing list and sent log as spreadsheets, and the visitor questions.
 
 ### AI connector (MCP) — `/api/mcp`
 
@@ -117,13 +160,14 @@ adds more).
 
 Tools (`src/lib/mcp/tools.ts`): `get_site_overview`, `search_site`, `read_section`,
 `propose_changes`, `publish_changes`, `undo_last_publish`, `translate_text`,
-`get_publish_history`. `propose_changes` checks the changes against the content (same
+`get_publish_history`, `get_visitor_questions`, `check_site`. `propose_changes` checks the changes against the content (same
 validation as publishing), translates English into Hindi and Kannada with the site's glossary,
 and returns a summary plus a signed review link (`/editor?proposal=…`, valid 30 days).
 **`publish_changes` publishes exactly that proposal — only after the person confirms in the
 chat** (the tools tell the AI so, and both write tools are marked destructive, so clients ask
 before running them). Each proposal publishes once (`applied` in `edits.json`), whether from a
 chat or the editor; a change needing a new photo must be published from the editor.
+`publish_changes` with `on_date` schedules the change for that morning instead.
 `undo_last_publish` restores the version before the latest publish. The editor's "Use it from
 Claude or ChatGPT" card shows people how to connect.
 
@@ -146,6 +190,13 @@ the file itself to WhatsApp through the device's share menu.
 - Every message has a personal unsubscribe link (`/unsubscribe`) and one-click unsubscribe headers
   (`/api/unsubscribe`, RFC 8058). Someone who unsubscribes stays unsubscribed even if added again.
 - Only people on the list can be sent to; Gmail allows about 500 a day, Workspace about 2,000.
+- **Draft it for me** (`/api/cms/mail/draft`): an AI first draft — newsletter or trustees' update,
+  in English, Hindi or Kannada — written only from the site's figures and news, what was published
+  since the last email and (for trustees) the visitor-question counts. Anything only the
+  Foundation knows comes back as a `[gap]`.
+- **Send later**: an email can be scheduled for a day; the daily job sends it that morning to the
+  list as it is then, at most 200 a run (a longer list carries on the next day). Upcoming emails
+  show under Sent, with Cancel.
 
 **Before pushing code:** the editor commits to `main` too — `git pull --rebase` first. If a
 content change moves or renames something the Foundation has edited, check `edits.json`.
