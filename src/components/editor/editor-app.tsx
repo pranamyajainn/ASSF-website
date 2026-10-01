@@ -10,6 +10,7 @@ import { applyActions, blankLike, changeList, describeAt, problems, setField, tr
 import { Find, Panel, type Selection } from "./panel";
 import { preparePhoto } from "./photo";
 import { MailView } from "./mail";
+import { InsightsView } from "./insights";
 import { Preview } from "./preview";
 
 type Staged = Record<string, { blob: string | null; preview: string }>;
@@ -95,14 +96,16 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
     }
   });
   const wide = () => window.matchMedia("(min-width: 1024px)").matches;
-  const [mode, setMode] = useState<"page" | "list" | "mail">(() => (wide() ? "page" : "list"));
+  const [mode, setMode] = useState<"page" | "list" | "mail" | "insights">(() => (wide() ? "page" : "list"));
+  const editing = mode === "page" || mode === "list";
   const [sitePage, setSitePage] = useState<SitePage>("home");
   const [selection, setSelection] = useState<Selection>(null);
   const [scrollTo, setScrollTo] = useState<{ path: Path; nonce: number } | null>(null);
   const [listPage, setListPage] = useState<ModuleName>("home");
   const [open, setOpen] = useState<Set<string>>(new Set());
   const [focused, setFocused] = useState<string | null>(null);
-  const [dialog, setDialog] = useState<"review" | "history" | "connect" | null>(null);
+  const [dialog, setDialog] = useState<"review" | "history" | "connect" | "qr" | null>(null);
+  const [menu, setMenu] = useState(false);
   const [incoming, setIncoming] = useState<{ proposal: Proposal | null; bad: boolean; done: boolean; already: boolean }>(() => {
     let already = false;
     try {
@@ -243,9 +246,10 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
   };
 
   /** Shows a field: on its page in the preview, or in the list. */
-  function reveal(path: Path) {
+  function reveal(path: Path, inMode: "page" | "list" = mode === "page" ? "page" : "list") {
     const target = path[0] as ModuleName;
-    if (mode === "page") {
+    if (inMode !== mode) setMode(inMode);
+    if (inMode === "page") {
       const onPage = SITE_PAGES.some((p) => p.module === target);
       if (onPage) setSitePage(target as SitePage);
       setSelection({ path });
@@ -354,7 +358,32 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
               <img src="/icon.png" alt="" className="size-8" />
               <p className="font-display text-[1.1rem] leading-tight">Site editor</p>
             </div>
-            <div role="group" aria-label="Language" className="flex items-center gap-1 rounded-full bg-white/8 p-1 text-[0.9rem]">
+            <nav aria-label="Editor" className="flex items-center gap-1 rounded-lg bg-white/8 p-1 text-[0.9rem]">
+              {(
+                [
+                  ["edit", "Edit the site"],
+                  ["mail", "Email updates"],
+                  ["insights", "Insights"],
+                ] as const
+              ).map(([id, label]) => {
+                const on = id === "edit" ? editing : mode === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    aria-current={on ? "page" : undefined}
+                    onClick={() => {
+                      setMenu(false);
+                      setMode(id === "edit" ? (wide() ? "page" : "list") : id);
+                    }}
+                    className={`cursor-pointer rounded-md px-3 py-1.5 transition-colors ${on ? "bg-leaf text-ink" : "text-board-ink/85 hover:bg-white/10"}`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </nav>
+            <div role="group" aria-label="Language" className={`items-center gap-1 rounded-full bg-white/8 p-1 text-[0.9rem] ${editing ? "flex" : "hidden"}`}>
               {locales.map((l) => (
                 <button
                   key={l}
@@ -369,15 +398,7 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
             </div>
             <StatusPill status={status} count={draftCount} storage={storage} onRetry={() => setDialog("review")} />
             <div className="ml-auto flex flex-wrap items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => setMode(mode === "mail" ? (wide() ? "page" : "list") : "mail")}
-                aria-pressed={mode === "mail"}
-                className={`cursor-pointer rounded-md px-3 py-2 text-[0.9rem] ${mode === "mail" ? "bg-white/15 text-board-ink" : "text-board-ink/85 hover:bg-white/10"}`}
-              >
-                {mode === "mail" ? "← Back to the site" : "✉ Email updates"}
-              </button>
-              {mode !== "mail" ? (
+              {editing ? (
                 <button
                   type="button"
                   onClick={() => setMode(mode === "page" ? "list" : "page")}
@@ -391,6 +412,27 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
                   History
                 </button>
               ) : null}
+              <div className="relative">
+                <button
+                  type="button"
+                  aria-expanded={menu}
+                  aria-haspopup="menu"
+                  onClick={() => setMenu(!menu)}
+                  className="cursor-pointer rounded-md px-3 py-2 text-[0.9rem] text-board-ink/85 hover:bg-white/10"
+                >
+                  More ▾
+                </button>
+                {menu ? (
+                  <MoreMenu
+                    onClose={() => setMenu(false)}
+                    items={[
+                      { label: "Print QR cards", hint: "For exhibitions, temples and libraries", onClick: () => setDialog("qr") },
+                      { label: "Download a backup", hint: "Everything on the site, the mailing list and questions", href: "/api/cms/backup" },
+                      { label: "Use with Claude or ChatGPT", hint: "Edit the site by asking", onClick: () => setDialog("connect") },
+                    ]}
+                  />
+                ) : null}
+              </div>
               <button
                 type="button"
                 onClick={() => setDialog("review")}
@@ -501,6 +543,23 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
           </div>
         ) : mode === "mail" ? (
           <MailView />
+        ) : mode === "insights" ? (
+          <InsightsView
+            onOpenPage={(module) => {
+              if (wide() && SITE_PAGES.some((p) => p.module === module)) {
+                setMode("page");
+                setSitePage(module as SitePage);
+                setSelection(null);
+              } else {
+                setMode("list");
+                setListPage(module);
+              }
+            }}
+            onReveal={(path, l) => {
+              if (l) setLang(l);
+              reveal(path, wide() ? "page" : "list");
+            }}
+          />
         ) : (
           <ListView page={listPage} onPage={setListPage} onFind={reveal} changedIn={(m) => new Set(draft.filter((o) => o.path[0] === m).map((o) => pathKey(o.path))).size} />
         )}
@@ -531,8 +590,53 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
         ) : null}
         {dialog === "history" ? <History onClose={() => setDialog(null)} onRestore={restore} /> : null}
         {dialog === "connect" ? <ConnectAi onClose={() => setDialog(null)} /> : null}
+        {dialog === "qr" ? <QrCards onClose={() => setDialog(null)} /> : null}
       </div>
     </EditorProvider>
+  );
+}
+
+/** The editor's quieter tools, under "More". */
+function MoreMenu({ items, onClose }: { items: { label: string; hint: string; onClick?: () => void; href?: string }[]; onClose: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const away = (e: MouseEvent) => {
+      if (ref.current && !ref.current.parentElement?.contains(e.target as Node)) onClose();
+    };
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("mousedown", away);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("mousedown", away);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [onClose]);
+  const row = "block w-full cursor-pointer rounded-md px-3 py-2.5 text-left hover:bg-ink/5";
+  return (
+    <div ref={ref} role="menu" className="absolute right-0 top-full z-40 mt-1.5 w-72 rounded-lg border border-ink/15 bg-leaf p-1.5 text-ink shadow-xl">
+      {items.map((item) =>
+        item.href ? (
+          <a key={item.label} role="menuitem" href={item.href} onClick={onClose} className={row}>
+            <span className="block text-[0.95rem]">{item.label}</span>
+            <span className="block text-[0.8rem] text-ink-faint">{item.hint}</span>
+          </a>
+        ) : (
+          <button
+            key={item.label}
+            role="menuitem"
+            type="button"
+            onClick={() => {
+              onClose();
+              item.onClick?.();
+            }}
+            className={row}
+          >
+            <span className="block text-[0.95rem]">{item.label}</span>
+            <span className="block text-[0.8rem] text-ink-faint">{item.hint}</span>
+          </button>
+        ),
+      )}
+    </div>
   );
 }
 
@@ -911,6 +1015,69 @@ function History({ onClose, onRestore }: { onClose: () => void; onRestore: (sha:
           </li>
         ))}
       </ol>
+    </Dialog>
+  );
+}
+
+/** Printable QR cards: choose what the code opens, in which language, at what size. */
+function QrCards({ onClose }: { onClose: () => void }) {
+  const [page, setPage] = useState<string>("ask");
+  const [lang, setLang] = useState<string>("all");
+  const [size, setSize] = useState<"a6" | "a4">("a6");
+  const src = `/editor/qr?page=${page}&lang=${lang}&size=${size}`;
+  const choice = (on: boolean) => `cursor-pointer rounded-full border px-3.5 py-1.5 text-[0.9rem] ${on ? "border-board bg-board text-board-ink" : "border-ink/20 bg-white/70 hover:border-cinnabar"}`;
+  return (
+    <Dialog title="Print QR cards" onClose={onClose}>
+      <p className="text-[0.95rem] text-ink-soft">
+        A card for an exhibition table, a temple notice board or a library shelf: visitors scan it and the page opens on their phone, in their language.
+      </p>
+      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+        <div className="space-y-4">
+          <div>
+            <p className="mb-1.5 font-display text-[1.05rem]">The code opens</p>
+            <select value={page} onChange={(e) => setPage(e.target.value)} className="w-full rounded-md border border-ink/20 bg-white/85 px-3 py-2.5 outline-none focus:border-cinnabar">
+              <option value="ask">The AI assistant — visitors ask, by typing or speaking</option>
+              {SITE_PAGES.map((p) => (
+                <option key={p.module} value={p.module}>
+                  {p.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <p className="mb-1.5 font-display text-[1.05rem]">Language</p>
+            <div className="flex flex-wrap gap-2">
+              {(
+                [
+                  ["all", "All three, side by side"],
+                  ["en", "English"],
+                  ["hi", LANG_LABEL.hi],
+                  ["kn", LANG_LABEL.kn],
+                ] as const
+              ).map(([id, label]) => (
+                <button key={id} type="button" aria-pressed={lang === id} onClick={() => setLang(id)} className={`${choice(lang === id)} ${id === "kn" ? "font-kannada" : ""}`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="mb-1.5 font-display text-[1.05rem]">Size</p>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" aria-pressed={size === "a6"} onClick={() => setSize("a6")} className={choice(size === "a6")}>
+                Table card (A6)
+              </button>
+              <button type="button" aria-pressed={size === "a4"} onClick={() => setSize("a4")} className={choice(size === "a4")}>
+                Poster (A4)
+              </button>
+            </div>
+          </div>
+          <a href={src} target="_blank" rel="noreferrer" className="inline-block rounded-md bg-cinnabar px-5 py-2.5 text-leaf hover:bg-cinnabar-deep">
+            Open to print ↗
+          </a>
+        </div>
+        <iframe key={src} title="The card" src={`${src}&embed=1`} className="h-[28rem] w-full rounded-md border border-ink/15 bg-leaf-deep/40" />
+      </div>
     </Dialog>
   );
 }

@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { emptyEdits, type Edits } from "./edits";
 
@@ -202,17 +202,42 @@ export async function readDataFile(path: string): Promise<{ text: string | null;
 
 /** Writes a data file on top of `head` (null: the branch doesn't exist yet, so it's started). */
 export async function writeDataFile(path: string, text: string, message: string, head: string | null): Promise<void> {
+  await writeDataFiles([{ path, text }], message, head);
+}
+
+/**
+ * One commit on the private-data branch: files written (`text`), kept as
+ * already-stored blobs (`blob` — a photograph waiting for a scheduled
+ * publish), or removed (`remove`).
+ */
+export type DataChange = { path: string; text: string } | { path: string; blob: string } | { path: string; remove: true };
+
+export async function writeDataFiles(changes: readonly DataChange[], message: string, head: string | null): Promise<void> {
   if (storage === "local") {
-    const file = join(process.cwd(), ".cms-data", path);
-    await mkdir(dirname(file), { recursive: true });
-    await writeFile(file, text);
+    for (const c of changes) {
+      const file = join(process.cwd(), ".cms-data", c.path);
+      if ("remove" in c) await rm(file, { force: true });
+      else if ("text" in c) {
+        await mkdir(dirname(file), { recursive: true });
+        await writeFile(file, c.text);
+      }
+    }
     return;
   }
   if (storage !== "github") throw new Error("The site editor isn't connected to storage.");
   const base = head ? await github<{ tree: { sha: string } }>(`/git/commits/${head}`) : null;
   const tree = await github<{ sha: string }>(`/git/trees`, {
     method: "POST",
-    body: JSON.stringify({ ...(base ? { base_tree: base.tree.sha } : {}), tree: [{ path, mode: "100644", type: "blob", content: text }] }),
+    body: JSON.stringify({
+      ...(base ? { base_tree: base.tree.sha } : {}),
+      tree: changes.map((c) =>
+        "remove" in c
+          ? { path: c.path, mode: "100644", type: "blob", sha: null }
+          : "blob" in c
+            ? { path: c.path, mode: "100644", type: "blob", sha: c.blob }
+            : { path: c.path, mode: "100644", type: "blob", content: c.text },
+      ),
+    }),
   });
   const commit = await github<{ sha: string }>(`/git/commits`, {
     method: "POST",
@@ -223,6 +248,34 @@ export async function writeDataFile(path: string, text: string, message: string,
   } else {
     await github(`/git/refs`, { method: "POST", body: JSON.stringify({ ref: `refs/heads/${DATA_BRANCH}`, sha: commit.sha }) });
   }
+}
+
+/** The private-data branch's files under `dir`, as they stand now. */
+export async function listDataFiles(dir: string): Promise<{ head: string | null; files: { path: string; sha: string }[] }> {
+  const prefix = `${dir.replace(/\/+$/, "")}/`;
+  if (storage === "github") {
+    let head: string;
+    try {
+      head = (await github<{ object: { sha: string } }>(`/git/ref/heads/${DATA_BRANCH}`)).object.sha;
+    } catch (err) {
+      if (err instanceof Error && err.message.startsWith("GitHub 404")) return { head: null, files: [] };
+      throw err;
+    }
+    const { tree } = await github<{ tree: { path: string; type: string; sha: string }[] }>(`/git/trees/${head}?recursive=1`);
+    return { head, files: tree.filter((t) => t.type === "blob" && t.path.startsWith(prefix)).map((t) => ({ path: t.path, sha: t.sha })) };
+  }
+  if (storage === "local") {
+    const names = await readdir(join(process.cwd(), ".cms-data", dir), { recursive: true }).catch(() => [] as string[]);
+    return { head: null, files: names.filter((n) => /\.[a-z]+$/.test(n)).map((n) => ({ path: `${prefix}${n}`, sha: `${prefix}${n}` })) };
+  }
+  throw new Error("The site editor isn't connected to storage.");
+}
+
+/** A listed data file's contents (by the `sha` listDataFiles gave). */
+export async function readDataBlob(sha: string): Promise<string> {
+  if (storage === "github") return github<string>(`/git/blobs/${sha}`, { raw: true });
+  if (storage === "local") return readFile(join(process.cwd(), ".cms-data", sha), "utf8");
+  throw new Error("The site editor isn't connected to storage.");
 }
 
 /** Retries `publish` from a fresh head when the branch moved underneath it. */
