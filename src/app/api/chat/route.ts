@@ -3,6 +3,8 @@ import { retrieve } from "@/lib/assistant-corpus";
 import { resolveContent } from "@/i18n/content";
 import { isLang, localizeHref } from "@/i18n/config";
 import { clientKey, overLimit } from "@/lib/rate-limit";
+import { after } from "next/server";
+import { logQuestion } from "@/lib/insights/questions";
 
 export const runtime = "nodejs";
 
@@ -32,6 +34,16 @@ function sameHost(origin: string, url: string): boolean {
     return new URL(origin).host === new URL(url).host;
   } catch {
     return false; // "null" and other opaque origins
+  }
+}
+
+/** The site page the question was asked from, from the Referer of a same-site request. */
+function pageOf(req: Request): string | null {
+  try {
+    const ref = new URL(req.headers.get("referer") ?? "");
+    return ref.host === new URL(req.url).host ? ref.pathname.slice(0, 120) : null;
+  } catch {
+    return null;
   }
 }
 
@@ -84,6 +96,7 @@ export async function POST(req: Request) {
   const rawLang = body && typeof body === "object" ? (body as { lang?: unknown }).lang : undefined;
   const lang = typeof rawLang === "string" && isLang(rawLang) ? rawLang : "en";
   const languageInstruction = LANGUAGE_INSTRUCTIONS[lang];
+  const spoken = !!body && typeof body === "object" && (body as { spoken?: unknown }).spoken === true;
 
   const messages = rawMessages
     .filter(isChatMessage)
@@ -156,6 +169,28 @@ export async function POST(req: Request) {
   const decoder = new TextDecoder();
   const encoder = new TextEncoder();
 
+  // The question and its answer are kept for the Foundation's Insights
+  // (lib/insights/questions.ts), once the answer has been written in full.
+  let answer = "";
+  let finished: () => void = () => {};
+  const written = new Promise<void>((resolve) => (finished = resolve));
+  const page = pageOf(req);
+  after(async () => {
+    await written;
+    if (!answer.trim()) return;
+    const { org } = shared;
+    const digits = org.phone.replace(/\D/g, "").slice(-8);
+    await logQuestion({
+      lang,
+      page,
+      q: (asked.at(-1) ?? "").slice(0, 600),
+      a: answer.slice(0, 1200),
+      spoken,
+      sources: sources.map((s) => s.href),
+      deflected: answer.includes(org.email) || (!!digits && answer.replace(/\D/g, "").includes(digits)),
+    });
+  });
+
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       let buffer = "";
@@ -174,6 +209,7 @@ export async function POST(req: Request) {
             const data = line.slice(5).trim();
             if (data === "[DONE]") {
               controller.close();
+              finished();
               return;
             }
             try {
@@ -181,7 +217,10 @@ export async function POST(req: Request) {
                 choices?: { delta?: { content?: string } }[];
               };
               const delta = parsed.choices?.[0]?.delta?.content;
-              if (delta) controller.enqueue(encoder.encode(delta));
+              if (delta) {
+                answer += delta;
+                controller.enqueue(encoder.encode(delta));
+              }
             } catch {
               // Skip malformed SSE chunks rather than aborting the stream.
             }
@@ -190,9 +229,12 @@ export async function POST(req: Request) {
         controller.close();
       } catch (err) {
         controller.error(err);
+      } finally {
+        finished();
       }
     },
     cancel() {
+      finished();
       reader.cancel().catch(() => {});
     },
   });

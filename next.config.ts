@@ -34,7 +34,8 @@ const security = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()" },
+  // The microphone: the assistant can be asked a question out loud.
+  { key: "Permissions-Policy", value: "camera=(), microphone=(self), geolocation=(), payment=(), usb=(), browsing-topics=()" },
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
 ];
 
@@ -68,6 +69,8 @@ const nextConfig: NextConfig = {
       { source: "/editor/:path*", headers: [noindex] },
       { source: "/editor", headers: [noindex] },
       { source: "/preview/:path*", headers: framedBySelf },
+      // The editor shows a QR card's preview in a frame.
+      { source: "/editor/qr", headers: framedBySelf },
       { source: "/oauth/:path*", headers: [noindex] },
       { source: "/unsubscribe", headers: [noindex] },
       { source: "/r/:path*", headers: [noindex] },

@@ -1,12 +1,13 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Container } from "./container";
 import { MobileNav } from "./mobile-nav";
-import { AiStamp, OPEN_CHAT_EVENT } from "@/components/chat/chat-widget";
+import { AiStamp, OPEN_CHAT_EVENT, SpeakerIcon, SpeakingIcon } from "@/components/chat/chat-widget";
+import { speak, useCanSpeak, type Reading } from "@/lib/speech";
 import { localeInfo, localizeHref, locales, unlocalizePath, type Lang } from "@/i18n/config";
 import type { UI } from "@/i18n/ui";
 import { CLEAN_EVENT, CLEAN_KEY } from "./reading-mode";
@@ -42,6 +43,9 @@ function setClean(next: boolean) {
  *   The choice is remembered: it stays on across pages and editions until
  *   the reader turns it off.
  * - "Ask AI" opens the Foundation's AI assistant from anywhere.
+ * - "Listen" reads the page aloud in the edition's language, with the
+ *   reader's own device voice, marking each passage as it is read. It is
+ *   offered only where the device has a voice for the language.
  */
 export function HeaderClient({
   lang,
@@ -149,6 +153,7 @@ export function HeaderClient({
                 </span>
                 <span className="sr-only sm:not-sr-only">{t.cleanFolio}</span>
               </button>
+              <ListenToPage lang={lang} t={t} />
             </div>
           </div>
         </Container>
@@ -228,5 +233,86 @@ export function HeaderClient({
         ) : null}
       </header>
     </>
+  );
+}
+
+/** The passages of the page, in reading order: each heading, paragraph, item and caption once. */
+function passages(): HTMLElement[] {
+  const main = document.getElementById("main");
+  if (!main) return [];
+  const all = [...main.querySelectorAll<HTMLElement>("h1, h2, h3, h4, p, li, blockquote, figcaption, dt, dd")];
+  const chosen = new Set<HTMLElement>();
+  for (const el of all) {
+    if (el.closest("[aria-hidden='true'], [data-ornament], nav, button, dialog")) continue;
+    if (!el.checkVisibility?.() && el.offsetParent === null) continue;
+    if ((el.innerText ?? "").trim().length < 2) continue;
+    // A paragraph inside a list item is read with the item.
+    let parent = el.parentElement;
+    let inside = false;
+    while (parent && parent !== main) {
+      if (chosen.has(parent)) inside = true;
+      parent = parent.parentElement;
+    }
+    if (!inside) chosen.add(el);
+  }
+  return [...chosen];
+}
+
+function ListenToPage({ lang, t }: { lang: Lang; t: UI["header"] }) {
+  const canSpeak = useCanSpeak(lang);
+  const pathname = usePathname();
+  const [on, setOn] = useState(false);
+  const readingRef = useRef<Reading | null>(null);
+
+  const stop = () => {
+    readingRef.current?.stop();
+    readingRef.current = null;
+    document.querySelectorAll("[data-reading]").forEach((el) => el.removeAttribute("data-reading"));
+    setOn(false);
+  };
+
+  // A new page, or leaving: stop reading the old one.
+  useEffect(() => () => stop(), [pathname]);
+
+  function start() {
+    const els = passages();
+    if (!els.length) return;
+    const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let marked: HTMLElement | null = null;
+    const reading = speak(
+      els.map((el) => el.innerText),
+      lang,
+      (i) => {
+        marked?.removeAttribute("data-reading");
+        marked = els[i];
+        marked.setAttribute("data-reading", "");
+        const box = marked.getBoundingClientRect();
+        if (box.top < 90 || box.bottom > window.innerHeight - 60) marked.scrollIntoView({ block: "center", behavior: smooth ? "smooth" : "auto" });
+      },
+    );
+    readingRef.current = reading;
+    setOn(true);
+    reading.done.then(() => {
+      if (readingRef.current !== reading) return;
+      marked?.removeAttribute("data-reading");
+      readingRef.current = null;
+      setOn(false);
+    });
+  }
+
+  if (!canSpeak) return null;
+  return (
+    <button
+      type="button"
+      onClick={() => (on ? stop() : start())}
+      aria-pressed={on}
+      className={`flex items-center gap-1.5 whitespace-nowrap py-1 font-mono text-register transition-colors ${
+        on ? "text-orpiment" : "text-board-soft hover:text-board-ink"
+      }`}
+    >
+      {on ? <SpeakingIcon className="size-4" /> : <SpeakerIcon className="size-4" />}
+      <span className="sr-only sm:not-sr-only">{on ? t.listenStop : t.listen}</span>
+      <span className="sr-only">{t.listenSr}</span>
+    </button>
   );
 }

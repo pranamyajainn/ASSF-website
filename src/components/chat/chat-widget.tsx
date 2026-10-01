@@ -11,6 +11,8 @@ import {
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import type { UI } from "@/i18n/ui";
+import type { Lang } from "@/i18n/config";
+import { speak, useCanSpeak, type Reading } from "@/lib/speech";
 
 type Role = "user" | "assistant";
 type Source = { page: string; href: string };
@@ -82,12 +84,46 @@ export function ChatWidget({
   const [error, setError] = useState<string | null>(null);
   const [showTeaser, setShowTeaser] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  /** Asking out loud: recording, then being written down. */
+  const [voice, setVoice] = useState<"idle" | "recording" | "hearing">("idle");
+  /** The answer being read aloud, by index. */
+  const [speaking, setSpeaking] = useState<number | null>(null);
+  const canSpeak = useCanSpeak(lang as Lang);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
+  const recordingRef = useRef<{ stop: () => void; cancel: () => void } | null>(null);
+  const meterRef = useRef<HTMLSpanElement>(null);
+  const readingRef = useRef<Reading | null>(null);
+
+  function stopReading() {
+    readingRef.current?.stop();
+    readingRef.current = null;
+    setSpeaking(null);
+  }
+
+  function readAloud(index: number, text: string) {
+    stopReading();
+    const reading = speak([text], lang as Lang);
+    readingRef.current = reading;
+    setSpeaking(index);
+    reading.done.then(() => {
+      if (readingRef.current === reading) {
+        readingRef.current = null;
+        setSpeaking(null);
+      }
+    });
+  }
+
+  // Closing the assistant stops it talking and listening.
+  useEffect(() => {
+    if (open) return;
+    readingRef.current?.stop();
+    recordingRef.current?.cancel();
+  }, [open]);
 
   // Load any prior conversation once, client-side only — sessionStorage isn't
   // available during SSR, so the default render must stay the static
@@ -129,6 +165,14 @@ export function ChatWidget({
       // ignore
     }
   }
+
+  // A printed QR card's code ends in #ask: the visitor arrives with the assistant open.
+  useEffect(() => {
+    if (window.location.hash !== "#ask") return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setOpen(true);
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+  }, []);
 
   // The masthead's "Ask AI" button (and anything else) opens the panel.
   useEffect(() => {
@@ -189,10 +233,11 @@ export function ChatWidget({
     });
   }
 
-  async function send(text: string) {
+  async function send(text: string, spoken = false) {
     const trimmed = text.trim();
     if (!trimmed || isStreaming) return;
 
+    stopReading();
     setError(null);
     const payload = [...messages, { role: "user" as const, content: trimmed }];
     setMessages([...payload, { role: "assistant", content: "" }]);
@@ -208,7 +253,7 @@ export function ChatWidget({
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: payload, lang }),
+        body: JSON.stringify({ messages: payload, lang, spoken }),
         signal: controller.signal,
       });
 
@@ -242,6 +287,8 @@ export function ChatWidget({
         });
       }
       setAnnouncement(full);
+      // Asked out loud, answered out loud — where the device has a voice for the language.
+      if (spoken && canSpeak && full.trim()) readAloud(payload.length, full);
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
         const message = (err as Error).message;
@@ -252,6 +299,92 @@ export function ChatWidget({
       setIsStreaming(false);
       abortRef.current = null;
     }
+  }
+
+  /**
+   * Records a spoken question (up to 30 seconds, or until the visitor taps
+   * again), has it written down, and asks it. A thin line follows the voice
+   * while it records, so the visitor can see they're being heard.
+   */
+  async function startRecording() {
+    if (voice !== "idle" || isStreaming) return;
+    stopReading();
+    setError(null);
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    } catch {
+      setError(strings.micBlocked);
+      return;
+    }
+    const type = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"].find((t) => MediaRecorder.isTypeSupported(t));
+    const recorder = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
+    const chunks: Blob[] = [];
+    let cancelled = false;
+    let raf = 0;
+    /** The loudest moment: a recording that never rose above the room's hum isn't sent. */
+    let peak = 0;
+    const audio = new AudioContext();
+    const analyser = audio.createAnalyser();
+    analyser.fftSize = 512;
+    audio.createMediaStreamSource(stream).connect(analyser);
+    const samples = new Uint8Array(analyser.fftSize);
+    const meter = () => {
+      analyser.getByteTimeDomainData(samples);
+      let sum = 0;
+      for (const v of samples) sum += ((v - 128) / 128) ** 2;
+      const level = Math.min(1, Math.sqrt(sum / samples.length) * 5);
+      peak = Math.max(peak, level);
+      if (meterRef.current) meterRef.current.style.transform = `scaleX(${0.06 + level * 0.94})`;
+      raf = requestAnimationFrame(meter);
+    };
+    const release = () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(limit);
+      stream.getTracks().forEach((t) => t.stop());
+      audio.close().catch(() => {});
+      recordingRef.current = null;
+    };
+    const limit = setTimeout(() => recorder.state === "recording" && recorder.stop(), 30_000);
+    recorder.ondataavailable = (e) => {
+      if (e.data.size) chunks.push(e.data);
+    };
+    recorder.onstop = async () => {
+      release();
+      if (cancelled) {
+        setVoice("idle");
+        return;
+      }
+      if (peak < 0.08) {
+        setVoice("idle");
+        setError(strings.notHeard);
+        return;
+      }
+      setVoice("hearing");
+      const blob = new Blob(chunks, { type: (recorder.mimeType || type || "audio/webm").split(";")[0] });
+      try {
+        const res = await fetch(`/api/chat/voice?lang=${lang}`, { method: "POST", headers: { "Content-Type": blob.type }, body: blob });
+        if (!res.ok) throw new Error(res.status === 429 ? strings.busy : strings.unavailable);
+        const { text } = (await res.json()) as { text: string };
+        setVoice("idle");
+        if (text) send(text, true);
+        else setError(strings.notHeard);
+      } catch (err) {
+        setVoice("idle");
+        setError((err as Error).message || strings.unavailable);
+      }
+    };
+    recordingRef.current = {
+      stop: () => recorder.state === "recording" && recorder.stop(),
+      cancel: () => {
+        cancelled = true;
+        if (recorder.state === "recording") recorder.stop();
+        else release();
+      },
+    };
+    recorder.start();
+    setVoice("recording");
+    meter();
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -273,6 +406,7 @@ export function ChatWidget({
 
   function resetConversation() {
     if (abortRef.current) abortRef.current.abort();
+    stopReading();
     setIsStreaming(false);
     setError(null);
     setMessages([GREETING]);
@@ -384,6 +518,15 @@ export function ChatWidget({
                 readingLabel={strings.reading}
                 sourcesLabel={strings.sources}
                 onGrow={followWriting}
+                listen={
+                  canSpeak && i > 0 && m.role === "assistant" && m.content && !(i === messages.length - 1 && isStreaming)
+                    ? {
+                        on: speaking === i,
+                        label: speaking === i ? strings.stopListen : strings.listen,
+                        toggle: () => (speaking === i ? stopReading() : readAloud(i, m.content)),
+                      }
+                    : null
+                }
               />
             ))}
 
@@ -413,7 +556,23 @@ export function ChatWidget({
           {/* Composer */}
           <form onSubmit={handleSubmit} className="shrink-0 border-t border-ink/20 p-3">
             <div className="flex items-end gap-2 border border-ink/30 bg-leaf px-3 py-2 focus-within:border-cinnabar">
+              {voice !== "idle" ? (
+                <span role="status" className="flex min-h-[1.75rem] flex-1 flex-col justify-center gap-1.5 py-0.5">
+                  <span className="flex items-center gap-2 font-mono text-[0.78rem] text-ink-soft">
+                    {voice === "recording" ? <span aria-hidden="true" className="voice-dot size-2 rounded-full bg-cinnabar" /> : null}
+                    {voice === "recording" ? strings.listening : strings.hearing}
+                  </span>
+                  <span aria-hidden="true" className="relative block h-px w-full overflow-hidden bg-ink/15">
+                    {voice === "recording" ? (
+                      <span ref={meterRef} style={{ transform: "scaleX(0.06)" }} className="absolute inset-y-0 left-0 w-full origin-left bg-cinnabar transition-transform duration-75" />
+                    ) : (
+                      <span className="rule-sweep absolute inset-y-0 left-0 w-1/3 bg-cinnabar" />
+                    )}
+                  </span>
+                </span>
+              ) : null}
               <textarea
+                hidden={voice !== "idle"}
                 ref={inputRef}
                 rows={1}
                 value={input}
@@ -426,8 +585,23 @@ export function ChatWidget({
                 aria-label={strings.message}
                 className="max-h-[7.5rem] flex-1 resize-none bg-transparent text-[1rem] leading-relaxed text-ink placeholder:text-ink-faint focus:outline-none"
               />
+              {canRecord() && !input.trim() ? (
+                <button
+                  type="button"
+                  onClick={() => (voice === "recording" ? recordingRef.current?.stop() : startRecording())}
+                  disabled={isStreaming || voice === "hearing"}
+                  aria-label={voice === "recording" ? strings.listening : strings.speak}
+                  title={voice === "recording" ? strings.listening : strings.speak}
+                  className={`mb-0.5 shrink-0 p-2 transition-colors disabled:cursor-not-allowed disabled:opacity-35 ${
+                    voice === "recording" ? "bg-cinnabar text-leaf hover:bg-cinnabar-deep" : "text-ink-soft hover:text-cinnabar"
+                  }`}
+                >
+                  {voice === "recording" ? <StopIcon className="size-4" /> : <MicIcon className="size-4" />}
+                </button>
+              ) : null}
               <button
                 type="submit"
+                hidden={voice !== "idle"}
                 disabled={!input.trim() || isStreaming}
                 aria-label={strings.send}
                 className="mb-0.5 shrink-0 bg-cinnabar p-2 text-leaf transition-colors hover:bg-cinnabar-deep disabled:cursor-not-allowed disabled:opacity-35"
@@ -435,8 +609,8 @@ export function ChatWidget({
                 <SendIcon className="size-4" />
               </button>
             </div>
-            <p className="mt-2 text-center font-mono text-[0.7rem] text-ink-faint">
-              {strings.disclaimer}
+            <p className="mt-2 text-center font-mono text-[0.7rem] leading-relaxed text-ink-faint">
+              {strings.disclaimer} {strings.kept}
             </p>
           </form>
         </div>
@@ -476,6 +650,11 @@ export function ChatWidget({
   );
 }
 
+/** Recording needs a browser that can record and a secure page. */
+function canRecord(): boolean {
+  return typeof window !== "undefined" && typeof MediaRecorder !== "undefined" && !!navigator.mediaDevices?.getUserMedia;
+}
+
 function MessageBubble({
   message,
   answer,
@@ -485,6 +664,7 @@ function MessageBubble({
   readingLabel,
   sourcesLabel,
   onGrow,
+  listen,
 }: {
   message: Msg;
   /** An assistant reply to a question (not the opening greeting). */
@@ -495,6 +675,8 @@ function MessageBubble({
   readingLabel: string;
   sourcesLabel: string;
   onGrow: () => void;
+  /** Read this answer aloud, where the device has a voice for the language. */
+  listen: { on: boolean; label: string; toggle: () => void } | null;
 }) {
   const isUser = message.role === "user";
 
@@ -535,6 +717,19 @@ function MessageBubble({
               </span>
             ))}
           </p>
+        ) : null}
+        {!isUser && listen ? (
+          <button
+            type="button"
+            onClick={listen.toggle}
+            aria-pressed={listen.on}
+            className={`mt-2 flex items-center gap-1.5 whitespace-normal font-mono text-[0.72rem] transition-colors ${
+              listen.on ? "text-cinnabar" : "text-ink-faint hover:text-cinnabar"
+            }`}
+          >
+            {listen.on ? <SpeakingIcon className="size-3.5" /> : <SpeakerIcon className="size-3.5" />}
+            {listen.label}
+          </button>
         ) : null}
       </div>
     </div>
@@ -670,6 +865,41 @@ function SendIcon({ className = "" }: { className?: string }) {
         strokeLinejoin="round"
         strokeLinecap="round"
       />
+    </svg>
+  );
+}
+
+function MicIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function StopIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <rect x="6.5" y="6.5" width="11" height="11" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function SpeakerIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4v-5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function SpeakingIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4v-5Z" fill="currentColor" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path className="speaking-wave" d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }

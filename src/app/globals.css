@@ -634,6 +634,58 @@ ol[data-verses] [data-verse-end]::after {
   animation: nib-blink 0.9s steps(1) infinite;
 }
 
+/* Asking out loud: the red dot breathes while the assistant listens. */
+@keyframes voice-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.7);
+  }
+}
+
+.voice-dot {
+  animation: voice-dot 1.2s ease-in-out infinite;
+}
+
+/* Reading aloud: the sound waves pulse while a voice speaks. */
+@keyframes speaking-wave {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.speaking-wave {
+  animation: speaking-wave 1s ease-in-out infinite;
+}
+
+/*
+ * "Listen": the passage being read is marked in the margin with the
+ * scribe's red rule, and washed faintly in orpiment, as a reader's finger
+ * follows the line.
+ */
+[data-reading] {
+  background-color: color-mix(in oklab, var(--color-orpiment) 22%, transparent);
+  box-shadow: -0.6rem 0 0 0 var(--color-cinnabar);
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-dot,
+  .speaking-wave {
+    animation: none;
+  }
+}
+
 /* "Clean the folio": the reader has asked for the leaf without ornament. */
 html[data-clean] body {
   background-image: none;
