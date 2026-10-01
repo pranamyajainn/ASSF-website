@@ -1151,9 +1151,10 @@ function ConnectAi({ onClose }: { onClose: () => void }) {
   return (
     <Dialog title="Use the site with Claude or ChatGPT" onClose={onClose}>
       <p className="text-[0.95rem] leading-relaxed text-ink-soft">
-        Connect your AI assistant to the website, then just ask: “Add yesterday&apos;s visit to Karanja to the news”, “Rakesh ji is now Joint Secretary”, “what
-        does the site say about the Kumbhoj work?”. It reads the site, prepares the changes and shows you what will change. It publishes only when you confirm in
-        the chat — or open its link to see the changes on the page and publish here. “Undo that” puts the site back.
+        Connect your AI assistant to the website, then just ask: “Add yesterday&apos;s visit to Karanja to the news”, “Rakesh ji is now Joint Secretary”, “put
+        up a Diwali greeting on the morning of Diwali”, “what are visitors asking that the site doesn&apos;t answer?”, “which translations are out of date?”. It
+        reads the site, prepares the changes and shows you what will change. It publishes only when you confirm in the chat — or open its link to see the changes
+        on the page and publish here. “Undo that” puts the site back.
       </p>
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <code className="min-w-0 flex-1 truncate rounded-md border border-ink/15 bg-white px-3 py-2 font-mono text-[0.88rem]">{url}</code>

@@ -20,6 +20,10 @@ import { history, readEdits, storage, withApplied, withRetry, writeEdits } from 
 import { translate, type Reference } from "@/lib/cms/translate";
 import { shapeOf, validateOps } from "@/lib/cms/validate";
 import { decodeProposal, encodeProposal, MAX_TOKEN } from "./proposal";
+import { checkSite } from "@/components/editor/health";
+import { listScheduled, scheduleSite, todayInIndia } from "@/lib/cms/schedule";
+import { readAnalysis, summarise } from "@/lib/insights/analyse";
+import { readQuestions } from "@/lib/insights/questions";
 
 /**
  * What an AI app can do with the site over MCP: learn its shape, search it,
@@ -560,10 +564,14 @@ const publishTool: Tool = {
     "Publish changes that propose_changes prepared, to the live website — exactly those changes, nothing else.",
     "Only call this after the person has seen what will change and clearly confirmed, in this conversation, that they want it published. Never publish on your own initiative.",
     "Pass the review link propose_changes returned. The site updates in about two minutes; undo_last_publish reverses it. Changes that need a new photo can't be published from a chat — they're published from the editor.",
+    "To publish on a later day instead (an announcement for the morning of an event), pass on_date: it goes live at about 6 a.m. India time that day, and can be cancelled from History in the site editor until then.",
   ].join("\n"),
   inputSchema: {
     type: "object",
-    properties: { proposal: { type: "string", description: "The review link propose_changes returned (…/editor?proposal=…)." } },
+    properties: {
+      proposal: { type: "string", description: "The review link propose_changes returned (…/editor?proposal=…)." },
+      on_date: { type: "string", description: "Optional: publish on this later day instead of now, as YYYY-MM-DD (India time)." },
+    },
     required: ["proposal"],
     additionalProperties: false,
   },
@@ -580,6 +588,26 @@ const publishTool: Tool = {
       throw new ToolError("That review link isn't valid — it may have been copied incompletely, or be more than 30 days old. Prepare the changes again with propose_changes.");
     }
     const link = `${ctx.origin}/editor?proposal=${token}`;
+    const onDate = typeof args.on_date === "string" && args.on_date.trim() ? args.on_date.trim() : null;
+    if (onDate) {
+      const limit = todayInIndia(new Date(Date.now() + 366 * 86_400_000));
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(onDate) || Number.isNaN(Date.parse(onDate)) || onDate <= todayInIndia() || onDate > limit) {
+        throw new ToolError(`on_date must be a day after today (India time is ${todayInIndia()}), within a year, as YYYY-MM-DD.`);
+      }
+      const { edits: head } = await readEdits();
+      if (head.applied?.includes(proposal.id)) throw new ToolError("These changes have already been published.");
+      if ((await listScheduled()).some((i) => i.status === "waiting" && i.kind === "site" && i.proposals.includes(proposal.id))) {
+        throw new ToolError("These changes are already scheduled. They can be cancelled from History in the site editor.");
+      }
+      const trees = treesFor(head);
+      const draft = applyActions([], trees, proposal.actions);
+      const problem = validateOps(draft, trees, shapeOf([...Object.values(base()), ...Object.values(trees)]), new Set());
+      if (problem) throw new ToolError(`These changes don't fit the site as it is now (${problem}). Prepare them again with propose_changes.`);
+      await scheduleSite({ ops: draft, images: [], note: proposal.summary, proposals: [proposal.id], date: onDate, by: ctx.email });
+      console.info("MCP schedule", { editor: ctx.email, app: ctx.app, date: onDate, proposal: proposal.id });
+      const day = new Date(onDate).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+      return `Scheduled: ${proposal.summary}\nIt goes live early on ${day} (about 6 a.m. India time), checked again against the site as it is then. To call it off, use History in the site editor.`;
+    }
     const revision = await withRetry(async () => {
       const { edits: head, commit } = await readEdits();
       if (head.applied?.includes(proposal.id)) throw new ToolError("These changes have already been published.");
@@ -638,9 +666,78 @@ const undoTool: Tool = {
   },
 };
 
-export const TOOLS: Tool[] = [overview, search, read, propose, publishTool, undoTool, translateTool, historyTool];
+/* ------------------------------------------------------------- insights */
+
+const questionsTool: Tool = {
+  name: "get_visitor_questions",
+  title: "What visitors ask",
+  description: [
+    "What visitors have asked the website's AI assistant recently, in English, Hindi and Kannada: counts, the themes they group into, and the latest questions with the assistant's answers.",
+    "Questions marked sent_away were answered by pointing the visitor to the Foundation's email or phone — the website doesn't say. Use this to suggest what the site could add; the facts themselves must come from the person, never from you.",
+  ].join("\n"),
+  inputSchema: {
+    type: "object",
+    properties: { days: { type: "number", enum: [7, 30, 90], description: "How far back to look (default 30)." } },
+    additionalProperties: false,
+  },
+  annotations: { readOnlyHint: true, openWorldHint: false },
+  async run(args) {
+    const days = [7, 30, 90].includes(Number(args.days)) ? Number(args.days) : 30;
+    const [asked, analysis] = await Promise.all([readQuestions(days), readAnalysis()]);
+    const summary = summarise(asked, days);
+    return json({
+      period: `the last ${days} days`,
+      questions: summary.total,
+      by_language: summary.byLang,
+      spoken_aloud: summary.spoken,
+      sent_away_because_the_site_doesnt_say: summary.deflected,
+      asked_from_pages: summary.pages,
+      themes: analysis
+        ? {
+            grouped: new Date(analysis.at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }),
+            note: "Grouped by AI in the site editor's Insights; 'covered' is counted from what the assistant actually did.",
+            items: analysis.themes.map((t) => ({ theme: t.title, questions: t.questions.length, covered: t.covered, note: t.note, examples: t.questions.slice(0, 3).map((q) => q.q) })),
+          }
+        : "Not grouped yet — an editor can group them under Insights in the site editor.",
+      latest: asked.slice(0, 40).map((a) => ({
+        asked: new Date(a.at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }),
+        language: a.lang,
+        page: a.page,
+        question: a.q,
+        answer: a.a.slice(0, 300),
+        sent_away: a.deflected,
+        spoken: a.spoken,
+      })),
+    });
+  },
+};
+
+const checkTool: Tool = {
+  name: "check_site",
+  title: "Site check",
+  description:
+    "What on the website needs attention: Hindi or Kannada translations left behind when the English was changed, Hindi/Kannada fields left empty (showing English), photos without a description, and facts still awaiting the Foundation. Each comes with its field path, ready for read_section and propose_changes.",
+  inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  annotations: { readOnlyHint: true, openWorldHint: false },
+  async run() {
+    const trees = await published();
+    const health = checkSite(base(), trees, translatedFields(base()));
+    const list = (items: { path: Path; lang?: Lang }[]) =>
+      items.map((f) => ({ path: fromPath(f.path), where: describeAt(trees.en, f.path), ...(f.lang ? { language: localeInfo[f.lang].label } : {}) }));
+    return json({
+      translations_behind_the_english: list(health.behind),
+      showing_english_on_hindi_or_kannada_site: list(health.english),
+      photos_without_a_description: list(health.undescribed),
+      awaiting_the_foundation: list(health.waiting),
+      note: "Translations can be updated with translate_text then propose_changes. Facts awaiting the Foundation must come from the person — never fill them in yourself.",
+    });
+  },
+};
+
+export const TOOLS: Tool[] = [overview, search, read, propose, publishTool, undoTool, translateTool, historyTool, questionsTool, checkTool];
 
 export const INSTRUCTIONS = `This server edits the website of Acharya Shanti Sagar Foundation (a Jain charitable trust in Bengaluru), in English, Hindi and Kannada.
 Start with get_site_overview. Read (read_section / search_site) before proposing changes, and use field paths exactly as returned.
-Changes are prepared with propose_changes, which returns a summary and a review link. Show the person what will change and ask. Only when they clearly confirm, publish with publish_changes (passing the review link); never publish without that confirmation. undo_last_publish reverses the latest publish when asked.
+Changes are prepared with propose_changes, which returns a summary and a review link. Show the person what will change and ask. Only when they clearly confirm, publish with publish_changes (passing the review link); never publish without that confirmation. undo_last_publish reverses the latest publish when asked. publish_changes can also schedule changes for a later day (on_date).
+get_visitor_questions shows what visitors ask the site's assistant and what the site doesn't yet answer; check_site lists translations and facts needing attention.
 Never invent figures, names, dates or prices; ask the person when something isn't known. Keep {tokens} such as {folioPrice} as they are.`;
