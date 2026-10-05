@@ -184,7 +184,7 @@ shows as a proper preview card — with "Open the report". (Older `/files/…` l
 the file itself to WhatsApp through the device's share menu.
 
 - The list lives **encrypted** (AES-256-GCM) in `mail.enc.json` on the `cms-data` branch, which
-  holds no site and never deploys (`vercel.json`) — the repository is public, and addresses must
+  holds no site and never deploys (it carries its own `vercel.json` turning deployments off — Vercel reads the one in the commit it builds) — the repository is public, and addresses must
   not be readable there. Locally, `.cms-data/` (git-ignored); without SMTP credentials `next dev`
   writes messages to `.cms-data/outbox.jsonl` instead of sending.
 - Every message has a personal unsubscribe link (`/unsubscribe`) and one-click unsubscribe headers

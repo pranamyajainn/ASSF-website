@@ -168,11 +168,19 @@ export async function history(): Promise<Publish[]> {
 /**
  * A private file kept on its own branch (`cms-data`), apart from the site:
  * the mailing list, for one. The branch has no site on it and Vercel doesn't
- * deploy it (vercel.json); the repository is public, so what's written here
+ * deploy it (the branch carries its own vercel.json, below); the repository is public, so what's written here
  * must already be encrypted (see lib/mail/data.ts). Locally, a file in
  * .cms-data/ (git-ignored).
  */
 const DATA_BRANCH = process.env.CMS_DATA_BRANCH ?? "cms-data";
+
+/**
+ * Vercel reads vercel.json from the commit it is asked to build, so the
+ * main branch's rule against deploying this branch never reaches it. Every
+ * commit here carries its own vercel.json turning deployments off (the same
+ * text each time, so it changes nothing after the first).
+ */
+const DATA_BRANCH_VERCEL = `${JSON.stringify({ git: { deploymentEnabled: false } }, null, 2)}\n`;
 
 export async function readDataFile(path: string): Promise<{ text: string | null; head: string | null }> {
   if (storage === "github") {
@@ -230,7 +238,7 @@ export async function writeDataFiles(changes: readonly DataChange[], message: st
     method: "POST",
     body: JSON.stringify({
       ...(base ? { base_tree: base.tree.sha } : {}),
-      tree: changes.map((c) =>
+      tree: [...changes, { path: "vercel.json", text: DATA_BRANCH_VERCEL }].map((c) =>
         "remove" in c
           ? { path: c.path, mode: "100644", type: "blob", sha: null }
           : "blob" in c
