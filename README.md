@@ -86,7 +86,13 @@ under the assistant — one encrypted line per question in a day file under `que
 `cms-data` branch (`src/lib/insights/questions.ts`), for the editor's **Insights**. The daily job
 removes them after a year.
 
-**Online giving (`/donate`).** Gifts go to the Foundation's **Apna Dharm** account (its
+**Online giving (`/donate`).** Reached quietly, never pressed: "Give" in the top line beside
+"Ask AI" (in the menu on small phones), one question at the end of each page about the work
+(`components/site/give-note.tsx`), and folio counts under "Adopting a folio" that open the form
+with the count chosen (`/donate?pages=5`, `/donate?amount` for any amount). The form opens
+ready: one folio chosen, only a name and a WhatsApp number asked, PAN/address (for a tax
+receipt) and email/note behind a "+", no pop-ups, and on phones the total and Pay stay in a bar
+at the bottom. Gifts go to the Foundation's **Apna Dharm** account (its
 donation system — an ERP for trusts) and are paid on **NTT DATA Payment Services'** checkout
 (formerly Atom). The page is the site's own, in three languages: the gift's category (Apna
 Dharm's, fetched and translated by `/api/donate/categories`), the donor's details, then Apna

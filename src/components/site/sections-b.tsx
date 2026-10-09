@@ -13,6 +13,7 @@ import {
 import { FolioWall } from "./folio-wall";
 import { getContent } from "@/i18n/content";
 import { scriptLang } from "@/lib/deva";
+import { fill } from "@/i18n/ui";
 
 /**
  * Join the work. Giving is one way in among several, never the loudest thing
@@ -55,14 +56,35 @@ export async function Join() {
             {adopt.heading}
           </Heading>
           <p className="mt-5 max-w-[48ch] text-[1.0625rem] leading-relaxed text-ink-soft">{adopt.body}</p>
-          <div className="mt-5 flex flex-wrap gap-x-8 gap-y-2">
-            <InlineLink href={adopt.give.href} className="">
-              {adopt.give.label}
-            </InlineLink>
-            <InlineLink href={adopt.link.href} className="">
-              {adopt.link.label}
-            </InlineLink>
-          </div>
+          {/* One step to giving: a count of folios goes straight to the donate
+              page with it chosen. No prices on the buttons — the sentence above
+              states the price once. */}
+          <nav aria-label={adopt.give.label} className="mt-7">
+            <p className="font-mono text-register text-ink-faint">{ui.give.adoptLead}</p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {[1, 5, 10].map((n) => (
+                <li key={n}>
+                  <a
+                    href={`${adopt.give.href}?pages=${n}`}
+                    className="inline-flex min-h-[2.75rem] items-center border border-ink/30 px-4 text-[1.0625rem] text-ink transition-colors hover:border-cinnabar hover:text-cinnabar"
+                  >
+                    {n === 1 ? ui.give.one : fill(ui.give.many, { n })}
+                  </a>
+                </li>
+              ))}
+              <li>
+                <a
+                  href={`${adopt.give.href}?amount`}
+                  className="inline-flex min-h-[2.75rem] items-center px-2 text-[1.0625rem] text-cinnabar underline decoration-cinnabar/35 underline-offset-[6px] hover:decoration-cinnabar"
+                >
+                  {ui.give.another}
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <InlineLink href={adopt.link.href} className="mt-6">
+            {adopt.link.label}
+          </InlineLink>
         </div>
 
         <div className="lg:pt-2">

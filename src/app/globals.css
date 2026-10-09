@@ -634,6 +634,20 @@ ol[data-verses] [data-verse-end]::after {
   animation: nib-blink 0.9s steps(1) infinite;
 }
 
+/*
+ * The donate page keeps its gift and Pay button in a bar along the bottom of
+ * a phone; the assistant's launcher steps up above it, and the page leaves
+ * room for it at the end.
+ */
+@media (width < 64rem) {
+  html:has([data-pay-bar]) body {
+    padding-bottom: 4.75rem;
+  }
+  html:has([data-pay-bar]) [data-chat-float] {
+    translate: 0 -4.5rem;
+  }
+}
+
 /* Asking out loud: the red dot breathes while the assistant listens. */
 @keyframes voice-dot {
   0%,

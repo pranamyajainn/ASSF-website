@@ -423,6 +423,7 @@ export function ChatWidget({
       {/* Proactive teaser: a note slipped into the margin, once per session. */}
       {showTeaser && !open ? (
         <div
+          data-chat-float
           className="on-dark fixed bottom-[5.25rem] right-5 z-40 max-w-[16rem] animate-[teaser-in_0.35s_ease-out] border-l-2 border-cinnabar bg-board py-3.5 pl-4 pr-9 text-board-ink shadow-[0_12px_30px_rgb(23_17_12/0.35)] sm:right-6"
           role="status"
         >
@@ -619,6 +620,7 @@ export function ChatWidget({
       {/* Launcher — a labelled tab, not an anonymous bubble */}
       <button
         ref={fabRef}
+        data-chat-float
         type="button"
         onClick={() => {
           const next = !open;

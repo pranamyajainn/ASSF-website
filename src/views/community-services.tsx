@@ -1,5 +1,6 @@
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
+import { GiveNote } from "@/components/site/give-note";
 import {
   Gloss,
   Heading,
@@ -146,6 +147,7 @@ export default async function CommunityServicesPage() {
             ))}
           </ul>
         </Leaf>
+        <GiveNote about="work" />
       </main>
       <Footer />
     </>

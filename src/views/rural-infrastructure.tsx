@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
+import { GiveNote } from "@/components/site/give-note";
 import { Heading, Leaf, PageHero, Plate, Prose, Verses } from "@/components/site/primitives";
 import { getContent } from "@/i18n/content";
 import { pageMetadata } from "@/i18n/metadata";
@@ -120,6 +121,7 @@ export default async function RuralInfrastructurePage() {
             ))}
           </Prose>
         </Leaf>
+        <GiveNote about="work" />
       </main>
       <Footer />
     </>

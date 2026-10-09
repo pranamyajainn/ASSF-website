@@ -42,7 +42,8 @@ function setClean(next: boolean) {
  *   `data-ornament`, the way a conservator dry-cleans a leaf to read it.
  *   The choice is remembered: it stays on across pages and editions until
  *   the reader turns it off.
- * - "Ask AI" opens the Foundation's AI assistant from anywhere.
+ * - "Ask AI" opens the Foundation's AI assistant from anywhere; "Give"
+ *   beside it leads to the donate page — a word, not a call to action.
  * - "Listen" reads the page aloud in the edition's language, with the
  *   reader's own device voice, marking each passage as it is read. It is
  *   offered only where the device has a voice for the language.
@@ -107,6 +108,14 @@ export function HeaderClient({
                 {t.ask} <AiStamp className="text-orpiment" />
                 <span className="sr-only">{t.askSr}</span>
               </button>
+              {/* Giving, as quietly as asking: a word in the top line, never a button in the masthead. */}
+              <Link
+                href={localizeHref("/donate", lang)}
+                aria-current={basePath === "/donate" ? "page" : undefined}
+                className="hidden py-1 text-[0.95rem] text-board-ink transition-colors hover:text-orpiment aria-[current=page]:text-orpiment sm:block"
+              >
+                {t.give}
+              </Link>
               <span aria-hidden="true" className="h-4 w-px bg-board-soft/30" />
 
               <nav aria-label={t.language}>

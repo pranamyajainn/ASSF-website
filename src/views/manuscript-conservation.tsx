@@ -1,5 +1,6 @@
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
+import { GiveNote } from "@/components/site/give-note";
 import { Sites } from "@/components/site/sites";
 import {
   Gloss,
@@ -163,6 +164,7 @@ export default async function ManuscriptConservationPage() {
           </Prose>
           <InlineLink href={href("/#join")}>{t.joinLink}</InlineLink>
         </Leaf>
+        <GiveNote about="restore" />
       </main>
       <Footer />
     </>

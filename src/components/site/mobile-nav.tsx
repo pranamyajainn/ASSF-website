@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { toScriptNumerals } from "@/lib/deva";
 import type { UI } from "@/i18n/ui";
+import { localizeHref, type Lang } from "@/i18n/config";
 
 /**
  * Below `xl` the primary nav in the header is hidden — this is the way in.
@@ -123,6 +124,13 @@ export function MobileNav({
             className="mt-10 self-start text-[1.0625rem] text-board-ink underline decoration-orpiment/50 underline-offset-[6px] hover:decoration-orpiment"
           >
             {t.join}
+          </Link>
+          <Link
+            href={localizeHref("/donate", lang as Lang)}
+            onClick={close}
+            className="mt-4 self-start text-[1.0625rem] text-board-ink underline decoration-orpiment/50 underline-offset-[6px] hover:decoration-orpiment"
+          >
+            {t.giveOnline}
           </Link>
           <p className="mt-4 font-mono text-register text-board-soft">
             <a href={`tel:${phone.replace(/\s/g, "")}`} className="hover:text-board-ink">
