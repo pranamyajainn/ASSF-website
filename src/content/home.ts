@@ -298,6 +298,8 @@ export const adopt = {
   // {folioPrice} and {granthaPrice} are filled in from shared.ts (and the site editor's Prices).
   body: "Conserving one folio costs ₹{folioPrice}; each donor receives a donation receipt and a letter of thanks. Fund a whole grantha — about 100 folios, ₹{granthaPrice} — and your name is written on the cloth it is wrapped in.",
   link: { label: "Bank transfer details", href: "#give" },
+  /** Online giving, through the Foundation's Apna Dharm account (see views/donate.tsx). */
+  give: { label: "Give online", href: "/donate" },
   wall: {
     /** Leaves stay blank until real folio records exist. */
     filled: 0,

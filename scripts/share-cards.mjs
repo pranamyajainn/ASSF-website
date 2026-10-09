@@ -28,6 +28,7 @@ const PAGES = [
   { slug: "community-services", path: "/community-services" },
   { slug: "impact", path: "/impact" },
   { slug: "trustees", path: "/trustees" },
+  { slug: "donate", path: "/donate" },
 ];
 const EDITIONS = { en: "", hi: "/hi", kn: "/kn" };
 

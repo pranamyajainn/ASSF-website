@@ -43,7 +43,7 @@ function pageFor(path: string | null): (typeof PAGES)[number] | undefined {
 }
 
 export function InsightsView({ onOpenPage, onReveal }: { onOpenPage: (module: ModuleName) => void; onReveal: (path: Path, lang?: Lang) => void }) {
-  const [tab, setTab] = useState<"questions" | "check">("questions");
+  const [tab, setTab] = useState<"questions" | "gifts" | "check">("questions");
   return (
     <div className="mx-auto max-w-[80rem] px-4 py-6 lg:px-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -57,6 +57,7 @@ export function InsightsView({ onOpenPage, onReveal }: { onOpenPage: (module: Mo
           {(
             [
               ["questions", "Visitors' questions"],
+              ["gifts", "Online gifts"],
               ["check", "Site check"],
             ] as const
           ).map(([id, label]) => (
@@ -73,7 +74,9 @@ export function InsightsView({ onOpenPage, onReveal }: { onOpenPage: (module: Mo
           ))}
         </div>
       </div>
-      <div className="mt-6">{tab === "questions" ? <Questions onOpenPage={onOpenPage} /> : <SiteCheck onReveal={onReveal} />}</div>
+      <div className="mt-6">
+        {tab === "questions" ? <Questions onOpenPage={onOpenPage} /> : tab === "gifts" ? <Gifts /> : <SiteCheck onReveal={onReveal} />}
+      </div>
     </div>
   );
 }
@@ -270,6 +273,98 @@ function Questions({ onOpenPage }: { onOpenPage: (module: ModuleName) => void })
           </section>
         </>
       )}
+    </div>
+  );
+}
+
+type GiftData = {
+  days: number;
+  completed: number;
+  total: number;
+  unfinished: number;
+  gifts: { at: string; txn: string; status: string; amount: number; category: string; lang: string }[];
+};
+
+const GIFT_STATUS: Record<string, { label: string; tone: string }> = {
+  success: { label: "Completed", tone: "bg-emerald-900/10 text-emerald-900" },
+  failed: { label: "Didn't go through", tone: "bg-cinnabar/12 text-cinnabar-deep" },
+  cancelled: { label: "Cancelled", tone: "bg-ink/6 text-ink-soft" },
+  timeout: { label: "Timed out", tone: "bg-ink/6 text-ink-soft" },
+  unclear: { label: "Unclear — check Apna Dharm", tone: "bg-orpiment/30 text-ink" },
+};
+
+/** Gifts made on the website's donate page, as donors' browsers reported them. */
+function Gifts() {
+  const [days, setDays] = useState(30);
+  const [data, setData] = useState<GiftData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    fetch(`/api/cms/gifts?days=${days}`, { cache: "no-store" })
+      .then(async (res) => {
+        if (!live) return;
+        if (res.ok) {
+          setData((await res.json()) as GiftData);
+          setError(null);
+        } else setError(await res.text());
+      })
+      .catch(() => live && setError("Online gifts couldn't be loaded."));
+    return () => {
+      live = false;
+    };
+  }, [days]);
+  if (error) return <p className="text-cinnabar-deep">{error}</p>;
+  if (!data) return <p className="font-display text-xl text-ink-soft">Reading the gifts…</p>;
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="max-w-3xl text-[0.92rem] text-ink-soft">
+          Gifts made on the website&apos;s donate page, as each donor&apos;s browser heard from the bank. The Foundation&apos;s Apna Dharm account is the record of
+          every gift — donors&apos; names, receipts and settlements are there.
+        </p>
+        <div role="group" aria-label="Period" className="flex gap-1 rounded-full border border-ink/15 bg-white/60 p-1 text-[0.88rem]">
+          {[7, 30, 90, 365].map((d) => (
+            <button
+              key={d}
+              type="button"
+              aria-pressed={days === d}
+              onClick={() => setDays(d)}
+              className={`cursor-pointer rounded-full px-3 py-1 ${days === d ? "bg-ink text-leaf" : "text-ink-soft hover:bg-ink/5"}`}
+            >
+              {d === 365 ? "A year" : `${d} days`}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Stat label="Completed gifts" value={data.completed.toLocaleString("en-IN")} note={`in the last ${data.days} days`} />
+        <Stat label="Given online" value={`₹${data.total.toLocaleString("en-IN")}`} note="the completed gifts together" />
+        <Stat label="Started, not completed" value={data.unfinished.toLocaleString("en-IN")} note="cancelled, failed or unclear" />
+      </div>
+      <section className={card}>
+        <h2 className="font-display text-[1.4rem]">Latest</h2>
+        {data.gifts.length ? (
+          <ul className="mt-3 divide-y divide-ink/10">
+            {data.gifts.map((g) => (
+              <li key={g.txn + g.at} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-2.5">
+                <span className="min-w-0">
+                  <span className="block text-[1rem]">
+                    ₹{g.amount.toLocaleString("en-IN")} <span className="text-ink-soft">· {g.category || "—"}</span>
+                  </span>
+                  <span className="font-mono text-[0.74rem] text-ink-faint">
+                    {when(g.at)} · {LANG_NAME[g.lang] ?? g.lang} · ref {g.txn}
+                  </span>
+                </span>
+                <span className={`rounded-full px-2.5 py-0.5 text-[0.78rem] ${(GIFT_STATUS[g.status] ?? GIFT_STATUS.unclear).tone}`}>
+                  {(GIFT_STATUS[g.status] ?? GIFT_STATUS.unclear).label}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-2 text-ink-soft">No gifts on the website in this period yet.</p>
+        )}
+      </section>
     </div>
   );
 }

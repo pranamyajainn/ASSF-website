@@ -11,6 +11,7 @@ const PAGES = [
   "/community-services",
   "/impact",
   "/trustees",
+  "/donate",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

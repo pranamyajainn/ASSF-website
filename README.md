@@ -86,6 +86,33 @@ under the assistant — one encrypted line per question in a day file under `que
 `cms-data` branch (`src/lib/insights/questions.ts`), for the editor's **Insights**. The daily job
 removes them after a year.
 
+**Online giving (`/donate`).** Gifts go to the Foundation's **Apna Dharm** account (its
+donation system — an ERP for trusts) and are paid on **NTT DATA Payment Services'** checkout
+(formerly Atom). The page is the site's own, in three languages: the gift's category (Apna
+Dharm's, fetched and translated by `/api/donate/categories`), the donor's details, then Apna
+Dharm's script (`payment-sdk-1.0.8.js`, loaded only on Pay) creates the order and replaces the
+page with the checkout. The bank reports to Apna Dharm, which keeps the donor record and is the
+record of every gift; the donor returns to `/donate/thank-you?txn=…`, which reads the bank's
+status code (`OTS0000` = paid) rather than trusting the script, and reports the outcome — without
+the donor's details — for the editor's **Insights → Online gifts**. A donor who ticks "email
+updates" joins the newsletter list (after a completed gift only).
+
+- The account: `NEXT_PUBLIC_APNADHARM_VENDOR_ID` and `NEXT_PUBLIC_APNADHARM_TRUST_ID` (defaults in
+  `src/lib/donate/config.ts`). Categories, amounts and receipts are managed in Apna Dharm's portal;
+  the page shows changes within five minutes.
+- **Apna Dharm serves its script only to approved sites** — the Foundation's domain and
+  `localhost:3000` (it answers others "CORS: Host not allowed"). On the `vercel.app` review
+  address the form shows but says payment opens on the Foundation's domain
+  (`PAYMENT_READY_HOSTS`; more via `NEXT_PUBLIC_DONATE_HOSTS` once Apna Dharm approves them).
+  For local work, run `next dev -p 3000`.
+- Only the donate page may load Apna Dharm's and NTT DATA's scripts and frames (its own
+  Content-Security-Policy in `next.config.ts`). Nothing the donor types is stored in the browser
+  (Apna Dharm's own form keeps it all, PAN included); the tab keeps only the amount and outcome.
+- Apna Dharm's script listens for the checkout's answer only once, so an earlier message can
+  leave a paid donor on "Please wait…"; `followCheckout` (`src/lib/donate/checkout.ts`) listens
+  too and takes them to the thank-you page.
+- The earlier site's `/donation.html` and `/success.php` redirect to `/donate` and its thank-you page.
+
 **Daily job.** `/api/cron/daily`, about 6 a.m. India time: publishes scheduled changes and sends
 scheduled emails that are due (`src/lib/cms/schedule.ts`), and prunes old visitor questions.
 Locally, `curl "localhost:3000/api/cron/daily?now=2026-10-05"` runs it as of that morning.

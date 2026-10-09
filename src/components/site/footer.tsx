@@ -83,6 +83,12 @@ export async function Footer() {
                 <dd>{org.bank.ifsc}</dd>
               </div>
             </dl>
+            <a
+              href={href("/donate")}
+              className="mt-4 inline-block text-[1.0625rem] underline decoration-board-ink/35 underline-offset-[5px] hover:decoration-orpiment"
+            >
+              {t.giveOnline} →
+            </a>
           </section>
         </div>
 

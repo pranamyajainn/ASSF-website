@@ -55,9 +55,14 @@ export async function Join() {
             {adopt.heading}
           </Heading>
           <p className="mt-5 max-w-[48ch] text-[1.0625rem] leading-relaxed text-ink-soft">{adopt.body}</p>
-          <InlineLink href={adopt.link.href} className="mt-5">
-            {adopt.link.label}
-          </InlineLink>
+          <div className="mt-5 flex flex-wrap gap-x-8 gap-y-2">
+            <InlineLink href={adopt.give.href} className="">
+              {adopt.give.label}
+            </InlineLink>
+            <InlineLink href={adopt.link.href} className="">
+              {adopt.link.label}
+            </InlineLink>
+          </div>
         </div>
 
         <div className="lg:pt-2">
