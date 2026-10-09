@@ -41,7 +41,7 @@ export function MobileNav({
         type="button"
         onClick={() => dialogRef.current?.showModal()}
         aria-haspopup="dialog"
-        className="ml-auto flex h-11 shrink-0 items-center gap-2.5 border border-ink/30 px-3.5 text-ink xl:hidden"
+        className="-ml-4 flex h-11 shrink-0 items-center gap-2.5 border border-ink/30 px-3.5 text-ink sm:-ml-2 xl:hidden"
       >
         <svg
           viewBox="0 0 24 24"

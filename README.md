@@ -81,15 +81,23 @@ device's own Hindi, Kannada or English voice (`src/lib/speech.ts`), marking each
 only where the device has a voice for that language. A link ending in `#ask` opens the site with
 the assistant ready (the QR cards use it).
 
+**Reading aloud.** English is read in a natural, cheerful voice — Orpheus ("hannah", `[cheerful]`)
+on Groq through `/api/speak`, one sentence per request, cached by the CDN so a page costs nothing the
+second time (`TTS_VOICE` picks another voice). The model's terms must be accepted once in the Groq
+console. Hindi and Kannada, and English if that voice is unavailable, use the device's best voice
+(natural/online first, never the old robotic ones) at a brighter pitch (`src/lib/speech.ts`).
+
 **Visitor questions.** Each question and answer is kept — not who asked, and visitors are told so
 under the assistant — one encrypted line per question in a day file under `questions/` on the
 `cms-data` branch (`src/lib/insights/questions.ts`), for the editor's **Insights**. The daily job
 removes them after a year.
 
-**Online giving (`/donate`).** Reached quietly, never pressed: "Give" in the top line beside
-"Ask AI" (in the menu on small phones), one question at the end of each page about the work
-(`components/site/give-note.tsx`), and folio counts under "Adopting a folio" that open the form
-with the count chosen (`/donate?pages=5`, `/donate?amount` for any amount). The form opens
+**Online giving (`/donate`).** Easy to find, never pressed: a red **Donate** button ending the
+masthead on every page (beside the menu button on phones), the hero's "Support the mission",
+the home page's "One life, one page" band after the figures (the Foundation's own campaign — a
+page at its price, 1/5/10/25 in one tap), one question at the end of each page about the work
+(`components/site/give-note.tsx`), and folio counts under "Adopting a folio" — each opening the
+form with the choice made (`/donate?pages=5`, `/donate?amount` for any amount). The form opens
 ready: one folio chosen, only a name and a WhatsApp number asked, PAN/address (for a tax
 receipt) and email/note behind a "+", no pop-ups, and on phones the total and Pay stay in a bar
 at the bottom. Gifts go to the Foundation's **Apna Dharm** account (its

@@ -737,6 +737,7 @@ export const kn: Translation = {
       join: "ಈ ಕೆಲಸದಲ್ಲಿ ಜೊತೆಯಾಗಿ",
       give: "ದಾನ",
       giveOnline: "ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ದಾನ ಮಾಡಿ",
+      donate: "ದಾನ ಮಾಡಿ",
     },
     footer: {
       colophon: "ಅಂತ್ಯಲೇಖ",
@@ -888,6 +889,11 @@ export const kn: Translation = {
       one: "1 ಪತ್ರ",
       many: "{n} ಪತ್ರಗಳು",
       another: "ಬೇರೆ ಮೊತ್ತ",
+      bandEyebrow: "ಜೈನ ತಾಳೆಗರಿ ಸಂರಕ್ಷಣಾ ಅಭಿಯಾನ",
+      bandHeading: "ಒಂದು ಜೀವನ, ಒಂದು ಪತ್ರ",
+      bandBody: "ತಾಳೆಗರಿ ಹಸ್ತಪ್ರತಿಯ ಒಂದು ಪತ್ರದ ಸಂರಕ್ಷಣೆಗೆ ₹{folioPrice} ತಗಲುತ್ತದೆ. ನೀವು ಎಷ್ಟು ಪತ್ರಗಳನ್ನು ಸಂರಕ್ಷಿಸಲು ಬಯಸುತ್ತೀರಿ ಎಂದು ಆಯ್ಕೆಮಾಡಿ.",
+      bandPages: "ಪತ್ರಗಳು",
+      bandButton: "ದಾನ ಮಾಡಿ",
     },
     donate: {
       label: "ದಾನ",

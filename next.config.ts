@@ -19,7 +19,8 @@ const csp = [
   `style-src 'self' 'unsafe-inline'${preview ? " https://vercel.live" : ""}`,
   `img-src 'self' data: blob:${preview ? " https://vercel.live https://vercel.com" : ""}`,
   `font-src 'self'${preview ? " https://vercel.live https://assets.vercel.com" : ""}`,
-  "media-src 'self'",
+  // blob: — sentences read aloud in the natural voice are played from memory.
+  "media-src 'self' blob:",
   `connect-src 'self'${dev ? " ws:" : ""}${preview ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
   // 'self': the site editor shows the site's own pages in a frame.
   `frame-src 'self' https://www.youtube-nocookie.com${preview ? " https://vercel.live" : ""}`,

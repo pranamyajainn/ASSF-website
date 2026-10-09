@@ -6,6 +6,7 @@ import { Board, Field, Join, Lineage, Survey } from "@/components/site/sections-
 import { Voices } from "@/components/site/voices";
 import { UpClose } from "@/components/site/up-close";
 import { Footer } from "@/components/site/footer";
+import { GiveBand } from "@/components/site/give-note";
 import { OrgSchema } from "@/components/site/org-schema";
 import { pageMetadata } from "@/i18n/metadata";
 
@@ -33,6 +34,7 @@ export default function Home() {
         <UpClose />
         {/* HOW MUCH, then WHERE & WHEN — the register, then the sites. */}
         <Ledger />
+        <GiveBand />
         <Sites />
         {/* WHAT ELSE — the two pillars that serve the present. */}
         <Spread />

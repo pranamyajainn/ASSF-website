@@ -738,6 +738,7 @@ export const hi: Translation = {
       join: "इस कार्य से जुड़ें",
       give: "दान",
       giveOnline: "ऑनलाइन दान करें",
+      donate: "दान करें",
     },
     footer: {
       colophon: "पुष्पिका",
@@ -889,6 +890,11 @@ export const hi: Translation = {
       one: "1 पत्र",
       many: "{n} पत्र",
       another: "अन्य राशि",
+      bandEyebrow: "जैन ताड़पत्र संरक्षण मिशन",
+      bandHeading: "एक जीवन, एक पत्र",
+      bandBody: "ताड़पत्र पांडुलिपि के एक पत्र के संरक्षण में ₹{folioPrice} लगते हैं। चुनें कि आप कितने पत्रों का संरक्षण करना चाहेंगे।",
+      bandPages: "पत्र",
+      bandButton: "दान करें",
     },
     donate: {
       label: "दान",

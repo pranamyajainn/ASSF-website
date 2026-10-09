@@ -28,7 +28,7 @@ export const hero = {
   registration: `Registered trust, Bengaluru — ${org.registration}`,
   /** The Foundation's own hero actions ("Final Homepage Content", §1). */
   primary: { label: "Explore our work", href: "#pillars" },
-  secondary: { label: "Support the mission", href: "#join" },
+  secondary: { label: "Support the mission", href: "/donate" },
   /**
    * Banners, after the Foundation's own hero banners: each says one thing
    * about the work in a line a visitor can read in a few seconds, over the

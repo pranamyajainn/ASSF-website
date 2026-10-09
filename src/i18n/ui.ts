@@ -27,6 +27,7 @@ export const ui = {
     join: "Join the work",
     give: "Give",
     giveOnline: "Give online",
+    donate: "Donate",
   },
   footer: {
     colophon: "Colophon",
@@ -186,6 +187,12 @@ export const ui = {
     one: "1 folio",
     many: "{n} folios",
     another: "Another amount",
+    // The home page's invitation, after "Our work so far" — the Foundation's own campaign, "one life, one page".
+    bandEyebrow: "Jain Tadpatra Restoration Mission",
+    bandHeading: "One life, one page",
+    bandBody: "Conserving one page of a palm-leaf manuscript costs ₹{folioPrice}. Choose how many pages you would like to restore.",
+    bandPages: "pages",
+    bandButton: "Donate",
   },
   donate: {
     label: "Give",
