@@ -316,3 +316,65 @@ function LostPassage({ lines, featured }: { lines: number[]; featured: boolean }
     </div>
   );
 }
+
+/**
+ * Voices, for the home page: one recorded voice and one written in the
+ * visitors' book, side by side, and the way to the rest on Impact.
+ */
+export async function VoicesBrief() {
+  const { home, lang, ui, href } = await getContent();
+  const { voices } = home;
+  const film = voices.heard.items[0];
+  const written = voices.items.find((v) => v.quote);
+  return (
+    <Leaf id="voices" label={voices.label} question={ui.steps.voices}>
+      <Heading>{voices.heading}</Heading>
+      <div className="bleed-margin mt-12 grid items-center gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)]">
+        {film ? (
+          <figure className="w-full max-w-[17rem]">
+            <VoiceFilm
+              src={film.video.src}
+              poster={film.video.poster}
+              width={film.video.width}
+              height={film.video.height}
+              duration={film.video.duration}
+              title={film.name ?? film.kind}
+              playLabel={voices.heard.listen}
+              tracks={tracksFor(film.video.captions, lang)}
+              sizes="17rem"
+            />
+            <figcaption className="mt-3 font-mono text-register text-ink-soft">
+              <span className="text-ink">{film.name ?? voices.heard.nameAwaited}</span>
+              <span className="block text-ink-faint">{film.kind}</span>
+            </figcaption>
+          </figure>
+        ) : null}
+        {written ? (
+          <figure className="min-w-0">
+            <p className="font-mono text-register text-cinnabar">{written.kind}</p>
+            <blockquote lang="en" className="relative mt-5 max-w-[36ch] font-display text-[clamp(1.5rem,1.1rem+1.3vw,2.2rem)] leading-[1.32] text-ink">
+              <span aria-hidden="true" className="absolute -left-[0.55em] top-0 text-cinnabar">
+                “
+              </span>
+              {written.quote}
+              <span aria-hidden="true" className="text-cinnabar">
+                ”
+              </span>
+            </blockquote>
+            {written.translation ? <p className="mt-4 max-w-[52ch] border-l border-cinnabar/50 pl-4 text-[1rem] leading-relaxed text-ink-soft">{written.translation}</p> : null}
+            <figcaption className="mt-5 font-mono text-register text-ink-soft">
+              <span className="text-ink">— {written.name}</span>
+              {written.role ? <span className="block">{written.role}</span> : null}
+            </figcaption>
+            <a
+              href={href("/impact#voices")}
+              className="mt-8 inline-block text-[1.0625rem] text-cinnabar underline decoration-cinnabar/35 underline-offset-[6px] hover:decoration-cinnabar"
+            >
+              {ui.home.moreVoices} →
+            </a>
+          </figure>
+        ) : null}
+      </div>
+    </Leaf>
+  );
+}

@@ -40,7 +40,7 @@ export async function GiveNote({ about }: { about: "restore" | "work" }) {
  * a choice of how many in one tap, and the Donate button: nothing more.
  */
 export async function GiveBand() {
-  const { ui, shared, href } = await getContent();
+  const { ui, shared, home, href } = await getContent();
   const g = ui.give;
   const price = shared.folioPrice;
   return (
@@ -55,7 +55,8 @@ export async function GiveBand() {
             <h2 id="give-band-heading" className="mt-4 max-w-[16ch] text-balance font-display text-title font-medium">
               {g.bandHeading}
             </h2>
-            <p className="mt-5 max-w-[50ch] text-lede text-board-ink/90">{g.bandBody}</p>
+            {/* The "Adopting a folio" text: the price once, the receipt and thanks, and the donor's name on the grantha's cloth. */}
+            <p className="mt-5 max-w-[52ch] text-lede text-board-ink/90">{home.adopt.body}</p>
           </div>
           <div className="min-w-0 self-end md:col-start-2 lg:col-start-auto">
             <ul className="grid grid-cols-4 gap-2">

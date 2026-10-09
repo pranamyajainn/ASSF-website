@@ -1,6 +1,7 @@
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { GiveNote } from "@/components/site/give-note";
+import { Voices } from "@/components/site/voices";
 import { Heading, InlineLink, Leaf, PageHero, Prose } from "@/components/site/primitives";
 import Image from "next/image";
 import { LeafPanels } from "@/components/site/leaf-panels";
@@ -91,6 +92,8 @@ export default async function ImpactPage() {
             ))}
           </div>
         </Leaf>
+        {/* Every voice from the work, recorded and written; the home page shows one of each. */}
+        <Voices />
         <GiveNote about="work" />
       </main>
       <Footer />

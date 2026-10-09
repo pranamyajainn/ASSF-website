@@ -33,6 +33,36 @@ export const HIDDEN_BRANCHES = new Set([
   "shared.languages",
   // Only the trustee portal reads this list; it isn't shown on the site.
   "home.conservationStages",
+  // The home page shows only part of these (Oct 2026: one photograph each,
+  // the figures without the scale, the giving band); the rest isn't on any
+  // page, so the editor doesn't offer it. The full accounts are on their own pages.
+  "home.mission.label",
+  "home.mission.heading",
+  "home.mission.lede",
+  "home.mission.paragraphs",
+  "home.mission.steps",
+  "home.mission.note",
+  "home.mission.gloss",
+  "home.mission.link",
+  "home.pillarsIntro.principal",
+  "home.ledger.intro",
+  "home.scale",
+  "home.ruralTeaser.label",
+  "home.ruralTeaser.heading",
+  "home.ruralTeaser.body",
+  "home.ruralTeaser.highlights",
+  "home.ruralTeaser.link",
+  "home.communityTeaser.label",
+  "home.communityTeaser.heading",
+  "home.communityTeaser.body",
+  "home.communityTeaser.highlights",
+  "home.communityTeaser.link",
+  "home.adopt.heading",
+  "home.adopt.link",
+  "home.adopt.wall",
+  "home.board",
+  "home.join.body",
+  "home.field.lede",
 ]);
 
 /**
@@ -210,7 +240,7 @@ export type ModuleName = (typeof PAGES)[number]["module"];
 
 /** Sections in the order the page shows them; any not listed follow. */
 export const SECTION_ORDER: Partial<Record<ModuleName, string[]>> = {
-  home: ["hero", "mission", "pillarsIntro", "upClose", "ledger", "scale", "sites", "ruralTeaser", "communityTeaser", "field", "voices", "lineage", "board", "standing", "join", "adopt", "survey"],
+  home: ["hero", "pillarsIntro", "mission", "ruralTeaser", "communityTeaser", "ledger", "upClose", "adopt", "voices", "field", "join", "survey", "lineage", "sites", "standing"],
   shared: ["org", "folioPrice", "granthaPrice", "pillars", "nav"],
 };
 
@@ -218,18 +248,20 @@ export const SECTION_ORDER: Partial<Record<ModuleName, string[]>> = {
 const SECTION_LABELS: Record<string, string> = {
   "home.hero": "Top of the page & banners",
   "home.pillarsIntro": "Three pillars",
-  "home.upClose": "Photo album",
+  "home.upClose": "Photo strip (the work, up close)",
   "home.ledger": "Figures: our work so far",
   "home.scale": "Figures: the scale ahead",
-  "home.ruralTeaser": "Rural infrastructure",
-  "home.communityTeaser": "Community services",
+  "home.mission": "Three pillars — manuscripts photo",
+  "home.ruralTeaser": "Three pillars — rural photos",
+  "home.communityTeaser": "Three pillars — community photo",
   "home.field": "News & updates",
-  "home.voices": "Voices & films",
-  "home.lineage": "The Acharya",
+  "home.lineage": "The Acharya (on the About page)",
+  "home.sites": "Sites (on the Conservation page)",
+  "home.voices": "Voices & films (one of each on Home, all on Impact)",
   "home.board": "Board (home page)",
   "home.standing": "Registrations",
   "home.join": "Join the work",
-  "home.adopt": "Adopt a folio",
+  "home.adopt": "Giving band — One life, one page",
   "home.survey": "Manuscript survey",
   "shared.org": "Name, contact & bank details",
   "shared.nav": "Menu",

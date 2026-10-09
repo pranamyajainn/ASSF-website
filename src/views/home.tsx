@@ -1,10 +1,8 @@
 import { Header } from "@/components/site/header";
 import { Hero } from "@/components/site/hero";
-import { Ledger, Mission, PillarsIntro, Spread } from "@/components/site/sections";
-import { Sites } from "@/components/site/sites";
-import { Board, Field, Join, Lineage, Survey } from "@/components/site/sections-b";
-import { Voices } from "@/components/site/voices";
-import { UpClose } from "@/components/site/up-close";
+import { Survey } from "@/components/site/sections-b";
+import { Album, Figures, JoinBrief, News, WhatWeDo } from "@/components/site/home-sections";
+import { VoicesBrief } from "@/components/site/voices";
 import { Footer } from "@/components/site/footer";
 import { GiveBand } from "@/components/site/give-note";
 import { OrgSchema } from "@/components/site/org-schema";
@@ -24,30 +22,20 @@ export default function Home() {
       <OrgSchema />
       <Header />
       <main id="main">
-        {/* AT A GLANCE — who the Foundation is, and what it does, in banners. */}
+        {/* The home page opens the book; the other pages tell the rest. One
+            thing per section: who (the hero), what (three pillars, three
+            photographs), how much (four figures), what it looks like (the
+            album), the invitation, a voice, what's new, and the ways in —
+            closing on the custodian's call, because the mission is the
+            manuscripts. */}
         <Hero />
-        {/* WHY — the urgency, and the damage it describes. */}
-        <Mission />
-        {/* WHAT — three pillars on one leaf. */}
-        <PillarsIntro />
-        {/* HOW — the work itself, in the Foundation's own photographs. */}
-        <UpClose />
-        {/* HOW MUCH, then WHERE & WHEN — the register, then the sites. */}
-        <Ledger />
+        <WhatWeDo />
+        <Figures />
+        <Album />
         <GiveBand />
-        <Sites />
-        {/* WHAT ELSE — the two pillars that serve the present. */}
-        <Spread />
-        {/* WHAT'S NEW — the work is current, not archival. */}
-        <Field />
-        {/* VOICES — the people the work reaches, in their own words. */}
-        <Voices />
-        {/* WHO — whose name the Foundation carries, and who guides it. */}
-        <Lineage />
-        <Board />
-        {/* ACTION — many ways in, giving one of them; the custodian's call
-            closes the bundle, because the mission is the manuscripts. */}
-        <Join />
+        <VoicesBrief />
+        <News />
+        <JoinBrief />
         <Survey />
       </main>
       <Footer />

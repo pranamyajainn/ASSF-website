@@ -288,7 +288,7 @@ export const join = {
     {
       title: "Support the work",
       body: "Fund the conservation of a folio, or support the Foundation's programmes.",
-      link: { label: "Adopting a folio", href: "#adopt" },
+      link: { label: "Restore a folio", href: "/donate" },
     },
   ],
 } as const;
