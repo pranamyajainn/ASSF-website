@@ -2,7 +2,7 @@ import { Header } from "@/components/site/header";
 import { Hero } from "@/components/site/hero";
 import { Survey } from "@/components/site/sections-b";
 import { Album, Figures, JoinBrief, News, WhatWeDo } from "@/components/site/home-sections";
-import { VoicesBrief } from "@/components/site/voices";
+import { Voices } from "@/components/site/voices";
 import { Footer } from "@/components/site/footer";
 import { GiveBand } from "@/components/site/give-note";
 import { OrgSchema } from "@/components/site/org-schema";
@@ -25,7 +25,8 @@ export default function Home() {
         {/* The home page opens the book; the other pages tell the rest. One
             thing per section: who (the hero), what (three pillars, three
             photographs), how much (four figures), what it looks like (the
-            album), the invitation, a voice, what's new, and the ways in —
+            album), the invitation, the voices (all four, as the Foundation
+            asked: two recorded, two written), what's new, and the ways in —
             closing on the custodian's call, because the mission is the
             manuscripts. */}
         <Hero />
@@ -33,7 +34,7 @@ export default function Home() {
         <Figures />
         <Album />
         <GiveBand />
-        <VoicesBrief />
+        <Voices />
         <News />
         <JoinBrief />
         <Survey />

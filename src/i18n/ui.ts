@@ -82,7 +82,6 @@ export const ui = {
     standingStates: { recognised: "recognised", verify: "to verify", pending: "pending" },
     bundleLabel: "A grantha, wrapped",
     seeImpact: "See the full impact",
-    moreVoices: "More voices from the work",
     bundleAria: "A palm-leaf manuscript bundle between painted wooden covers, bound with a cord and resting on the red cloth it is wrapped in; a label on the cloth marks where a donor's name is written.",
   },
   about: {

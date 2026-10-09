@@ -257,7 +257,7 @@ const SECTION_LABELS: Record<string, string> = {
   "home.field": "News & updates",
   "home.lineage": "The Acharya (on the About page)",
   "home.sites": "Sites (on the Conservation page)",
-  "home.voices": "Voices & films (one of each on Home, all on Impact)",
+  "home.voices": "Voices & films",
   "home.board": "Board (home page)",
   "home.standing": "Registrations",
   "home.join": "Join the work",
