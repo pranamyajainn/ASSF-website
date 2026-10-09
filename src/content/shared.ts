@@ -34,9 +34,15 @@ export const org = {
   },
 } as const;
 
-/** Confirmed by the Foundation (Sept 2026): one folio, and one full grantha of about 100 folios. */
-export const folioPrice = 370;
-export const granthaPrice = 37000;
+/**
+ * One folio, and one full grantha of about 100 folios — as the Foundation
+ * charges them in Apna Dharm, its donation system ("Taadpatra Restoration,
+ * ₹414/Page"; Oct 2026, replacing the ₹370 first given), so the site and the
+ * checkout agree. The site editor's Prices change them; the donate page's
+ * amounts come from Apna Dharm itself.
+ */
+export const folioPrice = 414;
+export const granthaPrice = 41400;
 
 export const nav = [
   { label: "About", href: "/about" },

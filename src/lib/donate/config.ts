@@ -11,8 +11,11 @@
  * from the browser — so they live here, overridable per environment.
  */
 export const apnaDharm = {
-  vendorId: process.env.NEXT_PUBLIC_APNADHARM_VENDOR_ID || "446442",
-  trustId: process.env.NEXT_PUBLIC_APNADHARM_TRUST_ID || "6a219c71dcc763cbf8f1b62e",
+  // The account the Foundation's earlier site took gifts with, and the one
+  // with its donation categories. (The integration sample named another,
+  // 446442 / 6a219c71dcc763cbf8f1b62e, which has no categories yet.)
+  vendorId: process.env.NEXT_PUBLIC_APNADHARM_VENDOR_ID || "760021",
+  trustId: process.env.NEXT_PUBLIC_APNADHARM_TRUST_ID || "68789be353289298eccba73d",
   /** The SDK version is in the address, so a new release can't change the page unannounced. */
   sdk: "https://api.apnadharm.com/sdk/payment-sdk-1.0.8.js",
   api: "https://api.apnadharm.com/v1/app",
