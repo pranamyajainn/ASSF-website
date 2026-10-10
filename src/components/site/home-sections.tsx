@@ -69,12 +69,13 @@ export async function Figures() {
       <Heading>{ledger.heading}</Heading>
       <dl className="bleed-margin mt-12 grid gap-x-8 gap-y-10 border-t border-ink/20 pt-10 sm:grid-cols-2 lg:grid-cols-4">
         {ledger.metrics.map((m) => (
-          <div key={m.label} className="min-w-0">
-            <dd className="inked ink-on-scroll font-display text-[clamp(2.4rem,1.8rem+2vw,3.6rem)] font-medium leading-none tracking-[-0.02em] text-ink">
+          // A term, then its values (as a definition list must be); the figure is shown first.
+          <div key={m.label} className="flex min-w-0 flex-col">
+            <dt className="order-2 mt-3 text-[1.0625rem] leading-snug text-ink">{m.label}</dt>
+            <dd className="order-1 inked ink-on-scroll font-display text-[clamp(2.4rem,1.8rem+2vw,3.6rem)] font-medium leading-none tracking-[-0.02em] text-ink">
               {m.value ?? <Pending width="5rem" label={ui.common.awaiting} />}
             </dd>
-            <dt className="mt-3 text-[1.0625rem] leading-snug text-ink">{m.label}</dt>
-            <p className="mt-1.5 font-mono text-register leading-relaxed text-ink-faint">{m.note}</p>
+            <dd className="order-3 mt-1.5 font-mono text-register leading-relaxed text-ink-faint">{m.note}</dd>
           </div>
         ))}
       </dl>

@@ -627,7 +627,8 @@ export function ChatWidget({
           setOpen(next);
           if (next) dismissTeaser();
         }}
-        aria-label={open ? strings.closeChat : strings.openChat}
+        // The spoken name starts with the words on the button ("Ask AI", "Close").
+        aria-label={open ? `${strings.close} — ${strings.closeChat}` : `${strings.ask} AI — ${strings.openChat}`}
         aria-expanded={open}
         // On phones the open panel fills the screen and has its own close
         // button; the launcher would sit on top of the send button.

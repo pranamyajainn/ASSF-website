@@ -16,6 +16,11 @@ export function isEditorEmail(email: string | null | undefined): boolean {
   return !!email && listed().includes(email.trim().toLowerCase());
 }
 
+/** The editors' addresses, lower-case (for the automatic report). */
+export function editorEmails(): string[] {
+  return listed();
+}
+
 export function editorsConfigured(): boolean {
   return listed().length > 0;
 }

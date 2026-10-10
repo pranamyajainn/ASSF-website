@@ -132,7 +132,8 @@ scheduled emails that are due (`src/lib/cms/schedule.ts`), and prunes old visito
 Locally, `curl "localhost:3000/api/cron/daily?now=2026-10-05"` runs it as of that morning.
 
 **Site watch.** `.github/workflows/site-watch.yml` opens the main pages, the editor sign-in and
-the connector metadata every half hour; if any fails twice it opens a `site-down` issue (GitHub
+the connector metadata on a half-hourly schedule (GitHub runs scheduled jobs late under load, so in
+practice every few hours); if any fails twice it opens a `site-down` issue (GitHub
 emails the watchers) and closes it when the site answers again. Set the repository variable
 `SITE_URL` to watch another address.
 
@@ -201,7 +202,7 @@ adds more).
 
 Tools (`src/lib/mcp/tools.ts`): `get_site_overview`, `search_site`, `read_section`,
 `propose_changes`, `publish_changes`, `undo_last_publish`, `translate_text`,
-`get_publish_history`, `get_visitor_questions`, `check_site`. `propose_changes` checks the changes against the content (same
+`get_publish_history`, `get_visitor_questions`, `check_site`, `get_website_report`. `propose_changes` checks the changes against the content (same
 validation as publishing), translates English into Hindi and Kannada with the site's glossary,
 and returns a summary plus a signed review link (`/editor?proposal=…`, valid 30 days).
 **`publish_changes` publishes exactly that proposal — only after the person confirms in the
@@ -235,6 +236,13 @@ the file itself to WhatsApp through the device's share menu.
   in English, Hindi or Kannada — written only from the site's figures and news, what was published
   since the last email and (for trustees) the visitor-question counts. Anything only the
   Foundation knows comes back as a `[gap]`.
+- **Automatic reports** (`src/lib/reports/report.ts`, Email updates → Automatic reports): every
+  month (on the 1st) or week (Mondays), the daily job sends the chosen groups and/or the editors a
+  plain website report — visitors' questions (counts, languages, voice, what the site doesn't answer,
+  top themes), online gifts, what was published and is scheduled, the site check, and emails sent.
+  Every line is counted from the site's records, never written by AI, so it goes out unattended;
+  each period is sent once (`lastSent`). The editor previews it and sends a test; the AI connector's
+  `get_website_report` returns the same report.
 - **Send later**: an email can be scheduled for a day; the daily job sends it that morning to the
   list as it is then, at most 200 a run (a longer list carries on the next day). Upcoming emails
   show under Sent, with Cancel.

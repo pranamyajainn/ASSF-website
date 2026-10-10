@@ -24,6 +24,7 @@ import { checkSite } from "@/components/editor/health";
 import { listScheduled, scheduleSite, todayInIndia } from "@/lib/cms/schedule";
 import { readAnalysis, summarise } from "@/lib/insights/analyse";
 import { readQuestions } from "@/lib/insights/questions";
+import { buildReport } from "@/lib/reports/report";
 
 /**
  * What an AI app can do with the site over MCP: learn its shape, search it,
@@ -734,10 +735,30 @@ const checkTool: Tool = {
   },
 };
 
-export const TOOLS: Tool[] = [overview, search, read, propose, publishTool, undoTool, translateTool, historyTool, questionsTool, checkTool];
+const reportTool: Tool = {
+  name: "get_website_report",
+  title: "Website report",
+  description:
+    "The website's report for a recent period — visitors' questions to the assistant, gifts made online, what was published and is scheduled, the site check, and emails sent — the same report the Foundation can have emailed automatically each week or month. Every figure is counted from the site's records.",
+  inputSchema: {
+    type: "object",
+    properties: { days: { type: "number", enum: [7, 30, 90], description: "How far back (default 30)." } },
+    additionalProperties: false,
+  },
+  annotations: { readOnlyHint: true, openWorldHint: false },
+  async run(args) {
+    const days = [7, 30, 90].includes(Number(args.days)) ? Number(args.days) : 30;
+    const to = new Date();
+    const from = new Date(to.getTime() - days * 86_400_000);
+    const report = await buildReport(from, to, `the last ${days} days`, days <= 7 ? "weekly" : "monthly");
+    return `${report.subject}\n\n${report.body.replace(/\*\*/g, "")}`;
+  },
+};
+
+export const TOOLS: Tool[] = [overview, search, read, propose, publishTool, undoTool, translateTool, historyTool, questionsTool, checkTool, reportTool];
 
 export const INSTRUCTIONS = `This server edits the website of Acharya Shanti Sagar Foundation (a Jain charitable trust in Bengaluru), in English, Hindi and Kannada.
 Start with get_site_overview. Read (read_section / search_site) before proposing changes, and use field paths exactly as returned.
 Changes are prepared with propose_changes, which returns a summary and a review link. Show the person what will change and ask. Only when they clearly confirm, publish with publish_changes (passing the review link); never publish without that confirmation. undo_last_publish reverses the latest publish when asked. publish_changes can also schedule changes for a later day (on_date).
-get_visitor_questions shows what visitors ask the site's assistant and what the site doesn't yet answer; check_site lists translations and facts needing attention.
+get_visitor_questions shows what visitors ask the site's assistant and what the site doesn't yet answer; check_site lists translations and facts needing attention; get_website_report gives the counted report on visitors, gifts, publishes and emails.
 Never invent figures, names, dates or prices; ask the person when something isn't known. Keep {tokens} such as {folioPrice} as they are.`;

@@ -11,6 +11,17 @@ import type { UI } from "./ui";
  * reader's language. URLs are made absolute by `metadataBase` in the root
  * layouts.
  */
+/**
+ * Search results show about 155 characters of a description: longer ones
+ * end at a word, with an ellipsis, rather than being cut mid-word by Google.
+ */
+function clip(text: string, max = 155): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const end = Math.max(cut.lastIndexOf(" "), cut.lastIndexOf("।"));
+  return `${cut.slice(0, end > max * 0.6 ? end : max).replace(/[\s,;:—–-]+$/, "")}…`;
+}
+
 export async function pageMetadata(
   page: Exclude<keyof UI["meta"], "home" | "homeDescription" | "suffix"> | "home",
   path: string,
@@ -18,7 +29,7 @@ export async function pageMetadata(
 ): Promise<Metadata> {
   const { ui, lang } = await getContent();
   const title = page === "home" ? ui.meta.home : `${ui.meta[page]} — ${ui.meta.suffix}`;
-  const desc = description ?? ui.meta.homeDescription;
+  const desc = clip(description ?? ui.meta.homeDescription);
   const languages: Record<string, string> = { "x-default": path };
   for (const l of locales) languages[l] = localizeHref(path, l);
   const canonical = localizeHref(path, lang);

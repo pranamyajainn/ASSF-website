@@ -50,7 +50,7 @@ function parseAddresses(text: string): { name: string; email: string }[] {
 export function MailView() {
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [tab, setTab] = useState<"write" | "people" | "sent">("write");
+  const [tab, setTab] = useState<"write" | "people" | "sent" | "reports">("write");
 
   useEffect(() => {
     fetch("/api/cms/mail", { cache: "no-store" })
@@ -77,6 +77,7 @@ export function MailView() {
               ["write", "Write"],
               ["people", `People (${active.length})`],
               ["sent", "Sent"],
+              ["reports", "Automatic reports"],
             ] as const
           ).map(([id, label]) => (
             <button
@@ -105,6 +106,7 @@ export function MailView() {
         {tab === "write" ? <Write data={data} onSent={(sent) => setData({ ...data, sent })} onPeople={() => setTab("people")} /> : null}
         {tab === "people" ? <People data={data} onSaved={(contacts) => setData({ ...data, contacts })} /> : null}
         {tab === "sent" ? <SentList sent={data.sent} /> : null}
+        {tab === "reports" ? <Reports /> : null}
       </div>
     </div>
   );
@@ -761,3 +763,131 @@ function SentItems({ sent }: { sent: Sent[] }) {
     </ul>
   );
 }
+
+type ReportSettings = { enabled: boolean; frequency: "weekly" | "monthly"; groups: string[]; editors: boolean; lastSent: string | null };
+type ReportState = { settings: ReportSettings; groups: { id: string; name: string }[]; recipients: number; nextDue: string | null; mode: string };
+
+/**
+ * Automatic reports: a plain account of the website — visitors' questions,
+ * gifts, publishes, the site check, emails — sent by itself every week or
+ * month to the people chosen here. Counted from the site's records, never
+ * written by AI, so it goes out without anyone needing to check it.
+ */
+function Reports() {
+  const [state, setState] = useState<ReportState | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [preview, setPreview] = useState<{ subject: string; html: string } | null>(null);
+  const [status, setStatus] = useState<{ kind: "idle" | "busy" | "done" | "error"; text: string }>({ kind: "idle", text: "" });
+
+  useEffect(() => {
+    fetch("/api/cms/reports", { cache: "no-store" })
+      .then(async (res) => (res.ok ? setState((await res.json()) as ReportState) : setError(await res.text())))
+      .catch(() => setError("The report settings couldn't be loaded."));
+  }, []);
+
+  async function save(change: Partial<ReportSettings>) {
+    if (!state) return;
+    setStatus({ kind: "busy", text: "Saving…" });
+    const res = await fetch("/api/cms/reports", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(change) }).catch(() => null);
+    if (!res?.ok) {
+      setStatus({ kind: "error", text: (await res?.text().catch(() => "")) || "Couldn't save — check the connection and try again." });
+      return;
+    }
+    const next = (await res.json()) as Omit<ReportState, "groups" | "mode">;
+    setState({ ...state, ...next });
+    setStatus({ kind: "done", text: "Saved ✓" });
+  }
+
+  async function act(action: "preview" | "test") {
+    setStatus({ kind: "busy", text: action === "preview" ? "Making the report from today's records…" : "Sending a test to you…" });
+    const res = await fetch("/api/cms/reports", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action }) }).catch(() => null);
+    if (!res?.ok) {
+      setStatus({ kind: "error", text: (await res?.text().catch(() => "")) || "That didn't work — please try again." });
+      return;
+    }
+    if (action === "preview") {
+      setPreview((await res.json()) as { subject: string; html: string });
+      setStatus({ kind: "idle", text: "" });
+    } else setStatus({ kind: "done", text: `Test sent to ${((await res.json()) as { sent: string }).sent} ✓` });
+  }
+
+  if (error) return <p className="text-cinnabar-deep">{error}</p>;
+  if (!state) return <p className="font-display text-xl text-ink-soft">Opening automatic reports…</p>;
+  const { settings } = state;
+  const chip = (on: boolean) => `cursor-pointer rounded-full border px-4 py-1.5 text-[0.92rem] ${on ? "border-board bg-board text-board-ink" : "border-ink/20 bg-white/70 hover:border-cinnabar"}`;
+  const next = state.nextDue ? new Date(`${state.nextDue}T06:00:00+05:30`).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Kolkata" }) : null;
+
+  return (
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+      <div className="space-y-6">
+        <p className="text-[0.95rem] leading-relaxed text-ink-soft">
+          A plain report on the website — what visitors asked the AI assistant, gifts made online, what was published and what is coming up, the site check,
+          and the emails sent — sent by itself to the people you choose. Every figure is counted from the website&apos;s own records; nothing is written by AI.
+        </p>
+        <label className="flex cursor-pointer items-center justify-between gap-4 rounded-lg border border-ink/15 bg-white/60 px-4 py-3">
+          <span>
+            <span className="block font-display text-[1.15rem]">Send the report automatically</span>
+            <span className="block text-[0.88rem] text-ink-faint">{settings.enabled ? (next ? `Next: ${next}, early morning` : "On") : "Off"}</span>
+          </span>
+          <input type="checkbox" className="size-5 accent-[var(--color-cinnabar)]" checked={settings.enabled} onChange={(e) => save({ enabled: e.target.checked })} />
+        </label>
+        <div>
+          <p className="mb-2 font-display text-[1.1rem]">How often</p>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" aria-pressed={settings.frequency === "monthly"} onClick={() => save({ frequency: "monthly" })} className={chip(settings.frequency === "monthly")}>
+              Every month, on the 1st
+            </button>
+            <button type="button" aria-pressed={settings.frequency === "weekly"} onClick={() => save({ frequency: "weekly" })} className={chip(settings.frequency === "weekly")}>
+              Every week, on Monday
+            </button>
+          </div>
+        </div>
+        <div>
+          <p className="mb-2 font-display text-[1.1rem]">Who receives it</p>
+          <div className="flex flex-wrap gap-2">
+            {state.groups.map((g) => {
+              const on = settings.groups.includes(g.id);
+              return (
+                <button key={g.id} type="button" aria-pressed={on} onClick={() => save({ groups: on ? settings.groups.filter((x) => x !== g.id) : [...settings.groups, g.id] })} className={chip(on)}>
+                  {on ? "✓ " : ""}
+                  {g.name}
+                </button>
+              );
+            })}
+            <button type="button" aria-pressed={settings.editors} onClick={() => save({ editors: !settings.editors })} className={chip(settings.editors)}>
+              {settings.editors ? "✓ " : ""}The site&apos;s editors
+            </button>
+          </div>
+          <p className="mt-2 text-[0.88rem] text-ink-faint">
+            {state.recipients} {state.recipients === 1 ? "person" : "people"} would receive it. Anyone on the mailing list can unsubscribe from the link in it.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2 border-t border-ink/10 pt-5">
+          <button type="button" disabled={status.kind === "busy"} onClick={() => act("preview")} className={`${button} bg-ink text-leaf hover:bg-board`}>
+            See this month&apos;s report
+          </button>
+          <button type="button" disabled={status.kind === "busy" || state.mode === "none"} onClick={() => act("test")} className={`${button} border border-ink/25 bg-white/80 hover:border-cinnabar`}>
+            Send me a test
+          </button>
+        </div>
+        {state.mode === "none" ? (
+          <p className="rounded-md bg-orpiment/20 px-4 py-3 text-[0.9rem]">Sending isn&apos;t connected yet — reports start going out once the Foundation&apos;s Gmail app password is added. You can set them up now.</p>
+        ) : null}
+        {status.text ? (
+          <p role="status" className={`text-[0.92rem] ${status.kind === "error" ? "text-cinnabar-deep" : status.kind === "done" ? "text-emerald-800" : "text-ink-soft"}`}>
+            {status.text}
+          </p>
+        ) : null}
+      </div>
+      <div>
+        <p className="mb-2 font-display text-[1.1rem]">{preview ? preview.subject : "The report, as it arrives"}</p>
+        {preview ? (
+          <iframe title="The report, as it arrives" srcDoc={preview.html} sandbox="" className="h-[46rem] w-full rounded-md border border-ink/15 bg-white" />
+        ) : (
+          <p className="rounded-md border border-dashed border-ink/20 bg-white/40 px-5 py-16 text-center text-ink-faint">Press “See this month&apos;s report” to see it, made from today&apos;s records.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+

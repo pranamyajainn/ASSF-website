@@ -68,7 +68,7 @@ export function VoiceFilm({
         <button
           type="button"
           onClick={() => setStarted(true)}
-          aria-label={`${playLabel} — ${title} (${duration})`}
+          aria-label={`${playLabel} ${duration} — ${title}`}
           className="group absolute inset-0 block size-full cursor-pointer"
         >
           <Image
