@@ -1,0 +1,73 @@
+# Security watch: on every push to main and every Monday morning (India
+# time), two checks. Free on a public repository; a failure emails the
+# repository's owner.
+#
+# 1. Dependencies — `npm audit` fails on any known high or critical
+#    vulnerability in what the site ships (Dependabot opens the fix).
+# 2. The live site — its protective headers are still sent, and every door
+#    that needs a sign-in or a secret (the editor's API, the AI connector,
+#    the daily job) still refuses a visitor who has neither.
+#
+# Code scanning (CodeQL), secret scanning with push protection and
+# Dependabot alerts run alongside this in GitHub's own security settings.
+name: Security watch
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "15 1 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Known vulnerabilities in what the site ships
+        run: npm audit --omit=dev --audit-level=high
+
+  live-site:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      SITE: ${{ vars.SITE_URL || 'https://assf-website.vercel.app' }}
+    steps:
+      - name: Protective headers and locked doors
+        run: |
+          # A push deploys first; give Vercel a moment before looking.
+          if [ "${{ github.event_name }}" = "push" ]; then sleep 240; fi
+          fail=0
+          headers=$(curl -sSI --max-time 25 "$SITE/")
+          for h in content-security-policy strict-transport-security x-frame-options x-content-type-options referrer-policy permissions-policy; do
+            if ! printf '%s' "$headers" | grep -qi "^$h:"; then echo "::error::The home page no longer sends $h"; fail=1; fi
+          done
+          if ! printf '%s' "$headers" | grep -i "^content-security-policy:" | grep -q "frame-ancestors 'none'"; then
+            echo "::error::The home page can be framed by other sites"; fail=1
+          fi
+          expect() { # method path allowed-codes...
+            method=$1; path=$2; shift 2
+            code=$(curl -s -o /dev/null -w "%{http_code}" -X "$method" --max-time 25 -H "Origin: $SITE" -H "Content-Type: application/json" -d '{}' "$SITE$path")
+            for ok in "$@"; do [ "$code" = "$ok" ] && return 0; done
+            echo "::error::$method $path answered $code to a visitor who isn't signed in (expected $*)"; fail=1
+          }
+          expect GET  /api/cron/daily          401
+          expect GET  /api/cms/history         401 403
+          expect POST /api/cms/publish         401 403
+          expect POST /api/cms/mail/send       401 403
+          expect PUT  /api/cms/mail/contacts   401 403
+          expect GET  /api/cms/gifts           401 403
+          expect POST /api/cms/restore         401 403
+          expect POST /api/mcp                 401
+          exit $fail

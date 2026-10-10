@@ -71,7 +71,11 @@ node scripts/share-cards.mjs http://localhost:3000
 **Security.** `next.config.ts` sets a Content-Security-Policy (only the YouTube film and Google
 sign-in are allowed off-site), frame, referrer and permissions headers (the microphone only for
 the site itself, for spoken questions). The assistant accepts requests only from the site's own
-pages, caps request size, and rate-limits each visitor.
+pages, caps request size, and rate-limits each visitor. Sign-in accepts only Google-verified
+addresses and lasts a week. GitHub runs CodeQL, secret scanning with push protection and
+Dependabot; `.github/workflows/security.yml` audits dependencies and checks that the live site's
+headers are sent and its signed-in-only endpoints refuse visitors. How to report a problem, and the
+rest: [SECURITY.md](SECURITY.md).
 
 **Voice.** Visitors can ask the assistant out loud: the recording goes to Whisper on Groq
 (`/api/chat/voice`, the same `GROQ_API_KEY`), comes back as text in the edition's script, and is

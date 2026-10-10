@@ -88,5 +88,7 @@ export async function recordGift(gift: Omit<Gift, "at">): Promise<void> {
 }
 
 export async function readGifts(days: number): Promise<Gift[]> {
-  return (await readLines<Gift>(DIR, days)).sort((a, b) => b.at.localeCompare(a.at));
+  const latest = new Map<string, Gift>();
+  for (const g of (await readLines<Gift>(DIR, days)).sort((a, b) => b.at.localeCompare(a.at))) if (!latest.has(g.txn)) latest.set(g.txn, g);
+  return [...latest.values()];
 }

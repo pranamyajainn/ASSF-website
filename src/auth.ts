@@ -12,7 +12,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
-  session: { strategy: "jwt" },
+  // A week, renewed while it's in use: a laptop left signed in somewhere
+  // stops being a way in after seven days away (Auth.js's default is thirty).
+  session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60, updateAge: 24 * 60 * 60 },
   pages: {
     signIn: "/trustee-portal/login",
     // Sends a refused sign-in back to the page it started from — the trustee
@@ -24,7 +26,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // person is a trustee or advisor, or one of the Foundation's site
     // editors. Anyone on neither allowlist is refused here, before a session
     // is ever created. (Each area re-checks its own list on every request.)
-    async signIn({ user }) {
+    // Google must also have verified the address: a Google account can be
+    // opened under someone else's email, and that must never count as them.
+    async signIn({ user, profile }) {
+      if (profile?.email_verified !== true) return false;
       return isAuthorizedEmail(user.email) || isEditorEmail(user.email);
     },
   },

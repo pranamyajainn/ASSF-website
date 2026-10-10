@@ -81,9 +81,15 @@ export async function lookupClient(clientId: string): Promise<Client | null> {
   if (registered) return { name: registered.name, redirectUris: registered.redirect_uris };
   if (!/^https:\/\/[^/]+\/.+/.test(clientId)) return null;
   try {
-    const res = await fetch(clientId, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(5000) });
-    if (!res.ok) return null;
-    const doc = (await res.json()) as { client_id?: string; client_name?: string; redirect_uris?: unknown };
+    // Only from the AI apps' own sites (the same list as their redirects), so
+    // an unsigned-in visitor can't make the site fetch an address of their choosing.
+    const host = new URL(clientId).hostname;
+    if (![...REDIRECT_HOSTS].some((h) => host === h || host.endsWith(`.${h}`))) return null;
+    const res = await fetch(clientId, { headers: { Accept: "application/json" }, redirect: "error", signal: AbortSignal.timeout(5000) });
+    if (!res.ok || Number(res.headers.get("content-length") ?? 0) > 20_000) return null;
+    const text = await res.text();
+    if (text.length > 20_000) return null;
+    const doc = JSON.parse(text) as { client_id?: string; client_name?: string; redirect_uris?: unknown };
     if (doc.client_id !== clientId || !Array.isArray(doc.redirect_uris)) return null;
     const redirectUris = doc.redirect_uris.filter((u): u is string => typeof u === "string");
     return { name: doc.client_name || new URL(clientId).hostname, redirectUris };

@@ -1,0 +1,19 @@
+# Dependabot: a weekly pull request with dependency updates (security fixes
+# arrive on their own, as soon as GitHub knows of them). Nothing merges by
+# itself — each pull request gets a Vercel preview to check first.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Asia/Kolkata
+    open-pull-requests-limit: 3
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

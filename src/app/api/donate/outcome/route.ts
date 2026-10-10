@@ -17,7 +17,8 @@ const OUTCOMES = new Set<Outcome>(["success", "failed", "cancelled", "timeout", 
 export async function POST(req: Request) {
   const origin = req.headers.get("origin");
   const site = req.headers.get("sec-fetch-site");
-  let sameOrigin = true;
+  // Browsers always send Origin with a POST; a request without one didn't come from the donate page.
+  let sameOrigin = false;
   try {
     if (origin) sameOrigin = new URL(origin).host === new URL(req.url).host;
   } catch {
