@@ -500,9 +500,10 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
 }
 
 /**
- * An AI first draft, from what the site knows: its figures, its news, what
- * changed since the last email and — for trustees — what visitors asked.
- * Gaps the Foundation must fill come back in [square brackets].
+ * An AI first draft, from what the editor writes — and nothing else: no
+ * figures or news are taken from the website, whose data changes from day
+ * to day. A few lines in, a finished email out; anything an email of that
+ * kind would need but the notes don't say comes back as a [gap].
  */
 function DraftForMe({ kind: suggested, onDraft }: { kind: "newsletter" | "trustees"; onDraft: (subject: string, body: string) => boolean }) {
   const [open, setOpen] = useState(false);
@@ -513,7 +514,7 @@ function DraftForMe({ kind: suggested, onDraft }: { kind: "newsletter" | "truste
   const chip = (on: boolean) => `cursor-pointer rounded-full border px-3 py-1 text-[0.88rem] ${on ? "border-board bg-board text-board-ink" : "border-ink/20 bg-white/70 hover:border-cinnabar"}`;
 
   async function write() {
-    setState({ busy: true, text: "Reading the site and writing…", error: false });
+    setState({ busy: true, text: "Writing…", error: false });
     const res = await fetch("/api/cms/mail/draft", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -554,8 +555,8 @@ function DraftForMe({ kind: suggested, onDraft }: { kind: "newsletter" | "truste
   return (
     <div className="space-y-3 rounded-lg border border-cinnabar/30 bg-white/60 p-4">
       <p className="text-[0.9rem] text-ink-soft">
-        The AI writes a first draft from what the website knows — its figures and news, what changed since your last email
-        {kind === "trustees" ? ", and what visitors asked the assistant" : ""}. It never invents facts: anything only you know is left as a [gap].
+        Write what the email should say — a few lines, in any order, in any language. The AI turns exactly that into a finished email in the Foundation&apos;s
+        voice. It uses only what you write: nothing is taken from the website, and anything missing is left as a [gap] for you to fill.
       </p>
       <div className="flex flex-wrap items-center gap-2">
         <button type="button" aria-pressed={kind === "newsletter"} onClick={() => setKind("newsletter")} className={chip(kind === "newsletter")}>
@@ -580,12 +581,13 @@ function DraftForMe({ kind: suggested, onDraft }: { kind: "newsletter" | "truste
       <textarea
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
-        rows={3}
-        placeholder="Anything to include? e.g. “The health camp at Karanja is on 14 November” (optional)"
+        rows={5}
+        aria-label="What the email should say"
+        placeholder={"e.g. Health camp at Karanja on 14 November. About 300 people screened, 40 referred for cataract surgery. Thank the doctors and volunteers. Next camp in December, date to be fixed."}
         className={field}
       />
       <div className="flex flex-wrap items-center gap-3">
-        <button type="button" disabled={state.busy} onClick={write} className={`${button} bg-ink text-leaf hover:bg-board`}>
+        <button type="button" disabled={state.busy || notes.trim().length < 10} onClick={write} className={`${button} bg-ink text-leaf hover:bg-board`}>
           {state.busy ? "Writing…" : "Write the draft"}
         </button>
         <button type="button" onClick={() => setOpen(false)} className="cursor-pointer text-[0.88rem] text-ink-soft underline">

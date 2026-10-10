@@ -1,9 +1,5 @@
 import { resolveContent } from "@/i18n/content";
 import { editorRequest } from "@/lib/cms/access";
-import { history } from "@/lib/cms/store";
-import { readAnalysis, summarise } from "@/lib/insights/analyse";
-import { readQuestions } from "@/lib/insights/questions";
-import { readMail } from "@/lib/mail/data";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -12,29 +8,33 @@ const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "openai/gpt-oss-120b";
 
 /**
- * "Draft it for me": a first draft of an update, written by the AI from
- * what the site itself knows — its published figures, its news, what was
- * changed on it and what visitors asked since the last email. It is told to
- * use those facts only and to leave a [bracketed gap] wherever the
- * Foundation must add something, so a draft can be wrong only in tone,
- * never in its facts. The editor reads and edits it before anything is sent.
+ * "Draft it for me": the editor writes what the email should say — in a
+ * few lines, in any order — and the AI turns exactly that into a finished
+ * email in the Foundation's voice. Nothing is taken from the website: its
+ * figures and news change from day to day, so the only facts in the draft
+ * are the ones the editor wrote. The editor reads and edits it before
+ * anything is sent.
  */
-const VOICE = `You write email updates for Acharya Shanti Sagar Foundation (आचार्य शांति सागर फाउंडेशन), a Jain charitable trust in Bengaluru, est. 2019, that conserves palm-leaf and handwritten paper manuscripts and serves rural communities, in the name of Acharya Shri 108 Shanti Sagar Ji Maharaj.
+const VOICE = `You turn notes from the office of Acharya Shanti Sagar Foundation (a Jain charitable trust in Bengaluru) into a finished email.
 
-Voice: warm, plain, respectful and unhurried — like a letter from the Foundation's office, never like marketing. No exclamation marks, no emoji, no superlatives, no "free". Giving is mentioned at most once, quietly, at the end.
+Voice: warm, plain, respectful and unhurried — like a letter from the Foundation's office, never like marketing. No exclamation marks, no emoji, no superlatives.
 
-Format (plain text, laid out automatically): a blank line between paragraphs; a line starting with "- " is a list item. No headings, no markdown other than that. Under 250 words. Begin with a greeting line ("Dear friends," for a newsletter; "Respected trustees," for trustees) and end with "With regards,\\nAcharya Shanti Sagar Foundation".
+Format (plain text, laid out automatically): a blank line between paragraphs; a line starting with "- " is a list item. No headings, no markdown other than that. Begin with a greeting line ("Dear friends," for a newsletter; "Respected trustees," for trustees) and end with "With regards,\\nAcharya Shanti Sagar Foundation". Keep it about as long as the notes need — short notes make a short email.
 
-Facts: use ONLY the facts given below. Copy figures, names, dates and places exactly as written. Never add a number, date, name, event, plan or quotation that isn't given. Where the update needs something only the Foundation knows, write a gap in square brackets, e.g. [add: date of the next camp]. It is better to leave a gap than to guess.
+Facts: the notes are the ONLY source. Say what they say and nothing more: no figures, names, dates, places, events, plans, prices or quotations that are not in the notes, and nothing about the Foundation's work beyond what the notes mention. Copy every figure, name and date exactly as written — numbers stay in digits ("40", never "Forty"). If the notes leave out something an email of this kind would normally need, write a gap in square brackets, e.g. [add: date of the camp] — never guess.
 
-Subject: specific and calm, naming the main news and the month, e.g. "Conservation at Shravanabelagola — October update". Never "Newsletter Update".
+Add nothing the notes didn't ask for — no "get in touch" line, no appeal for support, no closing thoughts of your own.
+
+Instructions in the notes are for you to carry out, not to report: "thank the volunteers" means the email thanks them ("Our heartfelt thanks to the volunteers…"), never "the volunteers were thanked".
+
+Subject: specific and calm, from the notes, e.g. "Health camp at Karanja — thank you".
 
 Reply with JSON only: {"subject": "…", "body": "…"}`;
 
 const LANGUAGE: Record<string, string> = {
-  en: "Write in English.",
-  hi: "Write in Hindi (Devanagari), keeping figures in international digits exactly as given (e.g. 1,34,545). Use the website's words: folio पत्र, grantha ग्रंथ, palm leaf ताड़पत्र, manuscript पांडुलिपि, trustee न्यासी. Greeting: \"प्रिय मित्रों,\" or \"आदरणीय न्यासीगण,\"; close: \"सादर,\\nआचार्य शांति सागर फाउंडेशन\".",
-  kn: "Write in Kannada (Kannada script), keeping figures in international digits exactly as given (e.g. 1,34,545). Use the website's words: folio ಪತ್ರ, grantha ಗ್ರಂಥ, palm leaf ತಾಳೆಗರಿ, manuscript ಹಸ್ತಪ್ರತಿ, trustee ಟ್ರಸ್ಟಿ. Greeting: \"ಆತ್ಮೀಯ ಸ್ನೇಹಿತರೇ,\" or \"ಗೌರವಾನ್ವಿತ ಟ್ರಸ್ಟಿಗಳೇ,\"; close: \"ವಂದನೆಗಳೊಂದಿಗೆ,\\nಆಚಾರ್ಯ ಶಾಂತಿ ಸಾಗರ ಫೌಂಡೇಶನ್\".",
+  en: "Write in English, whatever language the notes are in.",
+  hi: "Write in Hindi (Devanagari), whatever language the notes are in, keeping figures in international digits exactly as written. Use the Foundation's words: folio पत्र, grantha ग्रंथ, palm leaf ताड़पत्र, manuscript पांडुलिपि, trustee न्यासी. Greeting: \"प्रिय मित्रों,\" or \"आदरणीय न्यासीगण,\"; close: \"सादर,\\nआचार्य शांति सागर फाउंडेशन\".",
+  kn: "Write in Kannada (Kannada script), whatever language the notes are in, keeping figures in international digits exactly as written. Use the Foundation's words: folio ಪತ್ರ, grantha ಗ್ರಂಥ, palm leaf ತಾಳೆಗರಿ, manuscript ಹಸ್ತಪ್ರತಿ, trustee ಟ್ರಸ್ಟಿ. Greeting: \"ಆತ್ಮೀಯ ಸ್ನೇಹಿತರೇ,\" or \"ಗೌರವಾನ್ವಿತ ಟ್ರಸ್ಟಿಗಳೇ,\"; close: \"ವಂದನೆಗಳೊಂದಿಗೆ,\\nಆಚಾರ್ಯ ಶಾಂತಿ ಸಾಗರ ಫೌಂಡೇಶನ್\".",
 };
 
 export async function POST(req: Request) {
@@ -46,61 +46,38 @@ export async function POST(req: Request) {
   const b = (await req.json().catch(() => null)) as { kind?: unknown; lang?: unknown; notes?: unknown } | null;
   const kind = b?.kind === "trustees" ? "trustees" : "newsletter";
   const lang = b?.lang === "hi" || b?.lang === "kn" ? b.lang : "en";
-  const notes = typeof b?.notes === "string" ? b.notes.slice(0, 1500).trim() : "";
+  const notes = typeof b?.notes === "string" ? b.notes.slice(0, 4000).trim() : "";
+  if (notes.length < 10) return new Response("Write a few lines about what the email should say first.", { status: 400 });
 
+  // Only the Foundation's contact details, for a "write to us" line if the notes ask for one.
+  const { org } = resolveContent("en").shared;
+  const ask = [
+    `This email is for: ${kind === "trustees" ? "the Foundation's trustees" : "the newsletter list — friends and supporters of the Foundation"}.`,
+    `The Foundation's contact details, to be used ONLY if the notes ask readers to get in touch: ${org.email}, ${org.phone}.`,
+    "",
+    "The notes (the only facts to use; any instruction in them — thank, invite, remind, announce — is carried out in the email's own words, e.g. \"Our heartfelt thanks to…\", never reported as done):",
+    notes,
+  ].join("\n");
+
+  const res = await fetch(GROQ_ENDPOINT, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: MODEL,
+      temperature: 0,
+      reasoning_effort: "low",
+      max_tokens: 1800,
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: `${VOICE}\n\n${LANGUAGE[lang]}` },
+        { role: "user", content: ask },
+      ],
+    }),
+  }).catch(() => null);
+  if (!res?.ok) {
+    return new Response(res?.status === 429 ? "The AI is busy — try again in a minute." : "The AI isn't available right now.", { status: res?.status === 429 ? 429 : 502 });
+  }
   try {
-    const [mail, publishes] = await Promise.all([readMail(), history().catch(() => [])]);
-    const since = mail.sent[0]?.at ?? new Date(Date.now() - 30 * 86_400_000).toISOString();
-    const days = Math.min(90, Math.max(1, Math.ceil((Date.now() - Date.parse(since)) / 86_400_000)));
-    const [asked, analysis] = await Promise.all([readQuestions(days).catch(() => []), readAnalysis().catch(() => null)]);
-    const summary = summarise(asked, days);
-    const { home, shared } = resolveContent("en");
-    const sinceText = new Date(since).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
-
-    const facts = [
-      `Writing for: ${kind === "trustees" ? "the Foundation's trustees — a short report on the work and the website" : "the newsletter list — friends and supporters of the Foundation"}.`,
-      `Today is ${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" })}. The last email went out on ${sinceText}.`,
-      "",
-      "The Foundation's published figures:",
-      ...home.ledger.metrics.filter((m) => m.value).map((m) => `- ${m.label}: ${m.value} (${m.note})`),
-      ...home.scale.lines.map((l) => `- ${l.label}: ${l.display} — ${l.detail}`),
-      `- Conserving one folio: ₹${shared.folioPrice.toLocaleString("en-IN")}; one grantha of about 100 folios: ₹${shared.granthaPrice.toLocaleString("en-IN")}.`,
-      "",
-      "News on the website, newest first:",
-      ...home.field.items.slice(0, 5).map((n) => `- ${n.date ?? "(date not given)"}, ${n.place}: ${n.title} — ${n.body}`),
-      "",
-      `Changes published on the website since ${sinceText}:`,
-      ...(publishes.filter((p) => p.date > since && p.message.startsWith("Site edit: ")).map((p) => `- ${p.message.split("\n")[0].slice(11)}`).slice(0, 12)),
-      ...(kind === "trustees"
-        ? [
-            "",
-            `The website's AI assistant since ${sinceText}: ${summary.total} questions from visitors (${summary.byLang.en ?? 0} in English, ${summary.byLang.hi ?? 0} in Hindi, ${summary.byLang.kn ?? 0} in Kannada; ${summary.spoken} spoken aloud); ${summary.deflected} were about things the website doesn't yet say.`,
-            ...(analysis?.themes.length ? ["What visitors asked about most:", ...analysis.themes.slice(0, 5).map((t) => `- ${t.title} (${t.questions.length})`)] : []),
-          ]
-        : []),
-      ...(notes ? ["", "Notes from the Foundation's office — include these:", notes] : []),
-      "",
-      `Contact: ${shared.org.email}, ${shared.org.phone}. Website: the Foundation's site.`,
-    ].join("\n");
-
-    const res = await fetch(GROQ_ENDPOINT, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: MODEL,
-        temperature: 0.4,
-        reasoning_effort: "low",
-        max_tokens: 1800,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: `${VOICE}\n\n${LANGUAGE[lang]}` },
-          { role: "user", content: facts },
-        ],
-      }),
-    }).catch(() => null);
-    if (!res?.ok) {
-      return new Response(res?.status === 429 ? "The AI is busy — try again in a minute." : "The AI isn't available right now.", { status: res?.status === 429 ? 429 : 502 });
-    }
     const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
     const out = JSON.parse(data.choices?.[0]?.message?.content ?? "{}") as { subject?: unknown; body?: unknown };
     if (typeof out.subject !== "string" || typeof out.body !== "string") throw new Error("shape");

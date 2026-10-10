@@ -233,9 +233,9 @@ the file itself to WhatsApp through the device's share menu.
   (`/api/unsubscribe`, RFC 8058). Someone who unsubscribes stays unsubscribed even if added again.
 - Only people on the list can be sent to; Gmail allows about 500 a day, Workspace about 2,000.
 - **Draft it for me** (`/api/cms/mail/draft`): an AI first draft — newsletter or trustees' update,
-  in English, Hindi or Kannada — written only from the site's figures and news, what was published
-  since the last email and (for trustees) the visitor-question counts. Anything only the
-  Foundation knows comes back as a `[gap]`.
+  in English, Hindi or Kannada — written only from the few lines the editor types. Nothing is taken
+  from the website (its figures change day by day), and anything the notes leave out comes back as
+  a `[gap]` to fill. Empty notes are refused.
 - **Automatic reports** (`src/lib/reports/report.ts`, Email updates → Automatic reports): every
   month (on the 1st) or week (Mondays), the daily job sends the chosen groups and/or the editors a
   plain website report — visitors' questions (counts, languages, voice, what the site doesn't answer,
