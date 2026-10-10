@@ -265,16 +265,18 @@ export async function Register({
   return (
     <dl className={`max-w-[46rem] border-t border-ink/20 ${className}`}>
       {entries.map((entry) => (
-        <div key={entry.label} className="border-b border-ink/20 py-4 sm:py-5">
-          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <dt className="text-[1.125rem] text-ink">{entry.label}</dt>
-            <span aria-hidden="true" className="leader hidden sm:block" />
-            <dd className="ml-auto font-display text-[clamp(1.7rem,1.3rem+1.4vw,2.5rem)] font-medium leading-none tabular-nums text-ink">
-              {entry.value ?? <Pending label={ui.common.awaiting} width="6rem" />}
-            </dd>
-          </div>
+        // Each entry is one group of a term and its values (as a definition list
+        // must be): the label carries the dotted leader; the figure, then the note.
+        <div key={entry.label} className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1 border-b border-ink/20 py-4 sm:py-5">
+          <dt className="flex items-baseline gap-x-4 text-[1.125rem] text-ink">
+            {entry.label}
+            <span aria-hidden="true" className="leader hidden flex-1 sm:block" />
+          </dt>
+          <dd className="font-display text-[clamp(1.7rem,1.3rem+1.4vw,2.5rem)] font-medium leading-none tabular-nums text-ink">
+            {entry.value ?? <Pending label={ui.common.awaiting} width="6rem" />}
+          </dd>
           {entry.note ? (
-            <dd className="mt-2 max-w-[52ch] font-mono text-register text-ink-faint">
+            <dd className="col-span-2 mt-1 max-w-[52ch] font-mono text-register text-ink-faint">
               {entry.note}
             </dd>
           ) : null}
