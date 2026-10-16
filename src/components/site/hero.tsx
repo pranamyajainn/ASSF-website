@@ -7,9 +7,9 @@ import { getContent } from "@/i18n/content";
  * The first leaf. The Foundation's approved headline inks in one clause
  * after another, and directly under it the work is shown the way the
  * Foundation's own hero banners show it: one banner per part of the work —
- * manuscripts, community, villages, and the Acharya whose name it carries —
- * each a single line over its own photographs, so a first-time visitor knows
- * what the Foundation does within a few seconds of landing.
+ * manuscripts, community, villages and empowerment — each a single line
+ * over its own photographs, so a first-time visitor knows what the
+ * Foundation does within a few seconds of landing.
  *
  * The banners are assembled here from the rest of the site: each clause's
  * figure (formerly its interlinear gloss) becomes its banner's proof line,
@@ -18,10 +18,10 @@ import { getContent } from "@/i18n/content";
  */
 export async function Hero() {
   const { home, about, conservation, community, rural, shared, ui } = await getContent();
-  const { hero, lineage } = home;
+  const { hero } = home;
   const { org } = shared;
 
-  const [cons, comm, vill, acharya] = hero.banners;
+  const [cons, comm, vill, emp] = hero.banners;
   const relief = community.relief.items[1];
   const banners: Banner[] = [
     {
@@ -40,7 +40,7 @@ export async function Hero() {
         about.plates.rows[0][1],
         community.healthcare.images[0],
         { src: relief.image, alt: relief.imageAlt, position: "42% 50%" },
-        about.plates.rows[1][2],
+        community.healthcare.images[1],
       ],
     },
     {
@@ -51,12 +51,9 @@ export async function Hero() {
       images: rural.projects.items[0].images,
     },
     {
-      ...acharya,
-      key: "acharya",
-      titleLang: "hi",
-      fact: `${lineage.heading}, ${lineage.dates}`,
-      link: { label: acharya.link, href: "#lineage" },
-      images: [lineage.portrait, about.namesake.album[0]],
+      ...emp,
+      key: "empowerment",
+      images: emp.images,
     },
   ];
 

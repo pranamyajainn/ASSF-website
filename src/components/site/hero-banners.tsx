@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type To
 
 export type BannerImage = { src: string; alt: string; caption?: string; position?: string };
 export type Banner = {
-  key: "conservation" | "community" | "rural" | "acharya";
+  key: "conservation" | "community" | "rural" | "empowerment";
   tab: string;
   eyebrow: string;
   title: string;
@@ -309,12 +309,21 @@ function Collage({ banner, eager }: { banner: Banner; eager: boolean }) {
     );
   }
 
-  // The Acharya: his portrait and a photograph from his lifetime, mounted
-  // on the dark board of a bundle's cover.
+  // Empowerment: the children and their books, together and then close —
+  // both photographs are wide, so they are stacked, not cropped to strips.
   return (
-    <div className={`${frame} grid-cols-[2fr_3fr] bg-board lg:grid-cols-[4fr_5fr]`}>
-      <div className={tile}>{img(a, "(min-width: 1024px) 16rem, 36vw", { filter: "sepia(0.25)", objectPosition: "50% 20%" })}</div>
-      <div className={tile}>{img(b, "(min-width: 1024px) 20rem, 54vw", { filter: "sepia(0.25)", objectPosition: "55% 40%" })}</div>
+    <div className={`${frame} grid-cols-2 lg:grid-cols-1 lg:grid-rows-[3fr_2fr]`}>
+      {[b, a].map((image, i) => (
+        <div key={image?.src ?? i} className={tile}>
+          {img(image, "(min-width: 1024px) 26rem, 50vw")}
+          {/* Side by side on a phone, the captions would cover the children. */}
+          {image?.caption ? (
+            <span className="absolute inset-x-1.5 bottom-1.5 hidden bg-leaf/92 sm:block px-2 py-1 font-mono text-[0.72rem] leading-snug text-ink lg:inset-x-2 lg:bottom-2 lg:text-register">
+              {image.caption}
+            </span>
+          ) : null}
+        </div>
+      ))}
     </div>
   );
 }

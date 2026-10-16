@@ -33,9 +33,11 @@ export const hero = {
    * Banners, after the Foundation's own hero banners: each says one thing
    * about the work in a line a visitor can read in a few seconds, over the
    * Foundation's own photographs of it. The first two headlines are the
-   * Foundation's own banner copy; the last is the epigraph its banner sets
-   * beside the Acharya's portrait. Photographs, captions and figures are
-   * drawn from the rest of the site, so each has one source.
+   * Foundation's own banner copy. The last is Empowerment, in place of the
+   * Acharya at the Foundation's request: only the education support and
+   * flood-rebuilding help it has actually given (the planned "Community
+   * Empowerment Scheme" stays out until it launches). Photographs, captions
+   * and figures are drawn from the rest of the site, so each has one source.
    */
   banners: [
     {
@@ -63,15 +65,29 @@ export const hero = {
       body: "A community hall, housing for teachers, public sanitation — built for what a village needs.",
     },
     {
-      key: "acharya",
-      tab: "The Acharya",
-      eyebrow: "Lineage",
-      // The epigraph stays in Hindi in every edition, with a translation.
-      title: "क्रिया करनी चाहिए,",
-      em: "तब अपना कार्य सिद्ध होता है।",
-      translation: "One must act; only then is one's work accomplished.",
-      body: "The Foundation carries his name and upholds his tradition.",
-      link: "About the Acharya",
+      key: "empowerment",
+      tab: "Empowerment",
+      eyebrow: "Empowerment",
+      title: "Empowering families",
+      em: "to learn and rebuild.",
+      body: "When a child can keep learning and a family can rebuild its home, the whole community grows stronger.",
+      // Both figures as the Community Services page gives them.
+      fact: "c. 500 students given books and stationery · 262 families helped to rebuild after the 2019 floods",
+      link: { label: "How we support education", href: "/community-services#education" },
+      images: [
+        {
+          src: "/images/community/education-support-1.jpeg",
+          alt: "Children in a school courtyard receiving workbooks from Foundation volunteers seated at a table.",
+          caption: "Workbooks for schoolchildren near Yarnal.",
+          position: "35% 50%",
+        },
+        {
+          src: "/images/community/education-support-2.jpeg",
+          alt: "Schoolchildren in uniform holding their new books, with teachers and Foundation members, in front of a school banner.",
+          caption: "Books and stationery, handed over at school.",
+          position: "50% 45%",
+        },
+      ],
     },
   ],
 } as const;
