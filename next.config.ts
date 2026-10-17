@@ -6,6 +6,49 @@ const dev = process.env.NODE_ENV !== "production";
 const preview = process.env.VERCEL_ENV === "preview";
 
 /**
+ * The Foundation's earlier WordPress site, as Google still lists it: each
+ * page goes to the page that now covers it, so search results and old links
+ * land somewhere useful and their standing passes to the new pages. The
+ * theme's demo pages (portfolio, ElementsKit, sample pages) are left to 404
+ * and drop out of the index. Temple conservation is out of scope, so its
+ * page goes to About.
+ */
+const earlierSite: [string, string][] = [
+  ["/contact", "/#contact"],
+  ["/volunteer", "/#contact"],
+  ["/faq", "/about"],
+  ["/services", "/"],
+  ["/causes", "/"],
+  ["/temple-restoration", "/about"],
+  ["/shanti-smarak", "/about"],
+  ["/testimonials", "/"],
+  ["/muni-deeksha-shatabdi-mahotsav", "/"],
+  ["/acaharya-pad-partisthapana-mahostav-2024-25", "/"],
+  ["/tadpatra-restoration", "/manuscript-conservation"],
+  ["/sharavanabalgal-m-at-parchan-tad-patar", "/manuscript-conservation"],
+  ["/infra-development-at-yernal", "/rural-infrastructure"],
+  ["/covid-19-initiative", "/community-services"],
+  ["/welfare-work-in-south-flood-2018", "/community-services"],
+  ["/annual-report", "/impact"],
+  ["/news-coverage", "/impact"],
+  ["/publication", "/impact"],
+  ["/short-videos", "/impact"],
+  ["/songs", "/impact"],
+  ["/blog", "/impact"],
+  ["/others", "/impact"],
+  ["/category/:slug*", "/impact"],
+  ["/donations/:slug*", "/donate"],
+  ["/donation-confirmation", "/donate"],
+  ["/donation-failed", "/donate"],
+  ["/donor-dashboard", "/donate"],
+  // Two Hindi posts about Acharya Shri, under their encoded and plain addresses.
+  ["/%e0%a4%86%e0%a4%9a%e0%a4%b0%e0%a4%af-%e0%a4%b6%e0%a4%b0-%e0%a4%b6%e0%a4%a4-%e0%a4%b8%e0%a4%97%e0%a4%b0-%e0%a4%9c", "/hi/about"],
+  ["/आचरय-शर-शत-सगर-ज", "/hi/about"],
+  ["/%e0%a4%85%e0%a4%a6%e0%a5%83%e0%a4%b6%e0%a5%8d%e0%a4%af-%e0%a4%ad%e0%a4%95%e0%a5%8d%e0%a4%a4%e0%a4%bf-%e0%a4%95%e0%a5%87-%e0%a4%a6%e0%a4%b0%e0%a5%8d%e0%a4%b6%e0%a4%a8-%e0%a4%b6%e0%a4%be%e0%a4%82", "/hi/about"],
+  ["/अदृश्य-भक्ति-के-दर्शन-शां", "/hi/about"],
+];
+
+/**
  * What a page may load. Everything is served from the site itself — fonts
  * are self-hosted by next/font, images go through /_next/image, the
  * assistant is /api/chat — except the restoration film, which is a
@@ -94,6 +137,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/donation.html", destination: "/donate", permanent: true },
       { source: "/success.php", destination: "/donate/thank-you", permanent: true },
+      ...earlierSite.map(([source, destination]) => ({ source, destination, permanent: true })),
     ];
   },
   async headers() {
