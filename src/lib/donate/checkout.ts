@@ -210,7 +210,8 @@ export async function startPayment(details: Details, txn: string, thanksUrl: str
   } catch (err) {
     window.history.replaceState(null, "", before);
     const e = err as { code?: number; message?: string };
-    throw new Error(e?.message || "The payment couldn't be started.");
+    const message = e?.message || "The payment couldn't be started.";
+    throw new Error(e?.code ? `${message} (Apna Dharm ${e.code})` : message);
   }
   followCheckout(thanksUrl, onResult);
 }

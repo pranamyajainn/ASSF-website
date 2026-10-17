@@ -157,7 +157,9 @@ export function DonateForm({
           if (pending) writePending(txn, { ...pending, status: outcome, code });
         },
       );
-    } catch {
+    } catch (err) {
+      // The donor sees a plain message; the reason is kept for whoever opens the console.
+      console.error("The payment couldn't start:", err);
       setBusy(false);
       setFailure(t.failed);
     }
