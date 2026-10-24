@@ -51,6 +51,8 @@ Pushing `main` deploys to Vercel (project `assf-website`).
 | `SMTP_USER`, `SMTP_PASS` | Email updates: the Foundation's Gmail / Google Workspace address and a 16-letter **app password** for it (Google Account → Security → 2-Step Verification → App passwords). Optional: `MAIL_FROM_NAME`, `SMTP_HOST`/`SMTP_PORT` for another provider, `SMTP_DAILY_LIMIT`. |
 | `MAIL_DATA_KEY` | Optional. Encrypts the mailing list; defaults to a key derived from `AUTH_SECRET`. Set it to the old `AUTH_SECRET` before rotating that secret, or the list becomes unreadable. |
 | `CRON_SECRET` | The daily job (`/api/cron/daily`, `vercel.json` → `crons`): Vercel sends it, and the job refuses calls without it. Any long random string. |
+| `BLOB_READ_WRITE_TOKEN` | The document vault (`/vault`): the private Vercel Blob store **assf-vault** (Mumbai), added when the store was connected to the project. |
+| `VAULT_EMAILS` | Optional. Google accounts that may open the document vault, comma-separated. Until it is set, the site editors (`EDITOR_EMAILS`) may. |
 | `NEXT_PUBLIC_SITE_URL` | Optional. Only if the canonical address should differ from Vercel's production domain (e.g. to prefer `https://www.…`). |
 
 **Indexing.** The site tells search engines to stay away (`X-Robots-Tag: noindex`) everywhere
@@ -140,6 +142,45 @@ the connector metadata on a half-hourly schedule (GitHub runs scheduled jobs lat
 practice every few hours); if any fails twice it opens a `site-down` issue (GitHub
 emails the watchers) and closes it when the site answers again. Set the repository variable
 `SITE_URL` to watch another address.
+
+## Careers and galleries
+
+`/careers`, `/gallery/photos` and `/gallery/videos` (with `/hi/…` and `/kn/…`) are ordinary pages
+of the site, edited in the site editor like the rest (pages **Careers**, **Photo Gallery** and
+**Video Gallery**). On wide screens they sit under **More** at the end of the menu (the row is
+full); the phone menu and the footer list them with the rest.
+
+- **Careers** (`src/content/careers.ts`) starts with no vacancies and says so; the editor's
+  **+ Add a vacancy** adds one (role, location, short description), per language. Each vacancy's
+  "Apply by email" opens an email to the Foundation's address with the role in the subject.
+  An empty list can still grow because `ITEM_TEMPLATES` (`src/lib/cms/schema.ts`) gives its
+  new items their shape.
+- **Photo Gallery** (`src/content/photo-gallery.ts`) opens with the photographs of the work
+  already on the site, with their own descriptions and captions; portraits stay on their pages.
+- **Video Gallery** (`src/content/video-gallery.ts`) opens with the two Voices recordings, which
+  play with their caption tracks. New films are added as a **YouTube link** (a film is too large
+  to upload through the editor); each shows YouTube's thumbnail and plays in the no-cookie
+  player only when pressed. A link that is neither YouTube nor one of the site's own recordings
+  is left off the page.
+
+## Document vault (`/vault`)
+
+The Foundation's private documents — **Trust Deed, Financials, Balance Sheets, Approvals** — in
+English, हिन्दी or ಕನ್ನಡ (`?lang=hi|kn`). Same Google sign-in as the editor; who may enter is
+`VAULT_EMAILS` (or the editors until it is set), re-checked on every request. The editor's
+**More → Trust documents** links to it; no public page does.
+
+- Signed out, `/vault` answers **401** with the sign-in (`unauthorized.tsx`, Next's
+  `authInterrupts`); signed in with another account, **403** (`forbidden.tsx`).
+- Files go from the browser straight to the private Blob store, with a ten-minute token from
+  `/api/vault/upload` for exactly one new path in one of the four groups (PDF, images, Word,
+  Excel; up to 100 MB; never over an existing file). They come back only through
+  `/api/vault/file` (401 / 403 otherwise, `no-store`). The store's own addresses refuse anyone
+  without its token. There is no delete button: removing a file is for the web team
+  (`vercel blob del`), so a wrong click can't lose a deed.
+- Nothing about the vault is in `src/content` or `src/i18n` (its words are in
+  `src/lib/vault/strings.ts`), so the assistant (`/api/chat`), the AI connector and the backup
+  never see it. Who uploaded or opened what is in the server logs.
 
 ## Site editor (`/editor`)
 

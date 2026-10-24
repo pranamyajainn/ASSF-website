@@ -8,7 +8,7 @@ type VoicesContent = Awaited<ReturnType<typeof getContent>>["home"]["voices"];
 
 /** Caption tracks sit beside each video as `<name>.<lang>.vtt`. */
 const trackLabels: Record<Lang, string> = { hi: "हिन्दी", en: "English", kn: "ಕನ್ನಡ" };
-function tracksFor(base: string, lang: Lang): FilmTrack[] {
+export function tracksFor(base: string, lang: Lang): FilmTrack[] {
   return (["hi", "en", "kn"] as const).map((l) => ({
     src: `${base}.${l}.vtt`,
     srclang: l,

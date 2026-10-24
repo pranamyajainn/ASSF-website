@@ -70,4 +70,7 @@ jobs:
           expect GET  /api/cms/gifts           401 403
           expect POST /api/cms/restore         401 403
           expect POST /api/mcp                 401
+          expect GET  /vault                   401
+          expect GET  /api/vault/file          401
+          expect POST /api/vault/upload        401
           exit $fail

@@ -33,7 +33,7 @@ export async function pageMetadata(
   const languages: Record<string, string> = { "x-default": path };
   for (const l of locales) languages[l] = localizeHref(path, l);
   const canonical = localizeHref(path, lang);
-  const card = { url: `/og/${lang}/${path === "/" ? "home" : path.slice(1)}.jpg`, width: 1200, height: 630, alt: title };
+  const card = { url: `/og/${lang}/${path === "/" ? "home" : path.slice(1).replaceAll("/", "-")}.jpg`, width: 1200, height: 630, alt: title };
   return {
     title,
     description: desc,

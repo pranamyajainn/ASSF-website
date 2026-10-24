@@ -28,6 +28,7 @@ export const ui = {
     give: "Give",
     giveOnline: "Give online",
     donate: "Donate",
+    more: "More",
   },
   footer: {
     colophon: "Colophon",
@@ -163,6 +164,8 @@ export const ui = {
     means: "What it means",
     who: "Who?",
     advises: "Who advises?",
+    open: "What's open?",
+    apply: "How to apply?",
   },
   meta: {
     home: "Acharya Shanti Sagar Foundation — जीवन धरोहर संरक्षण",
@@ -177,6 +180,23 @@ export const ui = {
     trustees: "Trustees",
     donate: "Give",
     donateThanks: "Thank you",
+    photos: "Photo Gallery",
+    videos: "Video Gallery",
+    careers: "Careers",
+  },
+  careers: {
+    location: "Location",
+    apply: "Apply by email",
+    /** The subject line an application email opens with. */
+    subject: "Application: {role}",
+    write: "Write to {email}",
+  },
+  gallery: {
+    open: "Open the photograph at full size",
+    play: "Play",
+    noPhotos: "No photographs yet.",
+    noFilms: "No films yet.",
+    youtube: "Plays from YouTube",
   },
   /** The quiet ways into giving: a question at the end of the work's pages, and folio counts in "Adopting a folio". */
   give: {

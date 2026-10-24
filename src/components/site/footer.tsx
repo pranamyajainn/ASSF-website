@@ -11,7 +11,7 @@ import { getContent } from "@/i18n/content";
  */
 export async function Footer() {
   const { shared, ui, href } = await getContent();
-  const { org, nav } = shared;
+  const { org, nav, navMore } = shared;
   const t = ui.footer;
   const tel = `tel:${org.phone.replace(/\s/g, "")}`;
 
@@ -97,7 +97,7 @@ export async function Footer() {
         <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-8 pb-28 pt-10 sm:pb-32">
           <nav aria-label={t.nav}>
             <ul className="flex flex-wrap gap-x-7 gap-y-3">
-              {[{ label: t.home, href: href("/home") }, ...nav].map((item) => (
+              {[{ label: t.home, href: href("/home") }, ...nav, ...navMore].map((item) => (
                 <li key={item.label}>
                   <Link
                     href={item.href}

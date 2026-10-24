@@ -110,9 +110,25 @@ const donating = [
   },
 ];
 
-/** The editor's preview may be framed — by the site itself, and nothing else. */
+/**
+ * The document vault uploads straight from the browser to its private store
+ * (Vercel Blob, through vercel.com's API), so its page alone may connect
+ * there. It is never indexed.
+ */
+const vault = [
+  { key: "Content-Security-Policy", value: csp.replace("connect-src 'self'", "connect-src 'self' https://vercel.com https://*.blob.vercel-storage.com") },
+  noindex,
+];
+
+/**
+ * The video gallery shows each YouTube film's own thumbnail until it is
+ * played (the film itself plays in the youtube-nocookie frame already allowed).
+ */
+const videoGallery = [{ key: "Content-Security-Policy", value: csp.replace("img-src 'self'", "img-src 'self' https://i.ytimg.com") }];
+
+/** The editor's preview may be framed — by the site itself, and nothing else (and shows the video gallery's thumbnails). */
 const framedBySelf = [
-  { key: "Content-Security-Policy", value: csp.replace("frame-ancestors 'none'", "frame-ancestors 'self'") },
+  { key: "Content-Security-Policy", value: csp.replace("frame-ancestors 'none'", "frame-ancestors 'self'").replace("img-src 'self'", "img-src 'self' https://i.ytimg.com") },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   noindex,
 ];
@@ -120,7 +136,8 @@ const framedBySelf = [
 const nextConfig: NextConfig = {
   // One 404 for every unmatched address, across both root layouts (see
   // app/global-not-found.tsx).
-  experimental: { globalNotFound: true },
+  // authInterrupts: the vault answers 401 / 403 with its sign-in (unauthorized.tsx, forbidden.tsx).
+  experimental: { globalNotFound: true, authInterrupts: true },
   images: {
     // AVIF first — typically a fifth to a third smaller than WebP for these
     // photographs — with WebP as the fallback for browsers without it.
@@ -155,6 +172,10 @@ const nextConfig: NextConfig = {
       { source: "/oauth/:path*", headers: [noindex] },
       { source: "/unsubscribe", headers: [noindex] },
       { source: "/r/:path*", headers: [noindex] },
+      { source: "/vault", headers: vault },
+      { source: "/vault/:path*", headers: vault },
+      { source: "/gallery/videos", headers: videoGallery },
+      { source: "/:lang(hi|kn)/gallery/videos", headers: videoGallery },
       { source: "/api/:path*", headers: [noindex] },
       { source: "/donate", headers: donating },
       { source: "/:lang(hi|kn)/donate", headers: donating },

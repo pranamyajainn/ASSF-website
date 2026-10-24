@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { isEditorEmail } from "@/lib/cms/editors";
 import { isAuthorizedEmail } from "@/lib/trustee-directory";
+import { isVaultEmail } from "@/lib/vault/people";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // Auth.js reads AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET; the Google console's
@@ -23,14 +24,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   callbacks: {
     // Google only confirms *who* someone is — this decides whether that
-    // person is a trustee or advisor, or one of the Foundation's site
-    // editors. Anyone on neither allowlist is refused here, before a session
-    // is ever created. (Each area re-checks its own list on every request.)
+    // person is a trustee or advisor, one of the Foundation's site editors,
+    // or someone who may open its document vault. Anyone on no allowlist is
+    // refused here, before a session is ever created. (Each area re-checks
+    // its own list on every request.)
     // Google must also have verified the address: a Google account can be
     // opened under someone else's email, and that must never count as them.
     async signIn({ user, profile }) {
       if (profile?.email_verified !== true) return false;
-      return isAuthorizedEmail(user.email) || isEditorEmail(user.email);
+      return isAuthorizedEmail(user.email) || isEditorEmail(user.email) || isVaultEmail(user.email);
     },
   },
 });

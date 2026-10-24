@@ -28,6 +28,9 @@ const PAGES = [
   { slug: "community-services", path: "/community-services" },
   { slug: "impact", path: "/impact" },
   { slug: "trustees", path: "/trustees" },
+  { slug: "gallery-photos", path: "/gallery/photos" },
+  { slug: "gallery-videos", path: "/gallery/videos" },
+  { slug: "careers", path: "/careers" },
   { slug: "donate", path: "/donate" },
 ];
 const EDITIONS = { en: "", hi: "/hi", kn: "/kn" };
@@ -96,21 +99,23 @@ const draw = (home, homePlates) => `(async () => {
   const title = document.title;
   const site = title.includes(' — ') ? title.split(' — ').pop() : title;
   let eyebrow, heading, plates, sign = site;
+  const nav = [...document.querySelectorAll('header a[href]')];
+  const label = (href) => nav.find((a) => a.getAttribute('href').replace(/^\\/(hi|kn)(?=\\/)/, '') === href)?.innerText.trim() ?? '';
+  const pillars = ${JSON.stringify(homePlates)}.map((p) => ({ src: p.src, label: label(p.href) }));
   if (${home}) {
-    const nav = [...document.querySelectorAll('header a[href]')];
-    const label = (href) => nav.find((a) => a.getAttribute('href').replace(/^\\/(hi|kn)(?=\\/)/, '') === href)?.innerText.trim() ?? '';
     const [name, line] = title.split(' — ');
     eyebrow = line;
     heading = name;
     sign = ${JSON.stringify(BRAND_LINES)}[document.documentElement.lang];
-    plates = ${JSON.stringify(homePlates)}.map((p) => ({ src: p.src, label: label(p.href) }));
+    plates = pillars;
   } else {
     const top = document.querySelector('main #top');
     eyebrow = top.querySelector('p').innerText.trim();
     heading = top.querySelector('h1').innerText.replace(/\\s*॥\\s*$/, '').trim();
     const img = top.querySelector('img');
     const all = [...new Set([...document.querySelectorAll('main img')].map((i) => unlocal(i.currentSrc || i.src)))];
-    plates = img ? [{ src: unlocal(img.currentSrc || img.src) }] : all.slice(0, 8).map((src) => ({ src }));
+    // A page without photographs (Careers) shows the three pillars, as the home card does.
+    plates = img ? [{ src: unlocal(img.currentSrc || img.src) }] : all.length ? all.slice(0, 8).map((src) => ({ src })) : pillars;
   }
   const lang = document.documentElement.lang;
   const second = lang === 'en' ? 'आचार्य शांति सागर फाउंडेशन' : 'Acharya Shanti Sagar Foundation';

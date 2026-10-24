@@ -8,6 +8,9 @@ import * as rural from "@/content/rural-infrastructure";
 import * as community from "@/content/community-services";
 import * as impact from "@/content/impact";
 import * as trustees from "@/content/trustees";
+import * as careers from "@/content/careers";
+import * as photos from "@/content/photo-gallery";
+import * as videos from "@/content/video-gallery";
 import editsFile from "@/content/edits.json";
 import { applyOps, clone, fillBlanks, fillTokens, type Edits } from "@/lib/cms/edits";
 import { tagTree } from "@/lib/cms/stega";
@@ -33,6 +36,9 @@ const source = {
   community: { ...community },
   impact: { ...impact },
   trustees: { ...trustees },
+  photos: { ...photos },
+  videos: { ...videos },
+  careers: { ...careers },
   ui,
 };
 

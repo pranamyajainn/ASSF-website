@@ -8,7 +8,7 @@
  * the Foundation may add to, remove from and reorder; and what each field is
  * called in plain words. Safe to import anywhere.
  */
-import type { Path } from "./edits";
+import type { Json, Path } from "./edits";
 
 /** Values that wire the page together rather than say anything. */
 export const HIDDEN_KEYS = new Set([
@@ -85,7 +85,19 @@ export const COLLECTIONS = new Set([
   "community.relief.items[].stats",
   "trustees.trustees",
   "trustees.advisors",
+  "photos.gallery.items",
+  "videos.gallery.items",
+  "careers.openings.items",
 ]);
+
+/**
+ * A new item for a collection that may be empty, where there is no item to
+ * copy the shape of: Careers starts with no vacancies. The editor's "Add",
+ * the AI connector and the server's checks all take the shape from here.
+ */
+export const ITEM_TEMPLATES: Record<string, Json> = {
+  "careers.openings.items": { role: "", location: "", description: "" },
+};
 
 /** Paragraph lists: open, whatever their path. */
 const TEXT_LISTS = new Set(["paragraphs", "bio", "body", "statement", "subjects"]);
@@ -187,6 +199,9 @@ const LABELS: Record<string, string> = {
   pageHero: "Top of the page",
   primary: "Main button",
   secondary: "Second button",
+  location: "Location",
+  description: "Short description",
+  empty: "When there are none",
 };
 
 /** Names that depend on where a field sits, not just what it's called. */
@@ -200,6 +215,16 @@ const PATH_LABELS: Record<string, string> = {
   "home.field.items[].date": "Date (as it should appear)",
   "home.ledger.metrics[].note": "Note under the figure",
   "home.ledger.metrics[].label": "What the figure counts",
+  "careers.openings.items": "Vacancies",
+  "careers.openings.items[].role": "Role (the position's name)",
+  "careers.openings.items[].location": "Location",
+  "careers.openings.items[].description": "Short description",
+  "careers.openings.empty": "Message when there are no openings",
+  "videos.gallery.items": "Videos",
+  "photos.gallery.items": "Photos",
+  "videos.gallery.items[].url": "Video — a YouTube link (or one of the site's own recordings)",
+  "videos.gallery.items[].title": "Title",
+  "videos.gallery.items[].caption": "Caption",
 };
 
 export function labelAt(path: Path): string {
@@ -232,6 +257,9 @@ export const PAGES = [
   { module: "community", title: "Community Services", href: "/community-services" },
   { module: "impact", title: "Impact", href: "/impact" },
   { module: "trustees", title: "Trustees", href: "/trustees" },
+  { module: "photos", title: "Photo Gallery", href: "/gallery/photos" },
+  { module: "videos", title: "Video Gallery", href: "/gallery/videos" },
+  { module: "careers", title: "Careers", href: "/careers" },
   { module: "shared", title: "Site-wide", href: "/" },
   { module: "ui", title: "Buttons & labels", href: "/" },
 ] as const;
@@ -241,7 +269,10 @@ export type ModuleName = (typeof PAGES)[number]["module"];
 /** Sections in the order the page shows them; any not listed follow. */
 export const SECTION_ORDER: Partial<Record<ModuleName, string[]>> = {
   home: ["hero", "pillarsIntro", "mission", "ruralTeaser", "communityTeaser", "ledger", "upClose", "adopt", "voices", "field", "join", "survey", "lineage", "sites", "standing"],
-  shared: ["org", "folioPrice", "granthaPrice", "pillars", "nav"],
+  shared: ["org", "folioPrice", "granthaPrice", "pillars", "nav", "navMore"],
+  careers: ["pageHero", "openings", "apply"],
+  photos: ["pageHero", "gallery"],
+  videos: ["pageHero", "gallery"],
 };
 
 /** Plain names for sections whose code names say little to a reader. */
@@ -265,6 +296,11 @@ const SECTION_LABELS: Record<string, string> = {
   "home.survey": "Manuscript survey",
   "shared.org": "Name, contact & bank details",
   "shared.nav": "Menu",
+  "shared.navMore": "Menu — under “More”",
+  "photos.gallery": "Photographs",
+  "videos.gallery": "Films",
+  "careers.openings": "Open positions",
+  "careers.apply": "How to apply",
   "shared.pillars": "Three pillars (everywhere)",
   "trustees.trustees": "Trustees",
   "trustees.advisors": "Advisors",

@@ -123,7 +123,7 @@ export async function POST(req: Request) {
   for (const p of passages.slice(0, 4)) {
     const href = localizeHref(p.href.replace(/^\/(hi|kn)(?=\/|$)/, "") || "/", lang);
     if (sources.some((s) => s.href === href)) continue;
-    const label = shared.nav.find((n) => n.href === href)?.label ?? (p.page === "Home" ? ui.header.homeLink : p.page);
+    const label = [...shared.nav, ...shared.navMore].find((n) => n.href === href)?.label ?? (p.page === "Home" ? ui.header.homeLink : p.page);
     sources.push({ page: label, href });
     if (sources.length === 3) break;
   }

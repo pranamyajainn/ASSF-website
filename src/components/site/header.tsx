@@ -11,6 +11,7 @@ export async function Header() {
     <HeaderClient
       lang={lang}
       nav={shared.nav}
+      more={shared.navMore}
       tagline={shared.org.tagline}
       brandLine={shared.org.brandLine}
       name={shared.org.displayName}

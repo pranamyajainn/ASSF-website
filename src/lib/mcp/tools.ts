@@ -10,6 +10,7 @@ import {
   isImagePath,
   isMediaPath,
   isOpenList,
+  ITEM_TEMPLATES,
   labelAt,
   PAGES,
   schemaPath,
@@ -217,7 +218,8 @@ const read: Tool = {
       const node = getAt(trees.en, path);
       if (Array.isArray(node)) {
         const open = isOpenList(path, node);
-        const first = node[0];
+        // An empty list's items take the template's shape (Careers' vacancies).
+        const first = node[0] ?? ITEM_TEMPLATES[schemaPath(path)];
         lists.push({
           list: fromPath(path),
           items: node.length,
@@ -428,7 +430,8 @@ const propose: Tool = {
       const at =
         c.position === "start" ? 0 : c.position === "end" ? list.length : typeof c.position === "number" ? Math.max(0, Math.min(c.position, list.length)) : newestFirst ? 0 : list.length;
       const modelIndex = at === 0 ? 0 : list.length - 1;
-      const item = Object.fromEntries(locales.map((l) => [l, blankLike(getAt(trees[l], [...listPath, modelIndex]) as Json)])) as Record<Lang, Json>;
+      const template = ITEM_TEMPLATES[schemaPath(listPath)];
+      const item = Object.fromEntries(locales.map((l) => [l, blankLike((getAt(trees[l], [...listPath, modelIndex]) ?? template) as Json)])) as Record<Lang, Json>;
       const given = c.item ?? {};
       if (typeof item.en === "string") {
         // A list of paragraphs: the item is the text itself.

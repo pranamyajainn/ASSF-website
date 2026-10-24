@@ -28,6 +28,7 @@ const PAGES: Record<string, { path: string; page: string }> = {
   community: { path: "/community-services", page: "Community Services" },
   impact: { path: "/impact", page: "Impact" },
   trustees: { path: "/trustees", page: "Trustees" },
+  careers: { path: "/careers", page: "Careers" },
 };
 
 /** Keys that hold files, links and layout, not words a reader sees. */

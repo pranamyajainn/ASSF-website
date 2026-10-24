@@ -8,6 +8,9 @@ import Impact from "@/views/impact";
 import Conservation from "@/views/manuscript-conservation";
 import Rural from "@/views/rural-infrastructure";
 import Trustees from "@/views/trustees";
+import Careers from "@/views/careers";
+import PhotoGallery from "@/views/photo-gallery";
+import VideoGallery from "@/views/video-gallery";
 
 const VIEWS: Record<string, () => Promise<React.ReactNode> | React.ReactNode> = {
   "": Home,
@@ -17,6 +20,9 @@ const VIEWS: Record<string, () => Promise<React.ReactNode> | React.ReactNode> = 
   "community-services": Community,
   impact: Impact,
   trustees: Trustees,
+  "gallery/photos": PhotoGallery,
+  "gallery/videos": VideoGallery,
+  careers: Careers,
 };
 
 /**

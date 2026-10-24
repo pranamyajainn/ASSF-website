@@ -19,12 +19,17 @@ or spam tests, or make real donations to test the payment flow.
 
 ## How the site is protected
 
-- **Sign-in:** the site editor and trustee portal use Google sign-in
+- **Sign-in:** the site editor, the document vault and the trustee portal use Google sign-in
   (verified addresses only) against allowlists kept in Vercel, re-checked on
   every request; sessions last a week. The AI connector uses OAuth 2.1 with
   PKCE, signed short-lived tokens and an allowlist of AI apps.
 - **Private data** (visitors' questions, gift outcomes, the mailing list)
   is encrypted (AES-256-GCM) before it is stored; the key lives only in Vercel.
+- **The document vault** (`/vault`): files are kept in a private Vercel Blob
+  store that can't be read by address; they are uploaded and downloaded only
+  through the site, for people on the vault's list. It is never linked from
+  the public pages, never in the sitemap, and robots and `noindex` keep it out
+  of search. The assistant and the AI connector never read it.
 - **The browser:** a strict Content-Security-Policy, HSTS, framing refused,
   and a narrower policy on the donate page for the payment provider alone.
 - **Abuse:** per-visitor rate limits on the assistant, voice, speech, sign-in

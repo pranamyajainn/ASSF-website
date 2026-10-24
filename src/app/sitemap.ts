@@ -11,6 +11,9 @@ const PAGES = [
   "/community-services",
   "/impact",
   "/trustees",
+  "/gallery/photos",
+  "/gallery/videos",
+  "/careers",
   "/donate",
 ];
 

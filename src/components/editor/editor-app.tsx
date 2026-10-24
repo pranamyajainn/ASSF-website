@@ -447,6 +447,7 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
                     items={[
                       { label: "Print QR cards", hint: "For exhibitions, temples and libraries", onClick: () => setDialog("qr") },
                       { label: "Download a backup", hint: "Everything on the site, the mailing list and questions", href: "/api/cms/backup" },
+                      { label: "Trust documents", hint: "The private vault: deed, financials, balance sheets, approvals", href: "/vault" },
                       { label: "Use with Claude or ChatGPT", hint: "Edit the site by asking", onClick: () => setDialog("connect") },
                     ]}
                   />

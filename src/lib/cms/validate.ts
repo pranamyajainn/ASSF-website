@@ -1,9 +1,9 @@
 import "server-only";
 import { locales, type Lang } from "@/i18n/config";
 import { getAt, pathKey, type Json, type Op } from "./edits";
-import { ENUM_KEYS, HIDDEN_KEYS, isHidden, isImagePath, isOpenList, schemaPath } from "./schema";
+import { ENUM_KEYS, HIDDEN_KEYS, isHidden, isImagePath, isOpenList, ITEM_TEMPLATES, schemaPath } from "./schema";
 
-const MODULES = new Set(["shared", "home", "about", "conservation", "rural", "community", "impact", "trustees", "ui"]);
+const MODULES = new Set(["shared", "home", "about", "conservation", "rural", "community", "impact", "trustees", "photos", "videos", "careers", "ui"]);
 const MAX_OPS = 3000;
 const MAX_TEXT = 8000;
 const MAX_LIST = 200;
@@ -51,7 +51,7 @@ function check(value: Json, current: unknown, path: (string | number)[], ctx: Ct
     if (!Array.isArray(value)) return `${where}: expected a list`;
     if (value.length > MAX_LIST) return `${where}: too many items`;
     if (value.length !== current.length && !isOpenList(path, current)) return `${where}: this list can't change length`;
-    const model = current[0];
+    const model = current[0] ?? ITEM_TEMPLATES[schema];
     if (model === undefined) return value.length ? `${where}: no model for new items` : null;
     for (let i = 0; i < value.length; i++) {
       const problem = check(value[i], current[i] ?? model, [...path, i], ctx);

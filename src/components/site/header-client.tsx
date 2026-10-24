@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -49,10 +49,14 @@ function setClean(next: boolean) {
  * - "Listen" reads the page aloud in the edition's language, with the
  *   reader's own device voice, marking each passage as it is read. It is
  *   offered only where the device has a voice for the language.
+ * - "More" ends the primary nav on wide screens: the masthead's row is
+ *   full, so the further pages (the galleries, careers) open beneath it.
+ *   The phone menu lists them with the rest.
  */
 export function HeaderClient({
   lang,
   nav,
+  more,
   tagline,
   brandLine,
   name,
@@ -65,6 +69,7 @@ export function HeaderClient({
 }: {
   lang: Lang;
   nav: readonly { label: string; href: string }[];
+  more: readonly { label: string; href: string }[];
   tagline: string;
   brandLine: string;
   name: string;
@@ -179,7 +184,7 @@ export function HeaderClient({
             <nav aria-label={t.primary} className="ml-auto hidden xl:block">
               {/* Home first, so the reader always sees which page they are on:
                   the current one is underlined in red. */}
-              <ul className="flex items-center gap-6 2xl:gap-7">
+              <ul className="flex items-center gap-4 2xl:gap-7">
                 {[{ label: t.homeLink, href: homePageHref }, ...nav].map((item) => {
                   const current =
                     pathname === item.href || (item.href === homePageHref && pathname === homeHref);
@@ -199,6 +204,7 @@ export function HeaderClient({
                     </li>
                   );
                 })}
+                <MoreMenu items={more} label={t.more} pathname={pathname} />
               </ul>
             </nav>
 
@@ -211,7 +217,7 @@ export function HeaderClient({
             </Link>
 
             <MobileNav
-              nav={nav}
+              nav={[...nav, ...more]}
               homeHref={homeHref}
               homePageHref={homePageHref}
               joinHref={joinHref}
@@ -244,6 +250,83 @@ export function HeaderClient({
         ) : null}
       </header>
     </>
+  );
+}
+
+/**
+ * The primary nav's last item: a disclosure that opens the further pages
+ * beneath it. It closes on a choice, on Escape (returning focus to it), and
+ * when focus or a tap goes elsewhere.
+ */
+function MoreMenu({ items, label, pathname }: { items: readonly { label: string; href: string }[]; label: string; pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLLIElement>(null);
+  const button = useRef<HTMLButtonElement>(null);
+  const id = useId();
+  const current = items.some((item) => item.href === pathname);
+
+  useEffect(() => {
+    if (!open) return;
+    const away = (e: PointerEvent) => {
+      if (!root.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const escape = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      button.current?.focus();
+    };
+    document.addEventListener("pointerdown", away);
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("pointerdown", away);
+      document.removeEventListener("keydown", escape);
+    };
+  }, [open]);
+
+  return (
+    <li
+      ref={root}
+      className="relative"
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false);
+      }}
+    >
+      <button
+        ref={button}
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen(!open)}
+        className={`flex cursor-pointer items-center gap-1.5 text-[1.0625rem] transition-colors hover:text-cinnabar ${
+          current ? "text-ink underline decoration-cinnabar decoration-2 underline-offset-[7px]" : "text-ink-soft"
+        }`}
+      >
+        {label}
+        <svg viewBox="0 0 12 12" aria-hidden="true" className={`size-2.5 transition-transform ${open ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="1.6">
+          <path d="M2 4.25 6 8l4-3.75" />
+        </svg>
+      </button>
+      <ul
+        id={id}
+        hidden={!open}
+        className="absolute right-0 top-full z-40 mt-4 min-w-[13rem] border border-ink/20 bg-leaf py-2 shadow-[0_12px_30px_-12px_rgb(40_25_10/0.35)]"
+      >
+        {items.map((item) => (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              onClick={() => setOpen(false)}
+              aria-current={item.href === pathname ? "page" : undefined}
+              className={`block whitespace-nowrap px-5 py-2.5 text-[1.0625rem] transition-colors hover:bg-ink/[0.05] hover:text-cinnabar ${
+                item.href === pathname ? "text-cinnabar" : "text-ink"
+              }`}
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </li>
   );
 }
 

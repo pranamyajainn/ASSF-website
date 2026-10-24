@@ -3,7 +3,7 @@
 import { createContext, useContext, useId, useRef, useState, type ReactNode } from "react";
 import { localeInfo, locales, type Lang } from "@/i18n/config";
 import { getAt, pathKey, type Json, type Path, type Scope } from "@/lib/cms/edits";
-import { ENUM_KEYS, isHidden, isImagePath, isLongText, isMediaPath, isOpenList, labelAt, labelFor, schemaPath } from "@/lib/cms/schema";
+import { ENUM_KEYS, isHidden, isImagePath, isLongText, isMediaPath, isOpenList, ITEM_TEMPLATES, labelAt, labelFor, schemaPath } from "@/lib/cms/schema";
 import { blankLike, enumOptions, itemTitle, NEWEST_FIRST, type Trees } from "./model";
 
 export type EditorApi = {
@@ -469,7 +469,9 @@ function List({ path }: { path: Path }) {
   const api = useEditor();
   const list = getAt(api.current.en, path) as unknown[];
   const open = isOpenList(path, list);
-  const strings = list.every((v) => typeof v === "string");
+  const template = ITEM_TEMPLATES[schemaPath(path)];
+  // An empty list is of paragraphs unless its template says otherwise.
+  const strings = list.length ? list.every((v) => typeof v === "string") : template === undefined || typeof template === "string";
   const newestFirst = NEWEST_FIRST.has(schemaPath(path));
 
   const move = (from: number, to: number) =>
@@ -484,7 +486,7 @@ function List({ path }: { path: Path }) {
   };
   const add = () => {
     api.changeList(path, (l) => {
-      const model = (newestFirst ? l[0] : l[l.length - 1]) ?? "";
+      const model = (newestFirst ? l[0] : l[l.length - 1]) ?? template ?? "";
       const item = blankLike(model as Json);
       return newestFirst ? [item, ...l] : [...l, item];
     });
@@ -575,6 +577,9 @@ function addNoun(path: Path): string {
   if (schema.endsWith("stats")) return "a figure";
   if (/images|album|upClose\.items|illuminated\.items/.test(schema)) return "a photo";
   if (schema.endsWith("voices.items")) return "a visitor's words";
+  if (schema === "careers.openings.items") return "a vacancy";
+  if (schema === "videos.gallery.items") return "a video";
+  if (schema === "photos.gallery.items") return "a photo";
   return "another";
 }
 

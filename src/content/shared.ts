@@ -53,6 +53,17 @@ export const nav = [
   { label: "Trustees", href: "/trustees" },
 ] as const;
 
+/**
+ * The menu's further pages. On wide screens the masthead's row is full, so
+ * they sit under "More" at its end; the phone menu and the footer list them
+ * with the rest.
+ */
+export const navMore = [
+  { label: "Photo Gallery", href: "/gallery/photos" },
+  { label: "Video Gallery", href: "/gallery/videos" },
+  { label: "Careers", href: "/careers" },
+] as const;
+
 export const languages = [
   { code: "en", label: "English" },
   { code: "hi", label: "हिन्दी" },

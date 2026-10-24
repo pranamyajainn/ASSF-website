@@ -15,6 +15,7 @@ export default async function SignInError({ searchParams }: { searchParams: Prom
   try {
     const path = new URL(decodeURIComponent(callback), "http://x").pathname;
     if (path.startsWith("/editor") || path.startsWith("/oauth")) target = "/editor/sign-in";
+    if (path === "/vault" || path.startsWith("/vault/")) target = "/editor/sign-in?next=/vault";
   } catch {}
-  redirect(`${target}?error=${encodeURIComponent(error ?? "Default")}`);
+  redirect(`${target}${target.includes("?") ? "&" : "?"}error=${encodeURIComponent(error ?? "Default")}`);
 }

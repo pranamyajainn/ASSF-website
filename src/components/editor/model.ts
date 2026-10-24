@@ -5,7 +5,7 @@
  */
 import { locales, type Lang } from "@/i18n/config";
 import { applyOps, clone, getAt, mergeOps, pathKey, setAt, type Json, type Op, type Path, type Scope } from "@/lib/cms/edits";
-import { ENUM_KEYS, HIDDEN_KEYS, isHidden, isImagePath, labelAt, PAGES, schemaPath, sectionLabel } from "@/lib/cms/schema";
+import { ENUM_KEYS, HIDDEN_KEYS, isHidden, isImagePath, ITEM_TEMPLATES, labelAt, PAGES, schemaPath, sectionLabel } from "@/lib/cms/schema";
 
 export type Trees = Record<Lang, unknown>;
 
@@ -31,6 +31,12 @@ export function translatedFields(base: Trees): Set<string> {
     else if (typeof first === "string" && values.some((v) => v !== first)) out.add(schemaPath(path));
   };
   for (const k of Object.keys(base.en as object)) walk([k]);
+  // A list that starts empty has no item to compare: its template's words are written per edition.
+  for (const [list, template] of Object.entries(ITEM_TEMPLATES)) {
+    if (template && typeof template === "object" && !Array.isArray(template)) {
+      for (const [k, v] of Object.entries(template)) if (typeof v === "string" && !HIDDEN_KEYS.has(k)) out.add(`${list}[].${k}`);
+    }
+  }
   return out;
 }
 
@@ -108,7 +114,7 @@ export function itemTitle(item: unknown, index: number): string {
   if (typeof item === "string") return clip(item) || `Paragraph ${index + 1}`;
   if (item && typeof item === "object") {
     const o = item as Record<string, unknown>;
-    for (const k of ["name", "title", "heading", "label", "place", "caption", "text", "alt", "tab"]) {
+    for (const k of ["name", "title", "heading", "label", "place", "caption", "text", "alt", "tab", "role"]) {
       if (typeof o[k] === "string" && o[k]) return clip(o[k] as string);
     }
   }
