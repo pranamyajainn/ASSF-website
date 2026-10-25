@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
-import { Button, Heading, InlineLink, Leaf, Lede, PageHero, Prose } from "@/components/site/primitives";
+import { Button, Heading, Leaf, Lede, PageHero, PageThread, Prose } from "@/components/site/primitives";
 import { getContent } from "@/i18n/content";
 import { pageMetadata } from "@/i18n/metadata";
 
@@ -10,14 +10,20 @@ export async function generateMetadata() {
   return pageMetadata("impact", "/impact", impact.pageHero.body);
 }
 
-/** Line icons for the figures: a palm leaf, a heart, a bowl, a building, a book. */
-function Icon({ name }: { name: "leaf" | "health" | "meal" | "building" | "book" }) {
+/** Each section's eyebrow, set above its headline on every screen size. */
+function Eyebrow({ children }: { children: string }) {
+  return <p className="mb-4 font-mono text-register text-cinnabar">{children}</p>;
+}
+
+/** Line icons for the figures: a palm leaf, a heart, a bowl, a building, a book, a map pin. */
+function Icon({ name }: { name: "leaf" | "health" | "meal" | "building" | "book" | "pin" }) {
   const paths = {
     leaf: <path d="M3 17C7 8 13 5 21 4c-1 8-4 14-13 18M3 17l5-5m-5 5 3 4" />,
     health: <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10ZM9.5 11h5M12 8.5v5" />,
     meal: <path d="M3 11h18a9 9 0 0 1-18 0Zm3 9h12M9 7c0-1.5 1-2 1-3.5M13 7c0-1.5 1-2 1-3.5" />,
     building: <path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6M9 11h.01M15 11h.01" />,
     book: <path d="M4 5a2 2 0 0 1 2-2h6v17H6a2 2 0 0 0-2 2V5Zm16 0a2 2 0 0 0-2-2h-6v17h6a2 2 0 0 1 2 2V5Z" />,
+    pin: <path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11Zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />,
   };
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" className="size-7 text-cinnabar" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -80,21 +86,11 @@ export default async function ImpactPage() {
       <main id="main">
         <PageHero
           question={ui.steps.glance}
-          thread={{
-            title: ui.steps.thread,
-            items: [
-              { id: "began", question: thread.began },
-              { id: "preserved", question: thread.preserved },
-              { id: "reached", question: thread.reached },
-              { id: "built", question: thread.built },
-              { id: "next", question: thread.next },
-            ],
-          }}
           label={ui.impact.heroLabel}
           {...pageHero}
           plate={{ ...pageHero.plate, position: "50% 45%" }}
         >
-          <dl className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <dl className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {strip.map((s) => (
               <div key={s.label} className="flex min-w-0 flex-col border border-ink/20 bg-leaf/60 px-5 py-5">
                 <dt className="order-3 mt-2 text-[1rem] leading-snug text-ink-soft">{s.label}</dt>
@@ -105,9 +101,20 @@ export default async function ImpactPage() {
               </div>
             ))}
           </dl>
+          <PageThread
+            title={ui.steps.thread}
+            items={[
+              { id: "began", question: thread.began },
+              { id: "preserved", question: thread.preserved },
+              { id: "reached", question: thread.reached },
+              { id: "built", question: thread.built },
+              { id: "next", question: thread.next },
+            ]}
+          />
         </PageHero>
 
         <Leaf id="began" label={began.eyebrow} question={thread.began}>
+          <Eyebrow>{began.eyebrow}</Eyebrow>
           <Heading>{began.heading}</Heading>
           <Prose>
             <p>{began.body}</p>
@@ -123,7 +130,8 @@ export default async function ImpactPage() {
           <ul className="bleed-margin mt-10 grid gap-3 md:grid-cols-3">
             {states.map((s) => (
               <li key={s.state} className="min-w-0 border border-ink/20 px-5 py-6">
-                <p className="font-display text-[1.5rem] font-medium text-ink">{s.state}</p>
+                <Icon name="pin" />
+                <p className="mt-3 font-display text-[1.5rem] font-medium text-ink">{s.state}</p>
                 <dl className="mt-4 space-y-2 font-mono text-register">
                   {(["repositories", "manuscripts", "folios"] as const).map((k) => (
                     <div key={k} className="flex justify-between gap-4 border-b border-ink/10 pb-2">
@@ -139,6 +147,7 @@ export default async function ImpactPage() {
         </Leaf>
 
         <Leaf id="preserved" label={preserved.eyebrow} question={thread.preserved}>
+          <Eyebrow>{preserved.eyebrow}</Eyebrow>
           <Heading>{preserved.heading}</Heading>
           <Prose>
             <p>{preserved.body}</p>
@@ -154,12 +163,15 @@ export default async function ImpactPage() {
             ))}
           </ul>
           <PullQuote {...preserved.quote} />
-          <InlineLink href={preserved.link.href} className="mt-10">
-            {preserved.link.label} →
-          </InlineLink>
+          <div className="mt-10">
+            <Button href={preserved.link.href} variant="outline">
+              {preserved.link.label} →
+            </Button>
+          </div>
         </Leaf>
 
         <Leaf id="reached" label={reached.eyebrow} question={thread.reached}>
+          <Eyebrow>{reached.eyebrow}</Eyebrow>
           <Heading>{reached.heading}</Heading>
           <Prose>
             <p>{reached.body}</p>
@@ -181,12 +193,15 @@ export default async function ImpactPage() {
             ))}
           </ul>
           <PullQuote {...reached.quote} />
-          <InlineLink href={reached.link.href} className="mt-10">
-            {reached.link.label} →
-          </InlineLink>
+          <div className="mt-10">
+            <Button href={reached.link.href} variant="outline">
+              {reached.link.label} →
+            </Button>
+          </div>
         </Leaf>
 
         <Leaf id="built" label={built.eyebrow} question={thread.built}>
+          <Eyebrow>{built.eyebrow}</Eyebrow>
           <Heading>{built.heading}</Heading>
           <Prose>
             <p>{built.body}</p>
@@ -212,13 +227,16 @@ export default async function ImpactPage() {
               ))}
             </ul>
           </div>
-          <p className="bleed-margin mt-3 bg-leaf-deep/60 px-5 py-4 text-[1.0625rem] leading-relaxed text-ink">{built.advocacy}</p>
-          <InlineLink href={built.link.href} className="mt-10">
-            {built.link.label} →
-          </InlineLink>
+          <p className="bleed-margin mt-3 bg-white/55 px-5 py-4 text-[1.0625rem] leading-relaxed text-ink">{built.advocacy}</p>
+          <div className="mt-10">
+            <Button href={built.link.href} variant="outline">
+              {built.link.label} →
+            </Button>
+          </div>
         </Leaf>
 
         <Leaf id="sustained" label={sustained.eyebrow} question={thread.sustained}>
+          <Eyebrow>{sustained.eyebrow}</Eyebrow>
           <Heading>{sustained.heading}</Heading>
           <Prose>
             <p>{sustained.body}</p>
@@ -228,6 +246,7 @@ export default async function ImpactPage() {
         </Leaf>
 
         <Leaf id="next" label={next.eyebrow} question={thread.next}>
+          <Eyebrow>{next.eyebrow}</Eyebrow>
           <Heading>{next.heading}</Heading>
           <Prose>
             <p>{next.body}</p>
@@ -262,7 +281,7 @@ export default async function ImpactPage() {
           </div>
         </Leaf>
         <section className="py-20 text-center lg:py-28">
-          <p className="mx-auto max-w-[64ch] px-5 font-mono text-register uppercase tracking-[0.14em] text-ink-soft">
+          <p className="mx-auto max-w-[64ch] px-5 font-display text-[1.7rem] tracking-[0.04em] text-ink-soft [font-variant-caps:all-small-caps]">
             {next.closing.latin} · {next.closing.translation}
           </p>
         </section>

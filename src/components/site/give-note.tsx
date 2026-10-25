@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Container } from "./container";
 import { getContent } from "@/i18n/content";
 
@@ -87,49 +86,3 @@ export async function GiveBand() {
   );
 }
 
-/**
- * People's voice: the dark band after the live sites, holding one entry
- * from the visitors' book, word for word, beside a photograph of visitors at
- * the work — and pointing on to every voice in the section below.
- */
-export async function VoiceBand() {
-  const { home } = await getContent();
-  const v = home.voiceBand;
-  return (
-    <section id="voice-band" aria-labelledby="voice-band-heading" className="on-dark scroll-mt-6 bg-board text-board-ink">
-      <Container>
-        <div className="grid gap-x-16 gap-y-10 py-14 md:grid-cols-[5.5rem_minmax(0,1fr)] md:py-16 lg:grid-cols-[7.5rem_minmax(0,1fr)_minmax(0,26rem)] lg:py-20">
-          <p aria-hidden="true" className="hidden font-display text-[2.4rem] leading-none text-orpiment md:block">
-            ॥
-          </p>
-          <figure className="min-w-0">
-            <p id="voice-band-heading" className="font-mono text-register text-orpiment">
-              {v.eyebrow}
-            </p>
-            <blockquote className="mt-5">
-              <p className="max-w-[30ch] text-balance font-display text-[clamp(1.6rem,1.2rem+1.6vw,2.6rem)] font-medium leading-[1.25]">
-                “{v.quote}”
-              </p>
-            </blockquote>
-            <figcaption className="mt-6">
-              <span className="block text-lede">{v.name}</span>
-              <span className="mt-1 block font-mono text-register text-board-soft">{v.place}</span>
-            </figcaption>
-            <a
-              href={v.link.href}
-              className="mt-7 inline-block text-[1.0625rem] text-orpiment underline decoration-orpiment/40 underline-offset-[6px] transition-colors hover:decoration-orpiment"
-            >
-              {v.link.label} ↓
-            </a>
-          </figure>
-          <figure className="min-w-0 self-center md:col-start-2 lg:col-start-auto">
-            <div className="relative aspect-[4/5] overflow-hidden outline outline-1 -outline-offset-1 outline-board-ink/20">
-              <Image src={v.image.src} alt={v.image.alt} fill sizes="(min-width: 1024px) 26rem, 90vw" className="object-cover" />
-            </div>
-            <figcaption className="mt-3 font-mono text-register text-board-soft">{v.image.caption}</figcaption>
-          </figure>
-        </div>
-      </Container>
-    </section>
-  );
-}

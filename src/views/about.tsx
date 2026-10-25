@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
-import { Heading, InlineLink, Leaf, Lede, PageHero, PersonGrid, Plate, Prose } from "@/components/site/primitives";
+import { Container, Heading, InlineLink, Leaf, Lede, PageHero, PageThread, PersonGrid, Plate, Prose } from "@/components/site/primitives";
 import { VideoLoop } from "@/components/site/video-loop";
 import { getContent } from "@/i18n/content";
 import { pageMetadata } from "@/i18n/metadata";
@@ -34,70 +34,78 @@ export default async function AboutPage() {
     <>
       <Header />
       <main id="main">
-        <PageHero
-          question={ui.steps.glance}
-          thread={{
-            title: ui.steps.thread,
-            items: [
-              { id: "inspiration", question: ui.steps.whose },
-              { id: "foundation", question: ui.steps.who },
-              { id: "mvv", question: ui.steps.believe },
-              { id: "leadership", question: ui.steps.guides },
-              { id: "areas", question: ui.steps.what },
-              { id: "practice", question: ui.steps.looks },
-              { id: "ahead", question: ui.steps.next },
-            ],
-          }}
-          label={ui.about.heroLabel}
-          {...pageHero}
-        />
+        <PageHero question={ui.steps.glance} label={ui.about.heroLabel} {...pageHero} />
+
+        {/* The page's navigation, in her section names — kept out of the
+            hero, as her document asks ("avoid placing a long menu of jump
+            links above the fold"). */}
+        <Container>
+          <div className="grid md:grid-cols-[5.5rem_minmax(0,1fr)] lg:grid-cols-[7.5rem_minmax(0,1fr)_16rem]">
+            <div className="hidden md:block" />
+            <div className="ruled min-w-0 pb-4 pl-5 sm:pl-7 lg:pl-12 [&>nav]:mt-0">
+              <PageThread
+                title={ui.steps.thread}
+                items={[inspiration, foundation, mvv, leadership, areas, practice, ahead].map((section, i) => ({
+                  id: ["inspiration", "foundation", "mvv", "leadership", "areas", "practice", "ahead"][i],
+                  question: section.label,
+                }))}
+              />
+            </div>
+          </div>
+        </Container>
 
         {/* The namesake, in the archive's own photographs: the ceremony print
             large, two small portraits beside it, then the sutra. */}
-        <Leaf id="inspiration" label={inspiration.label} question={ui.steps.whose}>
+        <Leaf id="inspiration" question={inspiration.label}>
           <Heading>{inspiration.heading}</Heading>
-          <p className="mt-3 font-mono text-register text-ink-faint">{inspiration.dates}</p>
           <Prose className="mt-7">
             {inspiration.paragraphs.map((p) => (
               <p key={p.slice(0, 24)}>{p}</p>
             ))}
           </Prose>
 
-          <div className="bleed-margin mt-14 grid gap-x-8 gap-y-10 lg:grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)]">
-            <figure data-plate>
-              <div
-                className="relative overflow-hidden bg-board-deep outline outline-1 -outline-offset-1 outline-ink/15"
-                style={{ aspectRatio: namesake.album[0].ratio }}
-              >
-                <Image
-                  src={namesake.album[0].src}
-                  alt={namesake.album[0].alt}
-                  fill
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="object-cover grayscale"
-                />
-              </div>
-              <figcaption className="mt-3 max-w-[60ch] font-mono text-register text-ink-faint">
-                <span lang="hi" className="block font-serif text-[1.02rem] leading-snug text-ink">
-                  {namesake.album[0].captionDeva}
-                </span>
-                <span className="mt-1.5 block">{namesake.album[0].caption}</span>
-              </figcaption>
-            </figure>
-
-            <div className="grid grid-cols-2 items-start gap-x-6 gap-y-10 lg:grid-cols-1">
-              {namesake.album.slice(1).map((photo) => (
-                <Plate
-                  key={photo.src}
-                  src={photo.src}
-                  alt={photo.alt}
-                  caption={photo.caption}
-                  ratio={photo.ratio}
-                  className="max-w-[13rem]"
-                  sizes="13rem"
-                  imageClassName="object-cover grayscale"
-                />
-              ))}
+          {/* One principal portrait, then at most two supporting historical
+              photographs, as her document directs. */}
+          <div className="bleed-margin mt-14 grid items-start gap-x-8 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
+            <Plate
+              src={namesake.album[1].src}
+              alt={namesake.album[1].alt}
+              caption={namesake.album[1].caption}
+              ratio={namesake.album[1].ratio}
+              className="max-w-[24rem]"
+              sizes="(min-width: 1024px) 24rem, 90vw"
+              imageClassName="object-cover grayscale"
+            />
+            <div className="grid gap-x-6 gap-y-10 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+              <figure data-plate className="min-w-0">
+                <div
+                  className="relative overflow-hidden bg-board-deep outline outline-1 -outline-offset-1 outline-ink/15"
+                  style={{ aspectRatio: namesake.album[0].ratio }}
+                >
+                  <Image
+                    src={namesake.album[0].src}
+                    alt={namesake.album[0].alt}
+                    fill
+                    sizes="(min-width: 1024px) 28vw, 90vw"
+                    className="object-cover grayscale"
+                  />
+                </div>
+                <figcaption className="mt-3 font-mono text-register text-ink-faint">
+                  <span lang="hi" className="block font-serif text-[1.02rem] leading-snug text-ink">
+                    {namesake.album[0].captionDeva}
+                  </span>
+                  <span className="mt-1.5 block">{namesake.album[0].caption}</span>
+                </figcaption>
+              </figure>
+              <Plate
+                src={namesake.album[2].src}
+                alt={namesake.album[2].alt}
+                caption={namesake.album[2].caption}
+                ratio={namesake.album[2].ratio}
+                className="max-w-[13rem]"
+                sizes="13rem"
+                imageClassName="object-cover grayscale"
+              />
             </div>
           </div>
 
@@ -117,7 +125,7 @@ export default async function AboutPage() {
           </figure>
         </Leaf>
 
-        <Leaf id="foundation" label={foundation.label} question={ui.steps.who}>
+        <Leaf id="foundation" question={foundation.label}>
           <Heading>{foundation.heading}</Heading>
           <Prose>
             {foundation.paragraphs.map((p) => (
@@ -126,7 +134,7 @@ export default async function AboutPage() {
           </Prose>
         </Leaf>
 
-        <Leaf id="mvv" label={mvv.label} question={ui.steps.believe}>
+        <Leaf id="mvv" question={mvv.label}>
           <Heading>{mvv.heading}</Heading>
 
           <div className="bleed-margin mt-12 grid gap-x-12 gap-y-10 border-t border-ink/20 pt-10 md:grid-cols-2">
@@ -144,14 +152,11 @@ export default async function AboutPage() {
               {mvv.values.map((value) => (
                 <div
                   key={value.name}
-                  className="grid gap-x-10 gap-y-2 border-b border-ink/20 py-6 md:grid-cols-[14rem_minmax(0,1fr)]"
+                  className="grid gap-x-10 gap-y-2 border-b border-ink/20 py-6 md:grid-cols-[19rem_minmax(0,1fr)]"
                 >
                   <dt>
-                    <span lang="sa" className="block font-display text-[2rem] leading-tight text-ink">
-                      {value.deva}
-                    </span>
-                    <span className="mt-1 block font-mono text-register text-cinnabar">
-                      {value.name} — {value.meaning}
+                    <span className="block font-display text-[1.45rem] leading-snug text-ink">
+                      <span lang="sa">{value.deva}</span> | {value.name} — {value.meaning}
                     </span>
                   </dt>
                   <dd className="max-w-[56ch] self-center text-[1.125rem] leading-relaxed text-ink-soft">
@@ -168,7 +173,7 @@ export default async function AboutPage() {
           </div>
         </Leaf>
 
-        <Leaf id="leadership" label={leadership.label} question={ui.steps.guides}>
+        <Leaf id="leadership" question={leadership.label}>
           <Heading>{leadership.heading}</Heading>
           <Prose>
             {leadership.paragraphs.map((p) => (
@@ -181,12 +186,9 @@ export default async function AboutPage() {
             <p className="mt-14 border-t border-ink/15 pt-12 font-mono text-register text-cinnabar">{leadership.advisorsLabel}</p>
             <PersonGrid people={trustees.advisors} columns={5} className="mt-6" profileLabels={profile} />
           </div>
-          <InlineLink href={leadership.link.href} className="mt-12">
-            {leadership.link.label} →
-          </InlineLink>
         </Leaf>
 
-        <Leaf id="areas" label={areas.label} question={ui.steps.what}>
+        <Leaf id="areas" question={areas.label}>
           <Heading>{areas.heading}</Heading>
           <Lede>{areas.intro}</Lede>
           <ul className="bleed-margin mt-12 grid gap-x-8 gap-y-12 md:grid-cols-3">
@@ -202,10 +204,10 @@ export default async function AboutPage() {
                     style={{ objectPosition: area.image.position }}
                   />
                 </div>
-                <p className="mt-5 font-mono text-register text-cinnabar">
+                <h3 className="mt-5 text-balance font-display text-[clamp(1.4rem,1.2rem+0.6vw,1.75rem)] leading-tight text-ink">
                   {String(i + 1).padStart(2, "0")} | {area.title}
-                </p>
-                <h3 className="mt-2 text-balance font-display text-[clamp(1.4rem,1.2rem+0.6vw,1.75rem)] leading-tight text-ink">{area.tagline}</h3>
+                </h3>
+                <p className="mt-2 font-mono text-register text-cinnabar">{area.tagline}</p>
                 <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-soft">{area.body}</p>
                 <InlineLink href={area.link.href} className="mt-auto pt-5">
                   {area.link.label} →
@@ -215,7 +217,7 @@ export default async function AboutPage() {
           </ul>
         </Leaf>
 
-        <Leaf id="practice" label={practice.label} question={ui.steps.looks}>
+        <Leaf id="practice" question={practice.label}>
           <Heading>{practice.heading}</Heading>
           <dl className="bleed-margin mt-10 grid gap-x-8 gap-y-8 border-t border-ink/20 pt-8 sm:grid-cols-2 lg:grid-cols-4">
             {practice.figures.map((f) => (
@@ -270,7 +272,7 @@ export default async function AboutPage() {
           </InlineLink>
         </Leaf>
 
-        <Leaf id="ahead" label={ahead.label} question={ui.steps.next}>
+        <Leaf id="ahead" question={ahead.label}>
           <Heading>{ahead.heading}</Heading>
           <Prose>
             {ahead.paragraphs.map((p) => (

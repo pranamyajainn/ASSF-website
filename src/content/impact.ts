@@ -27,13 +27,13 @@ export const strip = [
   { icon: "building", value: "3", label: "community spaces built or renovated" },
 ] as { icon: "leaf" | "health" | "meal" | "building"; value: string; label: string }[];
 
-/** The page's jump links, in order; each names a section below. */
+/** The page’s jump links, in order; each names a section below. */
 export const thread = {
   began: "Where it began",
   preserved: "Knowledge preserved",
   reached: "People reached",
   built: "Spaces built",
-  sustained: "How it is sustained",
+  sustained: "How the work is sustained",
   next: "What comes next",
 } as const;
 
@@ -63,7 +63,7 @@ export const preserved = {
     { name: "Kumbhoj Bahubali, Kolhapur", status: "Completed 2024", done: true, body: "1,140 manuscripts and 259 archival books, 1,06,277 folios, treated over two and a half years." },
     { name: "Jinwani, Mahaveer Brahmacharyashram, Karanja Lad", status: "Completed 2025", done: true, body: "193 manuscripts and 28 archival books, 28,268 folios, including postcards and handwritten letters." },
     { name: "Bahubali Prakrit Vidyapeeth, Shravanabelagola", status: "Under way since July 2025", done: false, body: "A collection of 2,695 palm-leaf granthas. 309 granthas and 31,987 folios conserved so far." },
-    { name: "Balatkar Gan Mandir, Karanja Lad", status: "Under way", done: false, body: "Conservation of the temple's collection, carried out in the lab we built at Karanja Lad." },
+    { name: "Balatkar Gan Mandir, Karanja Lad", status: "Under way", done: false, body: "Conservation of the temple’s collection, carried out in the lab we built at Karanja Lad." },
   ],
   quote: {
     text: "When a folio leaves our hands, it is ready for the next hundred years.",
@@ -123,10 +123,10 @@ export const built = {
 export const sustained = {
   eyebrow: "Our commitment",
   heading: "We build the capacity, then we do the work",
-  body: "The Foundation sets up its own labs, trains its own conservators and carries each project through from survey to the final archival box. Most of this has been made possible by the Foundation's own resources, a commitment we renew every year.",
+  body: "The Foundation sets up its own labs, trains its own conservators and carries each project through from survey to the final archival box. Most of this has been made possible by the Foundation’s own resources, a commitment we renew every year.",
   stats: [
     { value: "₹2.10 crore", label: "invested in manuscript conservation" },
-    { value: "94%", label: "from the Foundation's own resources" },
+    { value: "94%", label: "from the Foundation’s own resources" },
     { value: "2", label: "conservation labs running, at Karanja Lad and Shravanabelagola" },
   ],
   supporting: "Grant support under the national manuscripts framework has stood beside us on two projects, and we welcome every hand that joins this work.",

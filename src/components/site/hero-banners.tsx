@@ -153,7 +153,7 @@ export function HeroBanners({ banners, strings }: { banners: readonly Banner[]; 
       {/* The controls, then one tab per banner, so the whole story is named
           at a glance; the active tab's line is the clock. The controls sit
           at the left, clear of the assistant's button in the corner. */}
-      <div className="mt-2 flex items-start gap-3 sm:gap-5">
+      <div className="mt-2 flex flex-wrap items-start gap-x-3 gap-y-1 sm:flex-nowrap sm:gap-5">
         <div className="flex shrink-0 gap-1 pt-1">
           <ReelButton label={strings.previous} onClick={() => step(-1, true)} className="hidden sm:grid">
             <path d="M10 3.5 5.5 8l4.5 4.5" />
@@ -176,7 +176,7 @@ export function HeroBanners({ banners, strings }: { banners: readonly Banner[]; 
                 setStopped(true);
                 go(i, i > active ? "fwd" : "back");
               }}
-              className="group min-w-0 cursor-pointer pt-2 text-left"
+              className="group min-w-0 cursor-pointer pb-3 pt-2 text-left sm:pb-0"
             >
               <span className="relative block h-0.5 overflow-hidden bg-ink/15 transition-colors group-hover:bg-ink/30">
                 {i === active ? (
@@ -191,7 +191,7 @@ export function HeroBanners({ banners, strings }: { banners: readonly Banner[]; 
                 ) : null}
               </span>
               <span
-                className={`mt-2 block truncate font-mono text-register transition-colors ${
+                className={`mt-2 hidden truncate font-mono text-register transition-colors sm:block ${
                   i === active ? "text-ink" : "text-ink-soft group-hover:text-ink"
                 }`}
               >
@@ -200,6 +200,10 @@ export function HeroBanners({ banners, strings }: { banners: readonly Banner[]; 
             </button>
           ))}
         </div>
+        {/* On a phone the five labels don't fit under their bars: name the one showing. */}
+        <p aria-hidden="true" className="w-full font-mono text-register text-ink sm:hidden">
+          {current.tab}
+        </p>
 
       </div>
     </div>
@@ -311,7 +315,8 @@ function Collage({ banner, eager }: { banner: Banner; eager: boolean }) {
 
   // Empowerment: the children and their books, together and then close —
   // both photographs are wide, so they are stacked, not cropped to strips.
-  // The campaign card uses the same frame: the hands at work, then a page.
+  // The campaign card uses the same frame: the conservation table, then a
+  // conservator at work on one palm leaf.
   return (
     <div className={`${frame} grid-cols-2 lg:grid-cols-1 lg:grid-rows-[3fr_2fr]`}>
       {[b, a].map((image, i) => (

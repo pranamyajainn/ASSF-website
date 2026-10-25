@@ -150,7 +150,7 @@ export async function LiveSites() {
                 <span aria-hidden="true" className="size-2 rounded-full bg-cinnabar" />
                 {liveSites.status}
               </span>
-              <span className="text-ink-faint">{site.since}</span>
+              {site.since ? <span className="text-ink-faint">{site.since}</span> : null}
             </p>
             <h3 className="mt-3 font-display text-[clamp(1.6rem,1.3rem+1vw,2.2rem)] font-medium leading-tight text-ink">{site.name}</h3>
             <p className="mt-1 font-mono text-register text-ink-soft">
@@ -177,7 +177,7 @@ export async function LiveSites() {
   );
 }
 
-/** From the field: the three latest notes, side by side, short. */
+/** From the field: the three latest notes, side by side, short, each with its photograph. */
 export async function News() {
   const { home, ui } = await getContent();
   const { field } = home;
@@ -187,6 +187,11 @@ export async function News() {
       <ol className="bleed-margin mt-10 grid gap-x-8 gap-y-8 border-t border-ink/20 pt-8 md:grid-cols-3">
         {field.items.slice(0, 3).map((item) => (
           <li key={item.title} className="min-w-0">
+            {item.image ? (
+              <div className="relative mb-5 aspect-[4/3] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15">
+                <Image src={item.image.src} alt={item.image.alt} fill sizes="(min-width: 768px) 30vw, 92vw" className="object-cover" />
+              </div>
+            ) : null}
             <p className="font-mono text-register text-ink-faint">
               {item.date ?? <Pending width="3rem" label={ui.common.dateToVerify} />} · {item.place}
             </p>

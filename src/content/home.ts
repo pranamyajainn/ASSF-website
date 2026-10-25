@@ -94,7 +94,7 @@ export const hero = {
       // "One life, one page" banner (Website Changes sheet, rows 8–9). The
       // price is given once, from shared.ts; no tribute amount.
       key: "campaign",
-      tab: "One page",
+      tab: "One Life, One Page",
       eyebrow: "Jain Tadpatra Restoration Mission",
       title: "One life,",
       em: "one page.",
@@ -109,9 +109,9 @@ export const hero = {
           position: "50% 35%",
         },
         {
-          src: "/images/illuminated/painted-leaf.jpg",
-          alt: "An orange painted leaf showing an elephant, a white bull, a lion, a crescent moon, fish and vessels.",
-          caption: "One painted leaf: what a single page can carry.",
+          src: "/images/work/workshop-table.jpg",
+          alt: "Conservators in white coats and visitors gathered around a table of palm leaves.",
+          caption: "Conservators and visitors at the palm-leaf table.",
           position: "50% 50%",
         },
       ],
@@ -181,8 +181,8 @@ export const ledger = {
   intro:
     "Counts from the Foundation's two completed conservation projects and its survey of 18 repositories. Where a figure has not been supplied, the space is left open — not estimated.",
   metrics: [
-    { label: "Manuscripts conserved", value: "1,620+", note: "Kumbhoj 1,399 · Karanja Lad 221 — two completed projects." },
-    { label: "Folios conserved", value: "1,34,545+", note: "Kumbhoj 1,06,277 · Karanja Lad 28,268 — assessed, treated and rehoused folio by folio." },
+    { label: "Manuscripts conserved, completed projects", value: "1,620+", note: "Kumbhoj 1,399 · Karanja Lad 221 — two completed projects." },
+    { label: "Folios conserved, completed projects", value: "1,34,545+", note: "Kumbhoj 1,06,277 · Karanja Lad 28,268 — assessed, treated and rehoused folio by folio." },
     { label: "Repositories surveyed", value: "18", note: "Karnataka 3 · Maharashtra 6 · Tamil Nadu 9." },
     { label: "Folios documented by survey", value: "17,14,928", note: "In 12,681 manuscripts — the measure of what remains to be protected." },
   ] as { label: string; value: Pending<string>; note: string }[],
@@ -197,7 +197,7 @@ export const ledger = {
       metrics: [
         { label: "People screened at free health camps", value: "3,500+", note: "5 camps across Bengaluru, Mandya, Raichur and Belagavi." },
         { label: "Meals served, COVID-19 response", value: "7,77,534", note: "Bengaluru, 1 April – 3 May 2020." },
-        { label: "Children given education support", value: "600+", note: "Books and stationery in 3 schools near Yarnal, and longer-term support." },
+        { label: "Children given education support", value: "600+", note: "About 500 students in 3 Yarnal schools, and about 120 children over six years." },
       ],
     },
     {
@@ -351,9 +351,9 @@ export const join = {
   heading: "Join the work",
   /** A photograph for the section (Website Changes sheet, row 19). */
   plate: {
-    src: "/images/work/workshop-table.jpg",
-    alt: "Conservators in white coats and visitors gathered around a table of palm leaves.",
-    caption: "Conservators and visitors at the palm-leaf table, Shravanabelagola workshop.",
+    src: "/images/work/karanja-visitors.jpg",
+    alt: "Three men examining handwritten folios spread on a table beside a camera.",
+    caption: "Visitors examining folios at Karanja Lad.",
   },
   body: [
     "Preserving knowledge and serving communities are long-term responsibilities. They require people, expertise, institutions, resources and partnerships.",
@@ -550,7 +550,7 @@ export const liveSites = {
       region: "Hassan district, Karnataka",
       institution: "Bahubali Prakrit Bhawan",
       since: "Since 11 July 2025",
-      body: "A collection of 2,695 palm-leaf granthas, 3,65,520 folios — one of the Foundation's largest continuing programmes.",
+      body: "A collection of 2,695 palm-leaf granthas, 3,65,520 folios — one of the Foundation's largest continuing programmes. 309 granthas and 31,987 folios conserved so far.",
       photos: [
         { src: "/images/work/bundles-red-cloth.jpg", ratio: "1600 / 1066", alt: "Palm-leaf bundles and cloth-wrapped manuscripts laid out in rows on red cloth.", caption: "Palm-leaf bundles laid out at the start of the programme, July 2025." },
         { src: "/images/work/munis-reading.jpg", ratio: "1429 / 1800", alt: "Three munis bending over an open paper manuscript in a tray.", caption: "Munis reading a paper manuscript at the inauguration." },
@@ -560,7 +560,7 @@ export const liveSites = {
       name: "Karanja Lad",
       region: "Washim district, Maharashtra",
       institution: "Shri Mulsang Balatkar Gan Mandir",
-      since: "Under way",
+      since: "",
       body: "Conservation of the temple's collection, carried out in the lab the Foundation built at Karanja Lad after completing the Gurukul's 28,268 folios.",
       photos: [
         { src: "/images/work/lab-rolls.jpg", ratio: "1351 / 1800", alt: "Rolls of paper laid on a blue cloth in a bright conservation room.", caption: "The conservation room at Karanja Lad." },
@@ -569,24 +569,6 @@ export const liveSites = {
     },
   ],
   link: { label: "Follow every site", href: "/manuscript-conservation#sites" },
-} as const;
-
-/**
- * People's voice, in the band after the live sites (Website Changes sheet,
- * row 17): one entry from the visitors' book, word for word, leading into
- * the full Voices section below it.
- */
-export const voiceBand = {
-  eyebrow: "People's voice",
-  quote: "Seeing the restoration work of more than 1000 granths of our Jainism, filled me with immense pride and happiness.",
-  name: "Rishabh Jitendra Chhabda",
-  place: "Washim, Maharashtra — from the visitors' book at Karanja Lad",
-  image: {
-    src: "/images/work/karanja-visitors.jpg",
-    alt: "Three men examining handwritten folios spread on a table beside a camera.",
-    caption: "Visitors examining folios at Karanja Lad.",
-  },
-  link: { label: "Hear and read every voice", href: "#voices" },
 } as const;
 
 export const lineage = {
@@ -642,20 +624,23 @@ export const field = {
       place: "Shravanabelagola",
       title: "श्रवणबेलगोला में अति प्राचीन ताड़ पत्र व हस्त लिखित शास्त्रों के संरक्षण एवं संवर्धन का कार्य प्रारंभ।",
       body: "Conservation begins at Bahubali Prakrit Bhawan, Shravanabelagola — 2,695 granthas and 3,65,520 folios, one of the Foundation's largest continuing programmes.",
+      image: { src: "/images/sites/shravanabelagola.jpeg", alt: "Palm-leaf and paper manuscripts laid out on red cloth at Shravanabelagola, with monks and Foundation members looking on." },
     },
     {
       date: "15 November 2024",
       place: "Parsola, Rajasthan",
       title: "अदृश्य भक्ति के दर्शन: शांति सागर महोत्सव का आलोक",
       body: "The Mahotsav procession at Parsola, 13 October 2024.",
+      image: { src: "/images/field/parsola-procession.jpeg", alt: "Men in white dhotis with flags and a banner bearing the Acharya's portrait, before a temple at Parsola." },
     },
     {
       date: "13 November 2024",
       place: "India Post",
       title: "आचार्य श्री शांति सागर जी पर विशेष ₹5 डाक टिकट का शुभ विमोचन",
       body: "Release of the ₹5 commemorative stamp and first-day cover for Acharya Shri Shanti Sagar Ji.",
+      image: { src: "/images/stamp-first-day-cover.jpeg", alt: "India Post first-day cover bearing the ₹5 commemorative stamp for Acharya Shanti Sagar Ji Maharaj." },
     },
-  ] as { date: Pending<string>; place: string; title: string; body: string }[],
+  ] as { date: Pending<string>; place: string; title: string; body: string; image?: { src: string; alt: string } }[],
 } as const;
 
 export const survey = {

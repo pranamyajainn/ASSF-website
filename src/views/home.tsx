@@ -4,7 +4,6 @@ import { Survey } from "@/components/site/sections-b";
 import { Figures, JoinBrief, LiveSites, News, Purpose, WhatWeDo } from "@/components/site/home-sections";
 import { Voices } from "@/components/site/voices";
 import { Footer } from "@/components/site/footer";
-import { VoiceBand } from "@/components/site/give-note";
 import { OrgSchema } from "@/components/site/org-schema";
 import { pageMetadata } from "@/i18n/metadata";
 
@@ -27,16 +26,15 @@ export default function Home() {
             sheet (Oct 2026) asks for: who (the hero, closing on the "One
             life, one page" card), why (mission and vision), what (three
             pillars, three photographs), how much (all three pillars
-            counted), where the work is live now, a people's voice, then the
-            voices (all four, as the Foundation asked: two recorded, two
-            written), what's new, and the ways in — closing on the
+            counted), where the work is live now, then people's voices
+            straight after it (all four, as the Foundation asked: two
+            recorded, two written), what's new, and the ways in — closing on the
             custodian's call, because the mission is the manuscripts. */}
         <Hero />
         <Purpose />
         <WhatWeDo />
         <Figures />
         <LiveSites />
-        <VoiceBand />
         <Voices />
         <News />
         <JoinBrief />

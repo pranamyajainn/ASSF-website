@@ -6,9 +6,9 @@
  * data stay on the programme pages and on Impact, as that document asks.
  */
 export const pageHero = {
-  eyebrow: "About the Foundation",
+  eyebrow: "ABOUT THE FOUNDATION",
   title: "In Service of Heritage and Humanity",
-  body: "Acharya Shanti Sagar Foundation (ASSF) is a non-profit charitable trust established in 2019, inspired by the teachings and legacy of Acharya Shri 108 Shanti Sagar Ji Maharaj. Guided by the values of non-violence, truth, restraint, compassion and service, the Foundation works to preserve India's manuscript heritage, strengthen rural infrastructure and respond to community needs.",
+  body: "Acharya Shanti Sagar Foundation (ASSF) is a non-profit charitable trust established in 2019, inspired by the teachings and legacy of Acharya Shri 108 Shanti Sagar Ji Maharaj. Guided by the values of non-violence, truth, restraint, compassion and service, the Foundation works to preserve India’s manuscript heritage, strengthen rural infrastructure and respond to community needs.",
   supporting: "Guarding what is ancient. Serving what is present. Building what is needed.",
   plate: {
     src: "/images/sites/shravanabelagola.jpeg",
@@ -20,9 +20,8 @@ export const pageHero = {
 
 /** §02, Our Inspiration. */
 export const inspiration = {
-  label: "Our inspiration",
-  heading: "Acharya Shri 108 Shanti Sagar Ji Maharaj",
-  dates: "1872 – 1955",
+  label: "Our Inspiration",
+  heading: "Acharya Shri 108 Shanti Sagar Ji Maharaj (1872–1955)",
   paragraphs: [
     "The Foundation carries the name of Acharya Shri 108 Shanti Sagar Ji Maharaj, a revered Digambar Jain Acharya whose life and teachings continue to inspire a commitment to spiritual discipline, non-violence, restraint and service. Remembered as a leading figure in the revival of the Digambar Jain ascetic tradition in the twentieth century, he represents a way of life grounded in principle, humility and responsibility.",
     "For ASSF, his legacy is not only a source of inspiration; it is a guide to action. The Foundation seeks to honour that legacy by safeguarding knowledge passed down through generations and by serving communities with care, dignity and compassion.",
@@ -37,50 +36,49 @@ export const inspiration = {
 /** §03, About the Foundation. */
 export const foundation = {
   label: "About the Foundation",
-  heading: "An institution rooted in values, working for people",
+  heading: "An Institution Rooted in Values, Working for People",
   paragraphs: [
     "Established in 2019, Acharya Shanti Sagar Foundation is a charitable trust working at the intersection of cultural preservation and community service. Its work reflects a simple conviction: safeguarding the knowledge inherited from the past and strengthening the conditions in which people live today are connected responsibilities.",
-    "The Foundation's work has developed across three areas: manuscript conservation, rural infrastructure and community services. Together, these areas bring its guiding values into practice — preserving fragile cultural resources, supporting essential community needs and contributing to a more compassionate and resilient society.",
+    "The Foundation’s work has developed across three areas: manuscript conservation, rural infrastructure and community services. Together, these areas bring its guiding values into practice—preserving fragile cultural resources, supporting essential community needs and contributing to a more compassionate and resilient society.",
     "ASSF works with custodians, local institutions, specialists and communities, recognising that lasting results depend on respect for local knowledge, careful stewardship of resources and sustained engagement.",
   ],
 } as const;
 
 /** §05, Our Leadership. The people are the trustees and advisors on /trustees. */
 export const leadership = {
-  label: "Our leadership",
+  label: "Our Leadership",
   heading: "Trustees and Advisory Board",
   paragraphs: [
-    "The Foundation is guided by its Board of Trustees, who provide governance, institutional stewardship and strategic direction. An Advisory Board brings relevant experience and specialist perspectives to support the Foundation's work and long-term priorities.",
-    "Together, they help ensure that the Foundation's programmes remain aligned with its purpose, are informed by appropriate expertise and are carried out with responsibility and care.",
+    "The Foundation is guided by its Board of Trustees, who provide governance, institutional stewardship and strategic direction. An Advisory Board brings relevant experience and specialist perspectives to support the Foundation’s work and long-term priorities.",
+    "Together, they help ensure that the Foundation’s programmes remain aligned with its purpose, are informed by appropriate expertise and are carried out with responsibility and care.",
   ],
   trusteesLabel: "Board of Trustees",
   advisorsLabel: "Advisory Board",
-  link: { label: "Read every trustee's and advisor's profile", href: "/trustees" },
 } as const;
 
 /** §06, Our Areas of Work: three equal cards, one photograph each. */
 export const areas = {
-  label: "Our areas of work",
-  heading: "Three areas. One commitment.",
+  label: "Our Areas of Work",
+  heading: "Three Areas. One Commitment.",
   intro: "Our work takes shape through three connected areas. Each responds to a different need, while reflecting the same commitment to heritage, dignity and service.",
   items: [
     {
       title: "Manuscript Conservation",
-      tagline: "Preserving knowledge written by hand",
+      tagline: "Preserving Knowledge Written by Hand",
       body: "We work to preserve fragile palm-leaf and handwritten-paper manuscripts, protecting the knowledge they carry for future generations.",
       link: { label: "Explore Manuscript Conservation", href: "/manuscript-conservation" },
       image: { src: "/images/conservation/palm-leaf-before.jpeg", alt: "A damaged handwritten manuscript with a loss torn through its lower lines, photographed beside a slip marked BEFORE.", position: "50% 40%" },
     },
     {
       title: "Rural Infrastructure",
-      tagline: "Creating spaces that serve communities",
+      tagline: "Creating Spaces That Serve Communities",
       body: "We support rural communities through essential facilities and infrastructure that strengthen access, dignity and everyday community life.",
       link: { label: "Explore Rural Infrastructure", href: "/rural-infrastructure" },
       image: { src: "/images/rural/samudaya-bhavan-3-completed.jpeg", alt: "The completed Samudaya Bhavan at Yarnal: long, whitewashed wings with blue railings around a paved courtyard.", position: "40% 50%" },
     },
     {
       title: "Community Services",
-      tagline: "Responding where the need is immediate",
+      tagline: "Responding Where the Need Is Immediate",
       body: "We support communities through initiatives such as healthcare, education assistance and emergency relief, shaped by local needs.",
       link: { label: "Explore Community Services", href: "/community-services" },
       image: { src: "/images/community/health-camp-team.jpg", alt: "Doctors, nurses and volunteers standing in rows behind an Acharya Shanti Sagar Foundation banner at a free health camp.", position: "52% 50%" },
@@ -90,12 +88,12 @@ export const areas = {
 
 /**
  * §07, Our Work in Practice: one film, a small gallery and a few figures,
- * as the document's layout direction asks. The figures are the Impact
- * page's own.
+ * as the document’s layout direction asks. The figures are the Impact
+ * page’s own.
  */
 export const practice = {
-  label: "Our work in practice",
-  heading: "Our work in practice",
+  label: "Our Work in Practice",
+  heading: "Our Work in Practice",
   figures: [
     { value: "1,66,500+", label: "folios conserved by hand" },
     { value: "3,500+", label: "people screened at free health camps" },
@@ -107,16 +105,16 @@ export const practice = {
 
 /** §08, Looking Ahead. */
 export const ahead = {
-  label: "Looking ahead",
-  heading: "Preserving the past. Serving the present. Preparing for the future.",
+  label: "Looking Ahead",
+  heading: "Preserving the Past. Serving the Present. Preparing for the Future.",
   paragraphs: [
     "Much remains to be done. Fragile manuscripts continue to require careful preservation, communities continue to need essential support, and the knowledge carried across generations deserves to remain accessible to those who follow.",
     "Acharya Shanti Sagar Foundation will continue to build on its experience, work alongside custodians and communities, and pursue its mission with care, responsibility and a long-term view.",
   ],
   closing: "Preserving the wisdom of the past. Empowering the communities of today. Inspiring a more compassionate tomorrow.",
   links: [
-    { label: "Explore our work", href: "/#pillars" },
-    { label: "View our projects", href: "/manuscript-conservation#sites" },
+    { label: "Explore Our Work", href: "/#pillars" },
+    { label: "View Our Projects", href: "/impact#preserved" },
     { label: "Contact the Foundation", href: "#contact" },
   ],
   image: {
@@ -127,10 +125,10 @@ export const ahead = {
 } as const;
 
 /**
- * The Foundation's namesake, in the historical photographs the repo holds
+ * The Foundation’s namesake, in the historical photographs the repo holds
  * (reference/acharya-shantisagar/README.md). The 1955 portrait is public
  * domain; the other two are reproduced from DigJainWiki with credit, as the
- * README directs. The ceremony photograph's caption was printed onto the
+ * README directs. The ceremony photograph’s caption was printed onto the
  * image in Hindi; it is cropped off and set here as text, with a
  * translation.
  */
@@ -196,17 +194,17 @@ export const philosophy = {
 
 /** §04, Our Mission, Vision and Values. */
 export const mvv = {
-  label: "What guides us",
-  heading: "What guides us",
+  label: "Our Mission, Vision and Values",
+  heading: "What Guides Us",
   mission: {
     label: "Mission",
-    body: "To preserve India's manuscript heritage through scientific conservation and digitisation, strengthen rural communities through essential infrastructure, and respond to community needs through compassionate and practical service.",
+    body: "To preserve India’s manuscript heritage through scientific conservation and digitisation, strengthen rural communities through essential infrastructure, and respond to community needs through compassionate and practical service.",
   },
   vision: {
     label: "Vision",
-    body: "To build a future where India's civilizational wisdom and social responsibility coexist as living forces — where knowledge is preserved, communities are empowered, and heritage becomes a foundation for sustainable and inclusive progress.",
+    body: "To build a future where India’s civilizational wisdom and social responsibility coexist as living forces—where knowledge is preserved, communities are empowered, and heritage becomes a foundation for sustainable and inclusive progress.",
   },
-  valuesLabel: "Our values",
+  valuesLabel: "Our Values",
   values: [
     { deva: "अहिंसा", name: "Ahimsa", meaning: "Non-violence", body: "We seek to minimise harm and act with care in our decisions, relationships and programmes." },
     { deva: "सत्य", name: "Satya", meaning: "Truth", body: "We value integrity, accuracy and transparency in preserving knowledge, serving communities and stewarding entrusted resources." },
@@ -216,7 +214,7 @@ export const mvv = {
   ],
   principle: {
     label: "Our guiding principle",
-    body: "“Parasparopagraho Jivanam” — living beings support one another. It expresses the interconnectedness that underlies both our commitment to heritage and our commitment to humanity.",
+    body: "“Parasparopagraho Jivanam”—living beings support one another. It expresses the interconnectedness that underlies both our commitment to heritage and our commitment to humanity.",
   },
 } as const;
 
