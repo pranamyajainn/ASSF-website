@@ -408,6 +408,7 @@ export function PageHero({
   eyebrow,
   title,
   body,
+  supporting,
   plate,
   thread,
   children,
@@ -419,6 +420,8 @@ export function PageHero({
   eyebrow: string;
   title: string;
   body: string;
+  /** A short line set under the body, before the page's thread. */
+  supporting?: string;
   plate?: { src: string; alt: string; caption?: string; position?: string };
   children?: ReactNode;
 }) {
@@ -434,6 +437,7 @@ export function PageHero({
             </span>
           </h1>
           <p className="mt-8 max-w-[52ch] text-lede text-ink">{body}</p>
+          {supporting ? <p className="mt-5 font-display text-[1.25rem] italic leading-snug text-cinnabar">{supporting}</p> : null}
           {thread ? <PageThread {...thread} /> : null}
           {children}
         </div>

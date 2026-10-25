@@ -7,7 +7,8 @@ import { getContent } from "@/i18n/content";
  * The first leaf. The Foundation's approved headline inks in one clause
  * after another, and directly under it the work is shown the way the
  * Foundation's own hero banners show it: one banner per part of the work —
- * manuscripts, community, villages and empowerment — each a single line
+ * manuscripts, community, villages and empowerment, then the
+ * Foundation's own "One life, one page" campaign — each a single line
  * over its own photographs, so a first-time visitor knows what the
  * Foundation does within a few seconds of landing.
  *
@@ -21,7 +22,7 @@ export async function Hero() {
   const { hero } = home;
   const { org } = shared;
 
-  const [cons, comm, vill, emp] = hero.banners;
+  const [cons, comm, vill, emp, camp] = hero.banners;
   const relief = community.relief.items[1];
   const banners: Banner[] = [
     {
@@ -54,6 +55,11 @@ export async function Hero() {
       ...emp,
       key: "empowerment",
       images: emp.images,
+    },
+    {
+      ...camp,
+      key: "campaign",
+      images: camp.images,
     },
   ];
 

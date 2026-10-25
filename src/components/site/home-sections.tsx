@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { Heading, InlineLink, Leaf, Lede, Pending } from "./primitives";
 import { getContent } from "@/i18n/content";
-import { StripNav } from "./strip-nav";
 import { fill } from "@/i18n/ui";
 
 /**
@@ -11,6 +10,31 @@ import { fill } from "@/i18n/ui";
  * sites, the scale ahead, the trustees, the Acharya, every voice — live on
  * their own pages.
  */
+
+/**
+ * Mission and vision: the Foundation's two statements side by side, second
+ * on the page, before the pillars that carry them out.
+ */
+export async function Purpose() {
+  const { home, ui } = await getContent();
+  const { purpose } = home;
+  return (
+    <Leaf id="purpose" label={purpose.label} question={ui.steps.why}>
+      <Heading>{purpose.heading}</Heading>
+      <div className="bleed-margin mt-12 grid gap-x-12 gap-y-10 border-t border-ink/20 pt-10 md:grid-cols-2">
+        {[purpose.mission, purpose.vision].map((part) => (
+          <div key={part.label} className="min-w-0">
+            <p className="font-mono text-register text-cinnabar">{part.label}</p>
+            <p className="mt-4 text-pretty font-display text-[clamp(1.3rem,1.1rem+0.7vw,1.7rem)] leading-[1.4] text-ink">{part.body}</p>
+          </div>
+        ))}
+      </div>
+      <InlineLink href={purpose.link.href} className="mt-10">
+        {purpose.link.label} →
+      </InlineLink>
+    </Leaf>
+  );
+}
 
 /**
  * What we do: the three pillars as three photographs, each with its name,
@@ -60,7 +84,11 @@ export async function WhatWeDo() {
   );
 }
 
-/** Our work so far: the four counted figures, large, in one row — the breakdowns and the scale ahead are on Impact. */
+/**
+ * Our work so far: the four manuscript figures, large, in one row, then the
+ * other two pillars counted beneath them — the breakdowns and the scale
+ * ahead are on Impact.
+ */
 export async function Figures() {
   const { home, ui, href } = await getContent();
   const { ledger } = home;
@@ -79,6 +107,22 @@ export async function Figures() {
           </div>
         ))}
       </dl>
+      <div className="bleed-margin mt-14 grid gap-x-12 gap-y-12 lg:grid-cols-2">
+        {ledger.more.map((group) => (
+          <div key={group.label} className="min-w-0">
+            <p className="font-mono text-register text-cinnabar">{group.label}</p>
+            <dl className="mt-4 grid gap-x-8 gap-y-8 border-t border-ink/20 pt-6 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(9rem,1fr))]">
+              {group.metrics.map((m) => (
+                <div key={m.label} className="flex min-w-0 flex-col">
+                  <dt className="order-2 mt-2 text-[1rem] leading-snug text-ink">{m.label}</dt>
+                  <dd className="order-1 font-display text-[clamp(1.9rem,1.5rem+1.2vw,2.6rem)] font-medium leading-none tracking-[-0.02em] text-ink">{m.value}</dd>
+                  <dd className="order-3 mt-1.5 font-mono text-register leading-relaxed text-ink-faint">{m.note}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ))}
+      </div>
       <InlineLink href={href("/impact")} className="mt-10">
         {ui.home.seeImpact} →
       </InlineLink>
@@ -87,42 +131,48 @@ export async function Figures() {
 }
 
 /**
- * The work, up close: the Foundation's own photographs as one strip that
- * scrolls sideways, each print at the shape it was taken — a breath between
- * the figures and the invitation, with almost no words.
+ * Where the work is live now: the two running conservation sites, each with
+ * its place, its institution, one line on the collection, and two of the
+ * Foundation's own photographs from it.
  */
-export async function Album() {
+export async function LiveSites() {
   const { home, ui } = await getContent();
-  const { upClose } = home;
+  const { liveSites } = home;
   return (
-    <Leaf id="up-close" label={upClose.label} question={ui.steps.how}>
-      <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-4">
-        <Heading>{upClose.heading}</Heading>
-        <p className="max-w-[46ch] text-[1.0625rem] leading-relaxed text-ink-soft">{upClose.lede}</p>
+    <Leaf id="live-sites" label={liveSites.label} question={ui.steps.where}>
+      <Heading>{liveSites.heading}</Heading>
+      <Lede>{liveSites.lede}</Lede>
+      <div className="bleed-margin mt-12 grid gap-x-10 gap-y-14 lg:grid-cols-2">
+        {liveSites.sites.map((site) => (
+          <article key={site.name} className="min-w-0 border-t border-ink/20 pt-6">
+            <p className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-register">
+              <span className="inline-flex items-center gap-1.5 text-cinnabar">
+                <span aria-hidden="true" className="size-2 rounded-full bg-cinnabar" />
+                {liveSites.status}
+              </span>
+              <span className="text-ink-faint">{site.since}</span>
+            </p>
+            <h3 className="mt-3 font-display text-[clamp(1.6rem,1.3rem+1vw,2.2rem)] font-medium leading-tight text-ink">{site.name}</h3>
+            <p className="mt-1 font-mono text-register text-ink-soft">
+              {site.institution} · {site.region}
+            </p>
+            <p className="mt-4 max-w-[52ch] text-[1.0625rem] leading-relaxed text-ink-soft">{site.body}</p>
+            <div className="mt-6 grid grid-cols-[3fr_2fr] gap-3">
+              {site.photos.map((photo) => (
+                <figure key={photo.src} className="min-w-0">
+                  <div className="relative aspect-[5/6] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15">
+                    <Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 1024px) 22rem, 60vw" className="object-cover" />
+                  </div>
+                  <figcaption className="mt-2 font-mono text-[0.75rem] leading-snug text-ink-faint">{photo.caption}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </article>
+        ))}
       </div>
-      <div className="mt-8 flex justify-end">
-        <StripNav target="up-close-strip" previous={ui.home.reel.previous} next={ui.home.reel.next} />
-      </div>
-      <ul id="up-close-strip" aria-label={upClose.heading} className="bleed-margin mt-4 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [scrollbar-width:thin] lg:gap-6">
-        {upClose.items.map((item, i) => {
-          const [w, h] = String(item.ratio).split("/").map(Number);
-          const ratio = w && h ? w / h : 4 / 3;
-          return (
-            <li key={item.src} className="shrink-0 snap-start">
-              <figure className="inline-block">
-                <div
-                  className="relative h-[15rem] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15 sm:h-[19rem] lg:h-[21rem]"
-                  style={{ aspectRatio: ratio }}
-                >
-                  <Image src={item.src} alt={item.alt} fill loading={i < 3 ? "eager" : "lazy"} sizes="(min-width: 1024px) 32rem, 80vw" className="object-cover" />
-                </div>
-                {/* As wide as its print, never wider. */}
-                <figcaption className="mt-3 w-0 min-w-full font-mono text-register text-ink-faint">{item.caption}</figcaption>
-              </figure>
-            </li>
-          );
-        })}
-      </ul>
+      <InlineLink href={liveSites.link.href} className="mt-10">
+        {liveSites.link.label} →
+      </InlineLink>
     </Leaf>
   );
 }
@@ -158,6 +208,12 @@ export async function JoinBrief() {
   return (
     <Leaf id="join" label={join.label} question={ui.steps.help}>
       <Heading>{join.heading}</Heading>
+      <figure className="bleed-margin mt-10">
+        <div className="relative aspect-[16/9] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15 sm:aspect-[21/8]">
+          <Image src={join.plate.src} alt={join.plate.alt} fill sizes="(min-width: 1024px) 70rem, 100vw" className="object-cover" style={{ objectPosition: "50% 45%" }} />
+        </div>
+        <figcaption className="mt-3 font-mono text-register text-ink-faint">{join.plate.caption}</figcaption>
+      </figure>
       <ul className="bleed-margin mt-10 grid border-t border-ink/20 sm:grid-cols-2 lg:grid-cols-4">
         {join.ways.map((way, i) => (
           <li

@@ -89,7 +89,53 @@ export const hero = {
         },
       ],
     },
+    {
+      // The Foundation's own campaign card, after its earlier site's
+      // "One life, one page" banner (Website Changes sheet, rows 8–9). The
+      // price is given once, from shared.ts; no tribute amount.
+      key: "campaign",
+      tab: "One page",
+      eyebrow: "Jain Tadpatra Restoration Mission",
+      title: "One life,",
+      em: "one page.",
+      body: "Conserving one folio costs ₹{folioPrice}. Each page you restore keeps a piece of written knowledge for the generations after us.",
+      fact: "₹{folioPrice} a page · ₹{granthaPrice} for a whole grantha of about 100 folios",
+      link: { label: "Restore a page", href: "/donate?pages=1" },
+      images: [
+        {
+          src: "/images/work/mending-palm-leaf.jpg",
+          alt: "A man in a white shirt working on a palm leaf laid on a padded board.",
+          caption: "Working on a palm leaf, Shravanabelagola.",
+          position: "50% 35%",
+        },
+        {
+          src: "/images/illuminated/painted-leaf.jpg",
+          alt: "An orange painted leaf showing an elephant, a white bull, a lion, a crescent moon, fish and vessels.",
+          caption: "One painted leaf: what a single page can carry.",
+          position: "50% 50%",
+        },
+      ],
+    },
   ],
+} as const;
+
+/**
+ * Mission and vision, second on the home page (Website Changes sheet, row
+ * 11), in the words of the Foundation's "About Us — Final Website Content"
+ * document, §04.
+ */
+export const purpose = {
+  label: "Mission and vision",
+  heading: "What guides us",
+  mission: {
+    label: "Our mission",
+    body: "To preserve India's manuscript heritage through scientific conservation and digitisation, strengthen rural communities through essential infrastructure, and respond to community needs through compassionate and practical service.",
+  },
+  vision: {
+    label: "Our vision",
+    body: "To build a future where India's civilizational wisdom and social responsibility coexist as living forces — where knowledge is preserved, communities are empowered, and heritage becomes a foundation for sustainable and inclusive progress.",
+  },
+  link: { label: "Our values", href: "/about#mvv" },
 } as const;
 
 export const mission = {
@@ -140,6 +186,28 @@ export const ledger = {
     { label: "Repositories surveyed", value: "18", note: "Karnataka 3 · Maharashtra 6 · Tamil Nadu 9." },
     { label: "Folios documented by survey", value: "17,14,928", note: "In 12,681 manuscripts — the measure of what remains to be protected." },
   ] as { label: string; value: Pending<string>; note: string }[],
+  /**
+   * The other two pillars, counted (Website Changes sheet, row 15). Every
+   * figure is the one the Community Services, Rural Infrastructure and
+   * Impact pages already give.
+   */
+  more: [
+    {
+      label: "Community services",
+      metrics: [
+        { label: "People screened at free health camps", value: "3,500+", note: "5 camps across Bengaluru, Mandya, Raichur and Belagavi." },
+        { label: "Meals served, COVID-19 response", value: "7,77,534", note: "Bengaluru, 1 April – 3 May 2020." },
+        { label: "Children given education support", value: "600+", note: "Books and stationery in 3 schools near Yarnal, and longer-term support." },
+      ],
+    },
+    {
+      label: "Rural infrastructure",
+      metrics: [
+        { label: "Community spaces built or renovated", value: "3", note: "Samudaya Bhavan and community hall, Yarnal; staff quarters, Hosur." },
+        { label: "Rooms of staff quarters", value: "14", note: "For teachers serving two schools at Hosur, with over 400 students." },
+      ],
+    },
+  ] as { label: string; metrics: { label: string; value: string; note: string }[] }[],
 } as const;
 
 /**
@@ -281,6 +349,12 @@ export const communityTeaser = {
 export const join = {
   label: "Join the work",
   heading: "Join the work",
+  /** A photograph for the section (Website Changes sheet, row 19). */
+  plate: {
+    src: "/images/work/workshop-table.jpg",
+    alt: "Conservators in white coats and visitors gathered around a table of palm leaves.",
+    caption: "Conservators and visitors at the palm-leaf table, Shravanabelagola workshop.",
+  },
   body: [
     "Preserving knowledge and serving communities are long-term responsibilities. They require people, expertise, institutions, resources and partnerships.",
     "Whether through support, institutional collaboration, professional expertise or participation, there are many ways to contribute to work that protects heritage and creates lasting value for communities.",
@@ -458,6 +532,61 @@ export const upClose = {
     { src: "/images/work/kumbhoj-munis.jpg", ratio: "1600 / 1201", alt: "A large group of munis gathered close around a conservation table.", caption: "Munis visiting the conservation work at Kumbhoj." },
     { src: "/images/work/lab-rolls.jpg", ratio: "1351 / 1800", alt: "Rolls of paper laid on a blue cloth in a bright conservation room.", caption: "The conservation room at the Karanja Lad exhibition." },
   ],
+} as const;
+
+/**
+ * Where the work is live now (Website Changes sheet, row 16): the two sites
+ * where conservation is under way today, in the Foundation's own
+ * photographs, each captioned only with where it was taken.
+ */
+export const liveSites = {
+  label: "Live sites",
+  heading: "Where the work is live now",
+  lede: "Two conservation sites are running today: one at Shravanabelagola in Karnataka and one at Karanja Lad in Maharashtra. At each, the lab is set up beside the collection, so the manuscripts never leave their custodians.",
+  status: "Live",
+  sites: [
+    {
+      name: "Shravanabelagola",
+      region: "Hassan district, Karnataka",
+      institution: "Bahubali Prakrit Bhawan",
+      since: "Since 11 July 2025",
+      body: "A collection of 2,695 palm-leaf granthas, 3,65,520 folios — one of the Foundation's largest continuing programmes.",
+      photos: [
+        { src: "/images/work/bundles-red-cloth.jpg", ratio: "1600 / 1066", alt: "Palm-leaf bundles and cloth-wrapped manuscripts laid out in rows on red cloth.", caption: "Palm-leaf bundles laid out at the start of the programme, July 2025." },
+        { src: "/images/work/munis-reading.jpg", ratio: "1429 / 1800", alt: "Three munis bending over an open paper manuscript in a tray.", caption: "Munis reading a paper manuscript at the inauguration." },
+      ],
+    },
+    {
+      name: "Karanja Lad",
+      region: "Washim district, Maharashtra",
+      institution: "Shri Mulsang Balatkar Gan Mandir",
+      since: "Under way",
+      body: "Conservation of the temple's collection, carried out in the lab the Foundation built at Karanja Lad after completing the Gurukul's 28,268 folios.",
+      photos: [
+        { src: "/images/work/lab-rolls.jpg", ratio: "1351 / 1800", alt: "Rolls of paper laid on a blue cloth in a bright conservation room.", caption: "The conservation room at Karanja Lad." },
+        { src: "/images/work/karanja-exhibition.jpg", ratio: "1600 / 1201", alt: "A building entrance under a maroon Foundation banner announcing an exhibition of palm-leaf and paper Jinvani.", caption: "The Foundation's exhibition of palm-leaf and paper Jinvani, Karanja Lad." },
+      ],
+    },
+  ],
+  link: { label: "Follow every site", href: "/manuscript-conservation#sites" },
+} as const;
+
+/**
+ * People's voice, in the band after the live sites (Website Changes sheet,
+ * row 17): one entry from the visitors' book, word for word, leading into
+ * the full Voices section below it.
+ */
+export const voiceBand = {
+  eyebrow: "People's voice",
+  quote: "Seeing the restoration work of more than 1000 granths of our Jainism, filled me with immense pride and happiness.",
+  name: "Rishabh Jitendra Chhabda",
+  place: "Washim, Maharashtra — from the visitors' book at Karanja Lad",
+  image: {
+    src: "/images/work/karanja-visitors.jpg",
+    alt: "Three men examining handwritten folios spread on a table beside a camera.",
+    caption: "Visitors examining folios at Karanja Lad.",
+  },
+  link: { label: "Hear and read every voice", href: "#voices" },
 } as const;
 
 export const lineage = {

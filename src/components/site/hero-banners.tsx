@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type To
 
 export type BannerImage = { src: string; alt: string; caption?: string; position?: string };
 export type Banner = {
-  key: "conservation" | "community" | "rural" | "empowerment";
+  key: "conservation" | "community" | "rural" | "empowerment" | "campaign";
   tab: string;
   eyebrow: string;
   title: string;
@@ -165,7 +165,7 @@ export function HeroBanners({ banners, strings }: { banners: readonly Banner[]; 
             <path d="M6 3.5 10.5 8 6 12.5" />
           </ReelButton>
         </div>
-        <div className="grid flex-1 grid-cols-4 gap-2 sm:gap-3">
+        <div className={`grid flex-1 gap-2 sm:gap-3 ${total === 5 ? "grid-cols-5" : "grid-cols-4"}`}>
           {banners.map((banner, i) => (
             <button
               key={banner.key}
@@ -311,6 +311,7 @@ function Collage({ banner, eager }: { banner: Banner; eager: boolean }) {
 
   // Empowerment: the children and their books, together and then close —
   // both photographs are wide, so they are stacked, not cropped to strips.
+  // The campaign card uses the same frame: the hands at work, then a page.
   return (
     <div className={`${frame} grid-cols-2 lg:grid-cols-1 lg:grid-rows-[3fr_2fr]`}>
       {[b, a].map((image, i) => (
