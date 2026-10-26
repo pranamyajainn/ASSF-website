@@ -3,7 +3,6 @@ import { Footer } from "@/components/site/footer";
 import { Heading, Leaf, PageHero, PersonGrid, Prose } from "@/components/site/primitives";
 import { getContent, resolveContent } from "@/i18n/content";
 import { pageMetadata } from "@/i18n/metadata";
-import { fill } from "@/i18n/ui";
 
 export async function generateMetadata() {
   const { trustees } = await getContent();
@@ -18,7 +17,7 @@ export async function generateMetadata() {
 export default async function TrusteesPage() {
   const content = await getContent();
   const { ui } = content;
-  const { advisors, pageHero, trustees } = content.trustees;
+  const { advisors, intros, pageHero, trustees } = content.trustees;
   const t = content.ui.trustees;
   // Grouped by the English rank (as edited), so the grouping holds in every edition.
   const sourceTrustees = resolveContent("en").trustees.trustees;
@@ -47,13 +46,7 @@ export default async function TrusteesPage() {
         <Leaf id="trustees" label={t.trusteesLabel} question={ui.steps.who}>
           <Heading>{t.trusteesHeading}</Heading>
           <Prose>
-            <p>
-              {fill(t.intro, {
-                total: trustees.length,
-                named: officeBearers.length,
-                founders: founders.length,
-              })}
-            </p>
+            <p>{intros.governance}</p>
           </Prose>
           <div className="bleed-margin">
             <PersonGrid people={officeBearers} columns={5} profileLabels={profile} />
@@ -63,6 +56,9 @@ export default async function TrusteesPage() {
 
         <Leaf id="advisors" label={t.advisorsLabel} question={ui.steps.advises}>
           <Heading>{t.advisorsHeading}</Heading>
+          <Prose>
+            <p>{intros.advisory}</p>
+          </Prose>
           <div className="bleed-margin">
             <PersonGrid people={advisors} columns={5} profileLabels={profile} />
           </div>

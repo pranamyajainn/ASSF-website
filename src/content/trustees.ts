@@ -10,6 +10,12 @@ export const pageHero = {
   body: "Acharya Shanti Sagar Foundation is guided by trustees and advisors who bring diverse expertise and a shared commitment to heritage preservation and community welfare.",
 } as const;
 
+/** The two introductions from the same document, §4.2 and §4.3. */
+export const intros = {
+  governance: "The Foundation is governed by a Board of Trustees drawn from industry, public institutions and the Jain religious and educational establishment. The Board sets strategy, approves budgets and exercises fiduciary oversight; Project execution rests with the operations and conservation leadership reporting to it.",
+  advisory: "The conservation and digitization mission is strengthened by an Advisory Board of distinguished leaders drawn from public policy, institutional leadership, and philanthropy, bringing diverse expertise and strategic perspective to the Foundation’s work.",
+} as const;
+
 export const trustees = [
   {
     name: "Rajashri Dharmadhikari Dr. D. Veerendra Heggade",

@@ -94,7 +94,7 @@ export const illuminated = {
 export const film = {
   label: "The work, filmed",
   heading: "Restoration of Tadpatras",
-  body: "The Foundation's own short film on the Kumbhoj Bahubali programme — documentation, treatment and digitisation, filmed during the conservation work itself. In Hindi.",
+  body: "The Foundation's own short film on the Kumbhoj programme, at Bahubali Siddhopeth Granthalaya — documentation, treatment and digitisation, filmed during the conservation work itself. In Hindi.",
   youtubeId: "m6tPodN-8YY",
 } as const;
 
