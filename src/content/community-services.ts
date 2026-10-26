@@ -28,9 +28,10 @@ export const healthcare = {
   body: "Free medical camps bring doctors and diagnostics to communities where specialist care is otherwise out of reach — with follow-up, not just a single day's consultation.",
   totals: [
     { label: "Beneficiaries screened", value: "3,500+" },
-    { label: "Cataract surgeries", value: "251+" },
+    { label: "Cataract surgeries", value: "250+" },
     { label: "Heart bypass surgeries", value: "5" },
     { label: "Spectacles distributed", value: "463+" },
+    { label: "Health camps organised", value: "5" },
   ],
   camps: [
     { place: "Irkal, Raichur", beneficiaries: "463", detail: "Cardiology, nephrology, neurology, ophthalmology — 5 heart bypasses, 35 cataract surgeries" },
@@ -63,7 +64,7 @@ export const relief = {
   items: [
     {
       name: "North Karnataka & Maharashtra floods, 2019",
-      body: "ASSF reached six villages with 2,000 food kits and 500 clothing kits, then extended direct financial support to 262 families rebuilding their homes.",
+      body: "Across Athani, Gokak, Sangli, Bagalkot, Raibag, Bhoj, Chikkodi and Mudlagi in Belgaum District, and in Kolhapur District, Maharashtra, ASSF reached six villages with 2,000 food kits and 500 clothing kits, then extended direct financial support to 262 families rebuilding their homes.",
       stats: [
         { value: "2,000", label: "food kits" },
         { value: "500", label: "clothing kits" },

@@ -59,6 +59,13 @@ export default async function ManuscriptConservationPage() {
                 key={item.name}
                 className={`py-8 ${i === 0 ? "md:border-r md:border-ink/20 md:pr-10" : "border-t border-ink/20 md:border-t-0 md:pl-10"}`}
               >
+                {/* A photograph of each material, as the Foundation asked (26 Oct 2026). */}
+                <figure className="mb-6">
+                  <div className="relative aspect-[16/9] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15">
+                    <Image src={item.image.src} alt={item.image.alt} fill sizes="(min-width: 768px) 40vw, 92vw" className="object-cover" />
+                  </div>
+                  <figcaption className="mt-2 font-mono text-register text-ink-faint">{item.image.caption}</figcaption>
+                </figure>
                 <h3 className="font-display text-[1.7rem] font-medium leading-tight text-ink">{item.name}</h3>
                 <p className="mt-3 max-w-[46ch] text-[1.0625rem] leading-relaxed text-ink-soft">{item.body}</p>
               </div>

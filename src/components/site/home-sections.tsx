@@ -12,8 +12,8 @@ import { fill } from "@/i18n/ui";
  */
 
 /**
- * Mission and vision: the Foundation's two statements side by side, second
- * on the page, before the pillars that carry them out.
+ * Mission and vision: the Foundation's two statements beside a photograph
+ * of the work, second on the page, before the pillars that carry them out.
  */
 export async function Purpose() {
   const { home, ui } = await getContent();
@@ -21,13 +21,21 @@ export async function Purpose() {
   return (
     <Leaf id="purpose" label={purpose.label} question={ui.steps.why}>
       <Heading>{purpose.heading}</Heading>
-      <div className="bleed-margin mt-12 grid gap-x-12 gap-y-10 border-t border-ink/20 pt-10 md:grid-cols-2">
-        {[purpose.mission, purpose.vision].map((part) => (
-          <div key={part.label} className="min-w-0">
-            <p className="font-mono text-register text-cinnabar">{part.label}</p>
-            <p className="mt-4 text-pretty font-display text-[clamp(1.3rem,1.1rem+0.7vw,1.7rem)] leading-[1.4] text-ink">{part.body}</p>
+      <div className="bleed-margin mt-12 grid items-start gap-x-12 gap-y-10 border-t border-ink/20 pt-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+        <div className="grid gap-y-10">
+          {[purpose.mission, purpose.vision].map((part) => (
+            <div key={part.label} className="min-w-0">
+              <p className="font-mono text-register text-cinnabar">{part.label}</p>
+              <p className="mt-4 text-pretty font-display text-[clamp(1.3rem,1.1rem+0.7vw,1.7rem)] leading-[1.4] text-ink">{part.body}</p>
+            </div>
+          ))}
+        </div>
+        <figure className="min-w-0">
+          <div className="relative aspect-[4/3] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15">
+            <Image src={purpose.plate.src} alt={purpose.plate.alt} fill sizes="(min-width: 1024px) 34vw, 92vw" className="object-cover" style={{ objectPosition: "50% 45%" }} />
           </div>
-        ))}
+          <figcaption className="mt-3 font-mono text-register text-ink-faint">{purpose.plate.caption}</figcaption>
+        </figure>
       </div>
       <InlineLink href={purpose.link.href} className="mt-10">
         {purpose.link.label} →
@@ -84,10 +92,108 @@ export async function WhatWeDo() {
   );
 }
 
+type LedgerIconName = "folios" | "manuscripts" | "repositories" | "meals" | "health" | "education" | "hall" | "quarters";
+
+/** A small drawing for each figure, in the page's ink, cinnabar and orpiment. */
+function LedgerIcon({ name }: { name: LedgerIconName }) {
+  const ink = { stroke: "var(--color-ink)", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" } as const;
+  const red = "var(--color-cinnabar)";
+  const gold = "var(--color-orpiment)";
+  const art = {
+    // Palm-leaf folios, stacked and tied with a cord.
+    folios: (
+      <>
+        <rect x="10" y="30" width="60" height="7" rx="3.5" fill={gold} fillOpacity=".35" {...ink} />
+        <rect x="14" y="23" width="56" height="7" rx="3.5" fill={gold} fillOpacity=".55" {...ink} />
+        <rect x="8" y="16" width="58" height="7" rx="3.5" fill={gold} fillOpacity=".8" {...ink} />
+        <path d="M24 13v27M56 13v27" {...ink} stroke={red} />
+        <path d="M14 44h52" {...ink} strokeDasharray="2 4" />
+      </>
+    ),
+    // A manuscript wrapped in red cloth, knotted.
+    manuscripts: (
+      <>
+        <rect x="12" y="18" width="56" height="24" rx="3" fill={red} {...ink} />
+        <path d="M12 26h56M12 34h56" {...ink} stroke="var(--color-leaf)" strokeOpacity=".5" />
+        <path d="M40 18v24" {...ink} stroke={gold} strokeWidth={3} />
+        <path d="M40 18c-6-7-12-6-10 0M40 18c6-7 12-6 10 0" {...ink} stroke={gold} strokeWidth={2} />
+      </>
+    ),
+    // Three pins on a dotted route.
+    repositories: (
+      <>
+        <path d="M8 42c10-10 18 4 30-4s20-6 34-2" {...ink} strokeDasharray="2 4" />
+        {[16, 40, 62].map((x, k) => (
+          <g key={x} transform={`translate(${x} ${k === 1 ? 10 : 18})`}>
+            <path d="M0 18s-7-7-7-12a7 7 0 0 1 14 0c0 5-7 12-7 12Z" fill={red} {...ink} />
+            <circle cx="0" cy="6" r="2.4" fill="var(--color-leaf)" />
+          </g>
+        ))}
+      </>
+    ),
+    // A bowl of rice, steaming.
+    meals: (
+      <>
+        <path d="M14 30c4-9 16-12 26-12s22 3 26 12" fill={gold} fillOpacity=".55" {...ink} />
+        <path d="M10 30h60c0 10-12 16-30 16S10 40 10 30Z" fill="var(--color-ink-soft)" fillOpacity=".15" {...ink} />
+        <path d="M30 46l-3 4h26l-3-4" {...ink} />
+        <path d="M32 13c0-3 3-4 3-7M44 13c0-3 3-4 3-7" {...ink} stroke={red} />
+      </>
+    ),
+    // A stethoscope over a heartbeat.
+    health: (
+      <>
+        <path d="M6 40h12l4-8 5 14 5-10h6" {...ink} stroke={red} />
+        <path d="M46 8v10a10 10 0 0 0 20 0V8" {...ink} />
+        <path d="M56 28v6a10 10 0 0 1-20 0v-2" {...ink} />
+        <circle cx="36" cy="28" r="4.5" fill={gold} {...ink} />
+        <circle cx="46" cy="8" r="1.6" fill="var(--color-ink)" />
+        <circle cx="66" cy="8" r="1.6" fill="var(--color-ink)" />
+      </>
+    ),
+    // An open book and a pen.
+    education: (
+      <>
+        <path d="M40 18c-8-5-18-5-28-2v28c10-3 20-3 28 2 8-5 18-5 28-2V16c-10-3-20-3-28 2Z" fill="var(--color-leaf)" {...ink} />
+        <path d="M40 18v28" {...ink} />
+        <path d="M18 24h14M18 30h14M48 24h14M48 30h10" {...ink} strokeWidth={1.2} stroke="var(--color-ink-soft)" />
+        <path d="M58 4l8 8-14 14-9 2 2-9Z" fill={red} {...ink} />
+      </>
+    ),
+    // A community hall: a pediment over columns.
+    hall: (
+      <>
+        <path d="M10 22 40 8l30 14Z" fill={red} {...ink} />
+        <path d="M14 22h52v4H14Z" fill={gold} {...ink} />
+        <path d="M20 26v16M32 26v16M48 26v16M60 26v16" {...ink} />
+        <path d="M10 42h60v5H10Z" fill="var(--color-ink-soft)" fillOpacity=".25" {...ink} />
+      </>
+    ),
+    // Staff quarters: a long block of rooms.
+    quarters: (
+      <>
+        <path d="M8 16h64v30H8Z" fill="var(--color-leaf)" {...ink} />
+        <path d="M6 16h68l-4-6H10Z" fill={red} {...ink} />
+        {[14, 26, 38, 50, 62].map((x) => (
+          <g key={x}>
+            <rect x={x} y="21" width="6" height="7" fill={gold} fillOpacity=".7" {...ink} strokeWidth={1.2} />
+            <rect x={x} y="33" width="6" height="7" fill={gold} fillOpacity=".7" {...ink} strokeWidth={1.2} />
+          </g>
+        ))}
+      </>
+    ),
+  }[name];
+  return (
+    <svg aria-hidden="true" viewBox="0 0 80 52" fill="none" className="h-14 w-auto">
+      {art}
+    </svg>
+  );
+}
+
 /**
- * Our work so far: the four manuscript figures, large, in one row, then the
- * other two pillars counted beneath them — the breakdowns and the scale
- * ahead are on Impact.
+ * Our work so far: eight figures across the three pillars, each with its
+ * drawing, in two rows of four (the layout the Foundation sent on 26 Oct
+ * 2026), standing on one line for what the survey found still waiting.
  */
 export async function Figures() {
   const { home, ui, href } = await getContent();
@@ -95,37 +201,29 @@ export async function Figures() {
   return (
     <Leaf id="ledger" label={ledger.label} question={ui.steps.much}>
       <Heading>{ledger.heading}</Heading>
-      <dl className="bleed-margin mt-12 grid gap-x-8 gap-y-10 border-t border-ink/20 pt-10 sm:grid-cols-2 lg:grid-cols-4">
-        {ledger.metrics.map((m) => (
-          // A term, then its values (as a definition list must be); the figure is shown first.
-          <div key={m.label} className="flex min-w-0 flex-col">
-            <dt className="order-2 mt-3 text-[1.0625rem] leading-snug text-ink">{m.label}</dt>
-            <dd className="order-1 inked ink-on-scroll font-display text-[clamp(2.4rem,1.8rem+2vw,3.6rem)] font-medium leading-none tracking-[-0.02em] text-ink">
-              {m.value ?? <Pending width="5rem" label={ui.common.awaiting} />}
+      <dl className="bleed-margin mt-12 grid grid-cols-2 gap-x-6 gap-y-12 border-t border-ink/20 pt-10 lg:grid-cols-4 lg:gap-x-8">
+        {ledger.figures.map((f) => (
+          // A term, then its values (as a definition list must be); the drawing and figure come first.
+          <div key={f.icon} className="flex min-w-0 flex-col">
+            <dt className="order-3 mt-2 text-[1rem] leading-snug text-ink">{f.label}</dt>
+            <dd className="order-1">
+              <LedgerIcon name={f.icon} />
             </dd>
-            <dd className="order-3 mt-1.5 font-mono text-register leading-relaxed text-ink-faint">{m.note}</dd>
+            <dd className="order-2 mt-4 font-display text-[clamp(1.9rem,1.5rem+1.4vw,2.8rem)] font-medium leading-none tracking-[-0.02em] text-ink">
+              {f.value ?? <Pending width="5rem" label={ui.common.awaiting} />}
+            </dd>
+            <dd className="order-4 mt-1.5 font-mono text-register leading-relaxed text-ink-faint">{f.note}</dd>
           </div>
         ))}
       </dl>
-      <div className="bleed-margin mt-14 grid gap-x-12 gap-y-12 lg:grid-cols-2">
-        {ledger.more.map((group) => (
-          <div key={group.label} className="min-w-0">
-            <p className="font-mono text-register text-cinnabar">{group.label}</p>
-            <dl className="mt-4 grid gap-x-8 gap-y-8 border-t border-ink/20 pt-6 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(9rem,1fr))]">
-              {group.metrics.map((m) => (
-                <div key={m.label} className="flex min-w-0 flex-col">
-                  <dt className="order-2 mt-2 text-[1rem] leading-snug text-ink">{m.label}</dt>
-                  <dd className="order-1 font-display text-[clamp(1.9rem,1.5rem+1.2vw,2.6rem)] font-medium leading-none tracking-[-0.02em] text-ink">{m.value}</dd>
-                  <dd className="order-3 mt-1.5 font-mono text-register leading-relaxed text-ink-faint">{m.note}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        ))}
+      <div className="bleed-margin mt-12 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-4 border-t border-ink/20 pt-6">
+        <p className="max-w-[60ch] font-display text-[clamp(1.15rem,1rem+0.5vw,1.4rem)] leading-snug text-ink">
+          <span className="font-medium text-cinnabar">{ledger.survey.value}</span> {ledger.survey.text}
+        </p>
+        <InlineLink href={href("/impact")} className="">
+          {ui.home.seeImpact} →
+        </InlineLink>
       </div>
-      <InlineLink href={href("/impact")} className="mt-10">
-        {ui.home.seeImpact} →
-      </InlineLink>
     </Leaf>
   );
 }

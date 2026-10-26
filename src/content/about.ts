@@ -87,23 +87,9 @@ export const areas = {
 } as const;
 
 /**
- * §07, Our Work in Practice: one film, a small gallery and a few figures,
- * as the document’s layout direction asks. The figures are the Impact
- * page’s own.
+ * §08, Looking Ahead. It ends on the Foundation's film (moved here when
+ * §07, Our Work in Practice, was dropped at Alka's request, 26 Oct 2026).
  */
-export const practice = {
-  label: "Our Work in Practice",
-  heading: "Our Work in Practice",
-  figures: [
-    { value: "1,66,500+", label: "folios conserved by hand" },
-    { value: "3,500+", label: "people screened at free health camps" },
-    { value: "7,77,534", label: "meals served, COVID-19 response" },
-    { value: "3", label: "community spaces built or renovated" },
-  ],
-  link: { label: "See the full impact", href: "/impact" },
-} as const;
-
-/** §08, Looking Ahead. */
 export const ahead = {
   label: "Looking Ahead",
   heading: "Preserving the Past. Serving the Present. Preparing for the Future.",
@@ -117,11 +103,6 @@ export const ahead = {
     { label: "View Our Projects", href: "/impact#preserved" },
     { label: "Contact the Foundation", href: "#contact" },
   ],
-  image: {
-    src: "/images/work/kumbhoj-munis.jpg",
-    alt: "A large group of munis gathered close around a conservation table.",
-    caption: "Munis visiting the conservation work at Kumbhoj.",
-  },
 } as const;
 
 /**

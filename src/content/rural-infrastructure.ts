@@ -26,7 +26,7 @@ export const projects = {
   items: [
     {
       name: "Samudaya Bhavan, Yarnal",
-      body: "The Yarnal Gram Panchayat identified the absence of a community facility as a real gap. ASSF developed a multi-purpose hall on donated land — for gatherings, cultural programmes, discourses and guest accommodation.",
+      body: "The Gram Panchayat of Hosur identified the absence of a community facility as a real gap. ASSF developed a multi-purpose hall on donated land — for gatherings, cultural programmes, discourses and guest accommodation.",
       images: [
         { src: "/images/rural/samudaya-bhavan-1-site.jpeg", alt: "Bare, levelled ground beside a village road.", caption: "Site before development" },
         { src: "/images/rural/samudaya-bhavan-2-construction.jpeg", alt: "Brick walls and red shuttering of the hall under construction, a worker on the wall.", caption: "Under construction" },

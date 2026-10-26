@@ -23,10 +23,20 @@ export const whatWeConserve = {
     {
       name: "Palm-leaf manuscripts",
       body: "Text inscribed into prepared palm leaves and bound into units. Over time the leaf itself becomes brittle, cracks and splits — conservation has to work with, not against, that material.",
+      image: {
+        src: "/images/conservation/palm-leaf-bundles.jpg",
+        alt: "Palm-leaf manuscripts on a white table: leaves fanned open, and stacked leaves between wooden covers tied with cord.",
+        caption: "Palm-leaf manuscripts laid out for conservation, Shravanabelagola, July 2025.",
+      },
     },
     {
       name: "Handwritten paper manuscripts",
       body: "Handmade paper develops tears, folds, losses and staining, often unevenly across a single manuscript. Every folio starts with its own condition assessment.",
+      image: {
+        src: "/images/conservation/palm-leaf-before.jpeg",
+        alt: "A handwritten paper manuscript, open, with a loss torn through its lower lines, beside a slip marked BEFORE.",
+        caption: "A paper manuscript before treatment, recorded as KBJ/PM/047.",
+      },
     },
   ],
   note: "Beyond scripture, these collections hold philosophy, mathematics, astronomy, medicine, grammar and literature — material records of an intellectual tradition, not only a religious one.",

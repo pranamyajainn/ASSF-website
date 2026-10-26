@@ -6,14 +6,6 @@ import { VideoLoop } from "@/components/site/video-loop";
 import { getContent } from "@/i18n/content";
 import { pageMetadata } from "@/i18n/metadata";
 
-/** Literal class names, so Tailwind sees every span it has to generate. */
-const SPAN = {
-  3: "lg:col-span-3",
-  4: "lg:col-span-4",
-  5: "lg:col-span-5",
-  7: "lg:col-span-7",
-} as const;
-
 export async function generateMetadata() {
   const { about } = await getContent();
   return pageMetadata("about", "/about", about.pageHero.body);
@@ -22,11 +14,11 @@ export async function generateMetadata() {
 /**
  * About, in the order of the Foundation's "About Us — Final Website Copy"
  * document: inspiration, the Foundation, what guides it, its leadership,
- * its three areas of work, the work in practice, and what lies ahead.
+ * its three areas of work, and what lies ahead, closing on the film.
  */
 export default async function AboutPage() {
   const { about, conservation, trustees, ui } = await getContent();
-  const { ahead, areas, foundation, inspiration, leadership, mvv, namesake, pageHero, plates, practice } = about;
+  const { ahead, areas, foundation, inspiration, leadership, mvv, namesake, pageHero } = about;
   const { film } = conservation;
   const t = ui.trustees;
   const profile = { open: t.readProfile, close: t.closeProfile };
@@ -45,8 +37,8 @@ export default async function AboutPage() {
             <div className="ruled min-w-0 pb-4 pl-5 sm:pl-7 lg:pl-12 [&>nav]:mt-0">
               <PageThread
                 title={ui.steps.thread}
-                items={[inspiration, foundation, mvv, leadership, areas, practice, ahead].map((section, i) => ({
-                  id: ["inspiration", "foundation", "mvv", "leadership", "areas", "practice", "ahead"][i],
+                items={[inspiration, foundation, mvv, leadership, areas, ahead].map((section, i) => ({
+                  id: ["inspiration", "foundation", "mvv", "leadership", "areas", "ahead"][i],
                   question: section.label,
                 }))}
               />
@@ -217,61 +209,6 @@ export default async function AboutPage() {
           </ul>
         </Leaf>
 
-        <Leaf id="practice" question={practice.label}>
-          <Heading>{practice.heading}</Heading>
-          <dl className="bleed-margin mt-10 grid gap-x-8 gap-y-8 border-t border-ink/20 pt-8 sm:grid-cols-2 lg:grid-cols-4">
-            {practice.figures.map((f) => (
-              <div key={f.label} className="flex min-w-0 flex-col">
-                <dt className="order-2 mt-2 text-[1.0625rem] leading-snug text-ink">{f.label}</dt>
-                <dd className="order-1 font-display text-[clamp(2.2rem,1.7rem+1.8vw,3.2rem)] font-medium leading-none tracking-[-0.02em] text-ink">{f.value}</dd>
-              </div>
-            ))}
-          </dl>
-
-          <div className="mt-16">
-            <p className="font-mono text-register text-cinnabar">{film.heading}</p>
-            <Prose className="mt-3">
-              <p>{film.body}</p>
-            </Prose>
-            <VideoLoop
-              className="bleed-margin mt-8"
-              youtubeId={film.youtubeId}
-              title={film.heading}
-              watchLabel={ui.common.watchWithSound}
-            />
-          </div>
-
-          <div className="bleed-margin mt-16 space-y-10">
-            {plates.rows.map((row, r) => (
-              <div key={r} className="grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-12">
-                {row.map((plate) => (
-                  <figure key={plate.src} data-plate className={SPAN[plate.span]}>
-                    <div
-                      className="relative overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15"
-                      style={{ aspectRatio: plate.ratio }}
-                    >
-                      <Image
-                        src={plate.src}
-                        alt={plate.alt}
-                        fill
-                        sizes="(min-width: 1024px) 45vw, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover"
-                        style={{ objectPosition: plate.position }}
-                      />
-                    </div>
-                    <figcaption className="mt-3 font-mono text-register text-ink-faint">
-                      <span className="text-ink-soft">{plate.pillar}.</span> {plate.caption}
-                    </figcaption>
-                  </figure>
-                ))}
-              </div>
-            ))}
-          </div>
-          <InlineLink href={practice.link.href} className="mt-10">
-            {practice.link.label} →
-          </InlineLink>
-        </Leaf>
-
         <Leaf id="ahead" question={ahead.label}>
           <Heading>{ahead.heading}</Heading>
           <Prose>
@@ -279,12 +216,13 @@ export default async function AboutPage() {
               <p key={p.slice(0, 24)}>{p}</p>
             ))}
           </Prose>
-          <figure className="bleed-margin mt-12">
-            <div className="relative aspect-[16/9] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15 sm:aspect-[21/9]">
-              <Image src={ahead.image.src} alt={ahead.image.alt} fill sizes="(min-width: 1024px) 70rem, 100vw" className="object-cover" />
-            </div>
-            <figcaption className="mt-3 font-mono text-register text-ink-faint">{ahead.image.caption}</figcaption>
-          </figure>
+          <VideoLoop
+            className="bleed-margin mt-12"
+            youtubeId={film.youtubeId}
+            title={film.heading}
+            watchLabel={ui.common.watchWithSound}
+          />
+          <p className="mt-3 font-mono text-register text-ink-faint">{film.heading}</p>
         </Leaf>
         <section className="py-20 text-center lg:py-28">
           <p className="mx-auto max-w-[30ch] px-5 font-display text-[clamp(1.6rem,1.1rem+2vw,2.6rem)] font-medium leading-[1.2] text-ink">

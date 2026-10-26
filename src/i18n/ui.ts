@@ -130,7 +130,7 @@ export const ui = {
     trusteesLabel: "Trustees",
     trusteesHeading: "Founder trustees",
     intro:
-      "{total} founder trustees. {named} carry a named role — Param Samrakshak Margadarshak, Settlor, President, Working President and Secretary — and {founders} serve as founder trustees.",
+      "{total} founder trustees. {named} carry a named role — Param Samrakshak Margadarshak, Settlor, Working President, President, and Secretary and Treasurer — and {founders} serve as founder trustees.",
     advisorsLabel: "Advisors",
     advisorsHeading: "Advisors",
     readProfile: "Read full profile",

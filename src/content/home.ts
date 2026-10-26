@@ -135,6 +135,12 @@ export const purpose = {
     label: "Our vision",
     body: "To build a future where India's civilizational wisdom and social responsibility coexist as living forces — where knowledge is preserved, communities are empowered, and heritage becomes a foundation for sustainable and inclusive progress.",
   },
+  /** A photograph for the section (Alka's suggestion, 26 Oct 2026). */
+  plate: {
+    src: "/images/work/inauguration-bundles.jpg",
+    alt: "Munis and Foundation members around tables of palm-leaf bundles and cloth-wrapped manuscripts on red cloth.",
+    caption: "The first manuscripts laid out for conservation at Shravanabelagola, July 2025.",
+  },
   link: { label: "Our values", href: "/about#mvv" },
 } as const;
 
@@ -180,34 +186,32 @@ export const ledger = {
   heading: "Our work so far",
   intro:
     "Counts from the Foundation's two completed conservation projects and its survey of 18 repositories. Where a figure has not been supplied, the space is left open — not estimated.",
+  /** The manuscript figures as the Foundation first published them; the
+      trustee portal, the conservation page and the assistant read these. */
   metrics: [
-    { label: "Manuscripts conserved, completed projects", value: "1,620+", note: "Kumbhoj 1,399 · Karanja Lad 221 — two completed projects." },
-    { label: "Folios conserved, completed projects", value: "1,34,545+", note: "Kumbhoj 1,06,277 · Karanja Lad 28,268 — assessed, treated and rehoused folio by folio." },
+    { label: "Manuscripts conserved", value: "1,620+", note: "Kumbhoj 1,399 · Karanja Lad 221 — two completed projects." },
+    { label: "Folios conserved", value: "1,34,545+", note: "Kumbhoj 1,06,277 · Karanja Lad 28,268 — assessed, treated and rehoused folio by folio." },
     { label: "Repositories surveyed", value: "18", note: "Karnataka 3 · Maharashtra 6 · Tamil Nadu 9." },
     { label: "Folios documented by survey", value: "17,14,928", note: "In 12,681 manuscripts — the measure of what remains to be protected." },
   ] as { label: string; value: Pending<string>; note: string }[],
   /**
-   * The other two pillars, counted (Website Changes sheet, row 15). Every
-   * figure is the one the Community Services, Rural Infrastructure and
-   * Impact pages already give.
+   * Eight figures in two rows of four, each with its own drawing, after the
+   * layout Alka sent on 26 Oct 2026: the manuscript work and the meals
+   * first, then health, education and the spaces built. Every figure is the
+   * one the pillar pages and Impact already give.
    */
-  more: [
-    {
-      label: "Community services",
-      metrics: [
-        { label: "People screened at free health camps", value: "3,500+", note: "5 camps across Bengaluru, Mandya, Raichur and Belagavi." },
-        { label: "Meals served, COVID-19 response", value: "7,77,534", note: "Bengaluru, 1 April – 3 May 2020." },
-        { label: "Children given education support", value: "600+", note: "About 500 students in 3 Yarnal schools, and about 120 children over six years." },
-      ],
-    },
-    {
-      label: "Rural infrastructure",
-      metrics: [
-        { label: "Community spaces built or renovated", value: "3", note: "Samudaya Bhavan and community hall, Yarnal; staff quarters, Hosur." },
-        { label: "Rooms of staff quarters", value: "14", note: "For teachers serving two schools at Hosur, with over 400 students." },
-      ],
-    },
-  ] as { label: string; metrics: { label: string; value: string; note: string }[] }[],
+  figures: [
+    { icon: "folios", label: "Folios conserved, completed projects", value: "1,34,545+", note: "Kumbhoj 1,06,277 · Karanja Lad 28,268" },
+    { icon: "manuscripts", label: "Manuscripts conserved, completed projects", value: "1,620+", note: "Kumbhoj 1,399 · Karanja Lad 221" },
+    { icon: "repositories", label: "Repositories surveyed", value: "18", note: "Karnataka 3 · Maharashtra 6 · Tamil Nadu 9" },
+    { icon: "meals", label: "Meals served, COVID-19 response", value: "7,77,534", note: "Bengaluru, 1 April – 3 May 2020" },
+    { icon: "health", label: "People screened at free health camps", value: "3,500+", note: "5 camps across Bengaluru, Mandya, Raichur and Belagavi" },
+    { icon: "education", label: "Children given education support", value: "600+", note: "About 500 students in 3 Yarnal schools, and about 120 children over six years" },
+    { icon: "hall", label: "Community spaces built or renovated", value: "3", note: "Samudaya Bhavan and community hall, Yarnal; staff quarters, Hosur" },
+    { icon: "quarters", label: "Rooms of staff quarters", value: "14", note: "For teachers serving two schools at Hosur, with over 400 students" },
+  ] as { icon: "folios" | "manuscripts" | "repositories" | "meals" | "health" | "education" | "hall" | "quarters"; label: string; value: Pending<string>; note: string }[],
+  /** The survey, as the line the figures stand on: what remains. */
+  survey: { value: "17,14,928 folios", text: "in 12,681 manuscripts, documented by our survey, mark the work ahead." },
 } as const;
 
 /**
@@ -328,7 +332,7 @@ export const communityTeaser = {
   heading: "Service where it is needed",
   body: "Alongside heritage work, the Foundation responds to healthcare, education and emergency needs — understanding what a community requires, then responding directly.",
   highlights: [
-    { label: "Healthcare", value: "3,500+", note: "Screened at free medical camps, with 251+ cataract surgeries and 5 heart bypasses." },
+    { label: "Healthcare", value: "3,500+", note: "Screened at free medical camps, with 250+ cataract surgeries and 5 heart bypasses." },
     { label: "Education support", value: "c. 500", note: "Students given books and stationery, across three schools near Yarnal." },
     { label: "Emergency relief", value: "7,77,534", note: "Meals in Bengaluru's 2020 COVID-19 response; flood relief for 262 families in 2019." },
   ],
@@ -600,7 +604,7 @@ export const board = {
   label: "Board",
   heading: "Guided by trustees and advisors",
   intro:
-    "Eight founder trustees and three advisors guide the Foundation's work.",
+    "Nine founder trustees and four advisors guide the Foundation's work.",
   members: [
     { name: "Dr. D. Veerendra Heggade", rank: "Param Samrakshak Margadarshak & Founder Trustee", affiliation: "Hereditary Dharmadhikari, Shri Kshetra Dharmasthala; Padma Vibhushan (2015); Member of Parliament, Rajya Sabha", image: "/images/trustees/veerendra-heggade.jpeg" },
     { name: "Shri Ashok Patni", rank: "Settlor, Visionary & Founder Trustee", affiliation: "Chairman Emeritus, R.K. Group; R.K. Marble; Wonder Cement", image: "/images/trustees/ashok-patni.jpeg" },

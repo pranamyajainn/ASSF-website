@@ -1,7 +1,8 @@
 /**
- * Trustee and advisor profiles — Foundation's "Trustee Intro" document
- * (Aug 2026). `body` is the condensed line shown on each card; `bio` is the
- * full profile from the document, lightly copy-edited, opened on demand.
+ * Trustee and advisor profiles, word for word from the Foundation's
+ * "Trustee Intro" document of 26 October 2026 (sections 4.2 and 4.3), in
+ * its order, with its photographs. Each `body` is the approved profile;
+ * `bio` is optional, for a longer profile opened on demand.
  */
 export const pageHero = {
   eyebrow: "Leadership & Governance",
@@ -11,83 +12,84 @@ export const pageHero = {
 
 export const trustees = [
   {
-    name: "Dr. D. Veerendra Heggade",
-    rank: "Param Samrakshak Margadarshak & Founder Trustee",
-    body: "Hereditary Dharmadhikari of Shri Kshetra Dharmasthala since 1968, and a nationally respected institution-builder through the SDM institutions and SKDRDP. Conferred the Padma Vibhushan in 2015 and nominated to the Rajya Sabha in 2022.",
-    bio: ["Padma Vibhushan Dr. D. Veerendra Heggade is the Hereditary Dharmadhikari of Shri Kshetra Dharmasthala, one of India's most respected centres of faith, service and cultural heritage. Since assuming this responsibility in 1968, he has devoted his life to advancing rural development, education, healthcare, environmental conservation and the preservation of India's cultural and spiritual legacy.", "A nationally respected philanthropist and institution-builder, Dr. Heggade has led numerous transformative initiatives through the Shri Dharmasthala Manjunatheshwara (SDM) institutions and the Shri Kshethra Dharmasthala Rural Development Project (SKDRDP). In recognition of his contribution to public service, he was conferred the Padma Vibhushan, India's second-highest civilian honour, in 2015, and was nominated to the Rajya Sabha in 2022.", "As the Param Samrakshak, Margadarshak and Founder Trustee of the Foundation, his vision and guidance inspire its commitment to preserving India's manuscript heritage, while keeping conservation rooted in service, authenticity and social responsibility."],
-    image: "/images/trustees/veerendra-heggade.jpeg",
+    name: "Rajashri Dharmadhikari Dr. D. Veerendra Heggade",
+    rank: "Param Samrakshak, Margadarshak & Founder Trustee",
+    body: "Hereditary Dharmadhikari of Shri Kshetra Dharmasthala; Padma Vibhushan and Padma Bhushan awardee; nominated to the Rajya Sabha in 2022. Long record in rural development, education and cultural preservation. At ASSF he is the guiding patron of the mission, lending institutional standing to the Foundation's approach to custodial institutions and counselling the Board on the preservation of religious and cultural heritage.",
+    image: "/images/trustees/oct26/veerendra-heggade.jpg",
   },
   {
     name: "Shri Ashok Patni",
     rank: "Settlor, Visionary & Founder Trustee",
-    body: "Chairman Emeritus of R.K. Group and founder of R.K. Marble and Wonder Cement. His conviction that business success carries a social responsibility shaped the Foundation's founding values.",
-    bio: ["Shri Ashok Patni is an entrepreneur and philanthropist whose vision founded the Foundation. As Chairman Emeritus of the R.K. Group and founder of R.K. Marble and Wonder Cement, he built businesses of scale while maintaining a deep commitment to environmental stewardship and to the welfare of the underprivileged.", "His belief — that success in business must translate into responsibility to society — shaped the Foundation's core values. Shri Patni brought together the trustees who share this vision of combining social service with heritage preservation."],
-    image: "/images/trustees/ashok-patni.jpeg",
-  },
-  {
-    name: "Shri Anil Kumar Sethi",
-    rank: "President & Founder Trustee",
-    body: "Chairman of ADD Group and a long-time infrastructure leader, having pioneered work in water, power, sanitation and smart-city development through Pump Academy and iPUMPNET.",
-    bio: ["Chairman of ADD Group and a long-time infrastructure leader, Shri Sethi has pioneered innovations in water, power, sanitation and smart-city development. As the founder of Pump Academy and iPUMPNET technology, he has created impact in critical sectors.", "His commitment to the Foundation is personal: he leads major charitable health, education and heritage-preservation initiatives. As President, he provides strategic leadership and ensures operational excellence."],
-    image: "/images/trustees/anil-kumar-sethi.png",
+    body: "Chairman Emeritus of the R.K. Group and founder of R.K. Marble, a principal force behind Wonder Cement. As Settlor he constituted the Trust and endowed its founding corpus, and he continues to set the long-term direction of the Foundation's heritage and community mandate.",
+    image: "/images/trustees/oct26/ashok-patni.jpg",
   },
   {
     name: "Shri Rajendra Kumar Kataria",
     rank: "Working President & Founder Trustee",
-    body: "Leads Kataria Automobiles, one of India's largest Maruti-Suzuki dealership networks, and has extended that customer-centred approach into education, health and environment initiatives.",
-    bio: ["The driving force of Kataria Automobiles — India's leading Maruti-Suzuki dealership, with 125+ touchpoints and record-breaking sales milestones — Shri Kataria demonstrates that customer-centric, innovation-led leadership creates both business excellence and social responsibility.", "His philanthropic contributions in education, health and the environment reflect his belief that prosperity must serve the community."],
-    image: "/images/trustees/rajendra-kumar-kataria.jpeg",
+    body: "Head of Kataria Automobiles Pvt. Ltd.; philanthropic work in education, health and environment. As Working President, he holds executive responsibility for the conservation Project, the progress of work at each site, the deployment of conservation teams and the delivery of the Foundation's project commitments.",
+    image: "/images/trustees/oct26/rajendra-kumar-kataria.jpg",
   },
   {
-    name: "Shri Rakesh Kumar Jain",
-    rank: "Secretary & Founder Trustee",
-    body: "FCA and FCS with expertise in insolvency, valuation and governance. Served as National Secretary during the Bahubali Mahamastakabhisheka at Shravanabelagola in 2018.",
-    bio: ["An FCA and FCS with expertise in insolvency, valuation and corporate governance, Shri Jain brings rigorous financial and organisational discipline to the Foundation.", "His deep involvement in social activities and his leadership of large-scale humanitarian initiatives — including prosthetic-limb camps — demonstrate strong organisational capacity and humanitarian commitment. He served as National Secretary during the Bahubali Mahamastakabhisheka held at Shravanabelagola in 2018."],
-    image: "/images/trustees/rakesh-kumar-jain.jpeg",
+    name: "Shri Anil Kumar Sethi",
+    rank: "President & Founder Trustee",
+    body: "Chairman of the ADD Group; infrastructure leader associated with SPML Infra; founder of Pump Academy and iPUMPNET. As President he leads the Foundation's outreach and representation, institutional relationships, and the convening of events through which the conservation work is presented to donors, custodians and the wider community.",
+    image: "/images/trustees/oct26/anil-kumar-sethi.jpg",
   },
   {
     name: "Shri Suresh Sablawat",
     rank: "Founder Trustee",
-    body: "Leads Readiprint International and has long been involved in cultural-heritage preservation and community welfare as a trustee at major institutions.",
-    bio: ["Leader of Readiprint International, a reputable printing and publishing enterprise, Shri Sablawat has devoted himself to preserving cultural heritage and advancing community welfare.", "A key trustee at major institutions, he understands that heritage preservation requires both expertise and a genuine commitment to stewardship."],
-    image: "/images/trustees/suresh-sablawat.jpeg",
+    body: "Head of Readiprint International Pvt. Ltd. A trustee at major Jain institutions, he brings the Foundation its connection to the wider network of Jain trusts and repositories, through which collections needing conservation are identified and access is arranged.",
+    image: "/images/trustees/oct26/suresh-sablawat.jpg",
   },
   {
     name: "Shri Vinod Doddanavar",
     rank: "Founder Trustee",
-    body: "Secretary of Bharatesh Education Trust, with a background spanning pharma research and academia. Has supported heritage restoration and COVID-care initiatives, and served as National Secretary during the 2018 Bahubali Mahamastakabhisheka.",
-    bio: ["Secretary of Bharatesh Education Trust, with expertise spanning pharmaceutical research, academia and family enterprises, Shri Doddanavar has expanded educational access, supported heritage restoration and launched major social projects, including COVID-care facilities.", "His background across diverse sectors brings a comprehensive understanding of societal challenges and their solutions. He also served as National Secretary during the Bahubali Mahamastakabhisheka held at Shravanabelagola in 2018."],
-    image: "/images/trustees/vinod-doddanavar.jpeg",
+    body: "Secretary, Bharatesh Education Trust; background in pharmaceutical research and academia, national Jain community leadership roles. He connects the mission to educational and academic institutions and to community leadership, and served as National Secretary during the Bahubali Mahamastakabhisheka at Shravanabelagola in 2018.",
+    image: "/images/trustees/oct26/vinod-doddanavar.jpg",
+  },
+  {
+    name: "Shri Rakesh Kumar Jain",
+    rank: "Secretary, Treasurer & Founder Trustee",
+    body: "FCA and FCS; expertise in insolvency, valuation and corporate governance. He manages the finances of the Foundation — budgets, financial controls, statutory accounts and audit, and the utilisation reporting that accompanies grant-supported work.",
+    image: "/images/trustees/oct26/rakesh-kumar-jain.jpg",
   },
   {
     name: "Shri Ashok Kumar Jain",
     rank: "Founder Trustee",
-    body: "Holds senior positions across community organisations, with long-standing responsibility for heritage conservation and community cohesion.",
-    bio: ["A retired businessman with senior positions across key community organisations, Shri Jain holds significant responsibility for heritage conservation and community cohesion.", "His role in the management of cultural institutions reflects his understanding that heritage preservation is both a financial and a moral responsibility."],
-    image: "/images/trustees/ashok-kumar-jain.jpeg",
+    body: "Senior positions across national and regional Jain community bodies, involved in the management of Shravanabelagola institutions and Karnataka tirth kshetras. He maintains the Foundation's custodial relationships with repositories in Karnataka, on which site access and post-project preservation depend.",
+    image: "/images/trustees/oct26/ashok-kumar-jain.jpg",
+  },
+  {
+    name: "Prof. D. A. Appa Patil",
+    rank: "Founder Trustee",
+    body: "Professor D. A. Appa Patil is an educationist, author and scholar with a sustained engagement with Jain philosophy, literature and spiritual heritage. As a Founder Trustee, he brings this academic and cultural perspective to ASSF’s mission of conserving India’s manuscript heritage and safeguarding the knowledge contained within it for future generations.",
+    image: "/images/trustees/oct26/appa-patil.jpg",
   },
 ] as const;
 
 export const advisors = [
   {
     name: "Shri Rajeev Jain",
-    rank: "Chief Advisor & Mentor",
-    body: "Former Director General of the Press Information Bureau, Government of India (IFS, 1991), with three decades across Finance, Defence, Civil Aviation and Commerce & Industry. Mentors the Foundation's strategic expansion, institutional partnerships and policy alignment.",
-    bio: ["Shri Rajeev Jain, former Director General of the Press Information Bureau (Government of India; IFS, 1991), brings three decades of distinguished service in national government leadership. His tenure has spanned senior strategic and communication roles across key ministries, including Finance, Defence, Civil Aviation, and Commerce & Industry.", "Recognising the national importance of safeguarding India's ancient knowledge traditions and making them accessible through modern digital platforms, he formally associated with the Foundation to mentor its strategic expansion, institutional partnerships, policy alignment and capacity-building.", "Under his guidance, the Foundation's conservation programme is being positioned as a scalable national heritage initiative that integrates scientific conservation, digital preservation, research access and public engagement, in line with India's broader cultural-preservation priorities."],
-    image: "/images/trustees/rajeev-jain.jpeg",
+    rank: "Chief Advisor, Acharya Shanti Sagar Foundation | Former Director General, Press Information Bureau, Government of India",
+    body: "An officer of the Indian Information Service (1991 batch) who retired as Director General of the Press Information Bureau after three decades leading government communications across the Ministries of Finance, Defence, Petroleum and Natural Gas, Commerce and Industry, Housing and Urban Affairs, and Railways. He has served as a government nominee director on public sector boards, bringing governance and institutional oversight experience. As Chief Advisor he guides ASSF on institutional development, government engagement and the public communication of the Foundation’s conservation work.",
+    image: "/images/trustees/oct26/rajeev-jain.jpg",
   },
   {
     name: "Dr. Jasvant Modi",
-    rank: "Advisor",
-    body: "A retired gastroenterologist and philanthropist based in Los Angeles, with decades of experience supporting healthcare, education and Jain community initiatives across India, the United States and Europe.",
-    bio: ["Dr. Jasvant Modi is a retired gastroenterologist and philanthropist based in Los Angeles, with a distinguished career in healthcare and community service. With decades of experience in medicine, institution-building and philanthropy, he has supported initiatives in healthcare, education, and Jain heritage and community development across India, the United States and Europe.", "He has also held leadership roles in Jain community organisations. As an Advisor, Dr. Modi provides guidance towards strengthening the Foundation's vision and advancing its commitment to heritage preservation and service to society."],
-    image: "/images/trustees/jasvant-modi.png",
+    rank: "Board Member, Arihanta Institute | Past President, Jain Center of Southern California",
+    body: "A gastroenterologist who retired from practice in 2014 to give his time to philanthropy in healthcare and Jain education. Since 2015 he has endowed chairs, professorships, post-doctoral fellowships and graduate scholarships that have carried Jain studies into universities across North America and India, and in 2023 he received the Ahiṃsā Award from the Institute of Jainology at the UK House of Commons. On the ASSF Advisory Board he guides the Foundation’s engagement with the international Jain studies community and the scholarly use of its conserved manuscripts.",
+    image: "/images/trustees/oct26/jasvant-modi.jpg",
   },
   {
     name: "Dr. Ashok Jetawat",
-    rank: "Advisor",
-    body: "An academic, researcher and e-governance specialist with a Ph.D. in e-Governance, contributing organisational-development and institution-building expertise to the Foundation's growth.",
-    bio: ["Dr. Ashok Jetawat is an academic, researcher, corporate trainer and e-governance specialist with extensive experience in education, professional development and institutional leadership. With a Ph.D. in e-Governance, he has contributed extensively to research, mentoring, leadership development and capacity-building.", "His expertise spans organisational development, team building, productivity, e-governance and professional training. As an Advisor, Dr. Jetawat provides strategic guidance to strengthen the Foundation's programmes, institutional capabilities and long-term impact."],
-    image: "/images/trustees/ashok-jetawat.png",
+    rank: "Professor and Research Guide, Pacific University | Chairman, Motivational Society of Achiever",
+    body: "An engineer and researcher in e-Governance, technology and management, holding a Doctorate in e-Governance from Mohanlal Sukhadia University alongside M.Tech. and MBA qualifications. He has published over forty research papers, guides doctoral scholars at Pacific University, and received the Scroll of Honour from The Institution of Engineers (India) for his services to the engineering fraternity. On the ASSF Advisory Board he advises on the technological and systems dimensions of the Foundation’s manuscript documentation and digitization Project.",
+    image: "/images/trustees/oct26/ashok-jetawat.jpg",
+  },
+  {
+    name: "Dr. Priyadarshana Jain",
+    rank: "Associate Professor and Head (i/c), Department of Jainology, University of Madras, Chennai",
+    body: "A scholar of Jain philosophy, logic and metaphysics, Prakrit language and literature, Jaina scriptures and Indian culture, with M.A., M.Phil. and Ph.D. in Jainology. Her edited works include Essence of Samayasara and Essence of Niyamasāra, and she has long been associated with institutions engaged in Jainology and Prakrit research. On the ASSF Advisory Board she provides academic and subject-matter guidance on the conservation, documentation and digitization of the Foundation’s manuscript collections.",
+    image: "/images/trustees/oct26/priyadarshana-jain.jpg",
   },
 ] as const;

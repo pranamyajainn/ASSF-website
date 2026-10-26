@@ -35,14 +35,14 @@ export const org = {
 } as const;
 
 /**
- * One folio, and one full grantha of about 100 folios — as the Foundation
- * charges them in Apna Dharm, its donation system ("Taadpatra Restoration,
- * ₹414/Page"; Oct 2026, replacing the ₹370 first given), so the site and the
- * checkout agree. The site editor's Prices change them; the donate page's
- * amounts come from Apna Dharm itself.
+ * One folio, and one full grantha of about 100 folios. Review branch only:
+ * ₹370 / ₹37,000 at the Foundation's request (Alka, 26 Oct 2026). Apna Dharm,
+ * its donation system, still charges ₹414/Page, so this must not reach the
+ * live site until Apna Dharm is changed to match. The site editor's Prices
+ * change these; the donate page's amounts come from Apna Dharm itself.
  */
-export const folioPrice = 414;
-export const granthaPrice = 41400;
+export const folioPrice = 370;
+export const granthaPrice = 37000;
 
 export const nav = [
   { label: "About", href: "/about" },

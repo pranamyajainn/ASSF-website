@@ -60,9 +60,9 @@ export const preserved = {
     { value: "4", label: "conservation projects, 2 completed and 2 under way" },
   ],
   projects: [
-    { name: "Kumbhoj Bahubali, Kolhapur", status: "Completed 2024", done: true, body: "1,140 manuscripts and 259 archival books, 1,06,277 folios, treated over two and a half years." },
-    { name: "Jinwani, Mahaveer Brahmacharyashram, Karanja Lad", status: "Completed 2025", done: true, body: "193 manuscripts and 28 archival books, 28,268 folios, including postcards and handwritten letters." },
-    { name: "Bahubali Prakrit Vidyapeeth, Shravanabelagola", status: "Under way since July 2025", done: false, body: "A collection of 2,695 palm-leaf granthas. 309 granthas and 31,987 folios conserved so far." },
+    { name: "Bahubali Siddhopeth Granthalaya, Kumbhoj, Maharashtra", status: "Completed 2024", done: true, body: "1,140 manuscripts and 259 archival books, 1,06,277 folios, treated over two and a half years." },
+    { name: "Jinvani, Mahaveer Brahmacharyashram, Karanja Lad", status: "Completed 2025", done: true, body: "193 manuscripts and 28 archival books, 28,268 folios, including postcards and handwritten letters." },
+    { name: "Bahubali Prakrit Bhawan, Shravanabelagola, Hassan District, Karnataka", status: "Under way since July 2025", done: false, body: "A collection of 2,695 palm-leaf granthas. 309 granthas and 31,987 folios conserved so far." },
     { name: "Balatkar Gan Mandir, Karanja Lad", status: "Under way", done: false, body: "Conservation of the temple’s collection, carried out in the lab we built at Karanja Lad." },
   ],
   quote: {
@@ -81,13 +81,13 @@ export const reached = {
       icon: "health",
       title: "Healthcare",
       headline: "3,500+ people screened",
-      lines: ["5 free camps across Bengaluru, Mandya, Raichur and Belagavi", "600 pairs of free spectacles", "250+ cataract cases taken to free surgery", "78 units of blood collected"],
+      lines: ["5 free camps across Bengaluru, Mandya, Raichur and Belagavi", "463 pairs of free spectacles", "250+ cataract cases taken to free surgery", "78 units of blood collected"],
     },
     {
       icon: "meal",
       title: "Relief in a crisis",
       headline: "7,77,534 meals",
-      lines: ["Bengaluru, 1 April to 3 May 2020, with 2,795 food grain kits, alongside 15 partner organisations", "2019 Belagavi floods: 2,500 survival kits across 6 villages and ₹10,000 each to 262 families rebuilding their homes"],
+      lines: ["Bengaluru, 1 April to 3 May 2020, with 2,795 food grain kits, alongside 15 partner organisations", "2019 floods in Athani, Gokak, Sangli, Bagalkot, Raibag, Bhoj, Chikkodi and Mudlagi (Belgaum District) and in Kolhapur District, Maharashtra: 2,500 survival kits across 6 villages and ₹10,000 each to 262 families rebuilding their homes"],
     },
     {
       icon: "book",
