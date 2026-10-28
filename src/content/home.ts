@@ -206,7 +206,7 @@ export const ledger = {
     { icon: "repositories", label: "Repositories surveyed", value: "18", note: "Karnataka 3 · Maharashtra 6 · Tamil Nadu 9" },
     { icon: "meals", label: "Meals served, COVID-19 response", value: "7,77,534", note: "Bengaluru, 1 April – 3 May 2020" },
     { icon: "health", label: "People screened at free health camps", value: "3,500+", note: "5 camps across Bengaluru, Mandya, Raichur and Belagavi" },
-    { icon: "education", label: "Children given education support", value: "600+", note: "About 500 students in 3 Yarnal schools, and about 120 children over six years" },
+    { icon: "education", label: "Children given education support", value: "500+", note: "Over six years, including books and stationery in 3 Yarnal schools" },
     { icon: "hall", label: "Community spaces built or renovated", value: "3", note: "Samudaya Bhavan and community hall, Yarnal; staff quarters, Hosur" },
     { icon: "quarters", label: "Rooms of staff quarters", value: "14", note: "For teachers serving two schools at Hosur, with over 400 students" },
   ] as { icon: "folios" | "manuscripts" | "repositories" | "meals" | "health" | "education" | "hall" | "quarters"; label: string; value: Pending<string>; note: string }[],

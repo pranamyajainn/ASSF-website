@@ -92,8 +92,8 @@ export const reached = {
     {
       icon: "book",
       title: "Education",
-      headline: "600+ children supported",
-      lines: ["Books and stationery for about 500 students in 3 Yarnal schools", "Education support for about 120 children over six years"],
+      headline: "500+ children supported",
+      lines: ["Education support for 500+ children over six years", "Books and stationery for students in 3 Yarnal schools"],
     },
   ] as { icon: "health" | "meal" | "book"; title: string; headline: string; lines: string[] }[],
   quote: {
@@ -125,8 +125,6 @@ export const sustained = {
   heading: "We build the capacity, then we do the work",
   body: "The Foundation sets up its own labs, trains its own conservators and carries each project through from survey to the final archival box. Most of this has been made possible by the Foundation’s own resources, a commitment we renew every year.",
   stats: [
-    { value: "₹2.10 crore", label: "invested in manuscript conservation" },
-    { value: "94%", label: "from the Foundation’s own resources" },
     { value: "2", label: "conservation labs running, at Karanja Lad and Shravanabelagola" },
   ],
   supporting: "Grant support under the national manuscripts framework has stood beside us on two projects, and we welcome every hand that joins this work.",
