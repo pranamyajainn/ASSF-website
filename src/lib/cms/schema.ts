@@ -96,11 +96,11 @@ export const COLLECTIONS = new Set([
  * the AI connector and the server's checks all take the shape from here.
  */
 export const ITEM_TEMPLATES: Record<string, Json> = {
-  "careers.openings.items": { role: "", location: "", description: "" },
+  "careers.openings.items": { role: "", location: "", openings: "", pay: "", description: "", responsibilities: [], qualifications: [], whyJoin: [] },
 };
 
 /** Paragraph lists: open, whatever their path. */
-const TEXT_LISTS = new Set(["paragraphs", "bio", "body", "statement", "subjects"]);
+const TEXT_LISTS = new Set(["paragraphs", "bio", "body", "statement", "subjects", "responsibilities", "qualifications", "whyJoin"]);
 
 /** "home.sites.items[].figures" for ["home", "sites", "items", 2, "figures"]. */
 export function schemaPath(path: Path): string {
@@ -218,7 +218,12 @@ const PATH_LABELS: Record<string, string> = {
   "careers.openings.items": "Vacancies",
   "careers.openings.items[].role": "Role (the position's name)",
   "careers.openings.items[].location": "Location",
-  "careers.openings.items[].description": "Short description",
+  "careers.openings.items[].openings": "How many openings (e.g. 4 openings)",
+  "careers.openings.items[].pay": "Monthly remuneration",
+  "careers.openings.items[].description": "Role overview",
+  "careers.openings.items[].responsibilities": "Key responsibilities (one per line)",
+  "careers.openings.items[].qualifications": "Qualifications and experience (one per line)",
+  "careers.openings.items[].whyJoin": "Why join (one per line)",
   "careers.openings.empty": "Message when there are no openings",
   "videos.gallery.items": "Videos",
   "photos.gallery.items": "Photos",
@@ -270,7 +275,7 @@ export type ModuleName = (typeof PAGES)[number]["module"];
 export const SECTION_ORDER: Partial<Record<ModuleName, string[]>> = {
   home: ["hero", "pillarsIntro", "mission", "ruralTeaser", "communityTeaser", "ledger", "upClose", "adopt", "voices", "field", "join", "survey", "lineage", "sites", "standing"],
   shared: ["org", "folioPrice", "granthaPrice", "pillars", "nav", "navMore"],
-  careers: ["pageHero", "openings", "apply"],
+  careers: ["pageHero", "summary", "about", "openings", "locations", "apply"],
   photos: ["pageHero", "gallery"],
   videos: ["pageHero", "gallery"],
 };
@@ -299,7 +304,10 @@ const SECTION_LABELS: Record<string, string> = {
   "shared.navMore": "Menu — under “More”",
   "photos.gallery": "Photographs",
   "videos.gallery": "Films",
+  "careers.summary": "Summary line",
+  "careers.about": "About the Foundation",
   "careers.openings": "Open positions",
+  "careers.locations": "Work locations",
   "careers.apply": "How to apply",
   "shared.pillars": "Three pillars (everywhere)",
   "trustees.trustees": "Trustees",

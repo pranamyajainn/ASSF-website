@@ -15,10 +15,10 @@ export const pageHero = {
   title: "Service Where It Is Needed",
   body: "Heritage work does not stand apart from human need. ASSF responds to healthcare, education and emergency needs directly — understanding what a community requires, then acting on it.",
   plate: {
-    src: "/images/community/health-camp-team.jpg",
-    alt: "Doctors, nurses and volunteers standing in rows behind an Acharya Shanti Sagar Foundation banner at a free health camp.",
-    caption: "The team at a free health camp.",
-    position: "55% 50%",
+    src: "/images/community/students-rural-health-centre.jpg",
+    alt: "A long line of students and health workers, most in white coats, standing on open ground outside a rural health centre.",
+    caption: "Students at a rural health centre.",
+    position: "50% 50%",
   },
 } as const;
 
@@ -42,6 +42,7 @@ export const healthcare = {
   images: [
     { src: "/images/community/health-screening.jpeg", alt: "A nurse recording an ECG for a man lying on a camp bed.", caption: "Diagnostic screening at a camp." },
     { src: "/images/community/health-consultation.jpeg", alt: "A doctor consulting patients at a table beneath Kannada camp banners.", caption: "Specialist consultation, free of charge." },
+    { src: "/images/community/health-camp-outreach.jpg", alt: "Health workers seated at tables checking blood pressure and taking down details for women and children at a community health camp.", caption: "Community health camp outreach." },
   ],
 } as const;
 

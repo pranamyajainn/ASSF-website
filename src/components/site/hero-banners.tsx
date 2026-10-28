@@ -13,6 +13,8 @@ export type Banner = {
   titleLang?: string;
   body: string;
   translation?: string;
+  /** A line on work that is coming, set apart from what has been done. */
+  upcoming?: string;
   fact: string;
   link: { label: string; href: string };
   images: readonly BannerImage[];
@@ -234,6 +236,10 @@ function BannerLeaf({ banner, eager }: { banner: Banner; eager: boolean }) {
         ) : null}
 
         <p className="mt-3 max-w-[38ch] text-[1.0625rem] leading-relaxed text-ink-soft lg:text-lg">{banner.body}</p>
+
+        {banner.upcoming ? (
+          <p className="mt-3 max-w-[40ch] border-l-2 border-orpiment pl-3 text-[1rem] leading-snug text-ink">{banner.upcoming}</p>
+        ) : null}
 
         <p className="mt-4 flex max-w-[44ch] items-baseline gap-3 font-mono text-register text-cinnabar">
           <span aria-hidden="true" className="h-px w-5 shrink-0 -translate-y-[0.3em] bg-cinnabar/60" />
