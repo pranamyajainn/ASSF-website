@@ -276,8 +276,11 @@ export default async function ImpactPage() {
               </li>
             ))}
           </ul>
-          <div className="mt-10">
+          <div className="mt-10 flex flex-wrap gap-3">
             <Button href={next.button.href}>{next.button.label}</Button>
+            <Button href={next.reports.href} variant="outline">
+              {next.reports.label}
+            </Button>
           </div>
         </Leaf>
         <section className="py-20 text-center lg:py-28">

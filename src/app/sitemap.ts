@@ -14,6 +14,7 @@ const PAGES = [
   "/gallery/photos",
   "/gallery/videos",
   "/careers",
+  "/reports",
   "/donate",
 ];
 

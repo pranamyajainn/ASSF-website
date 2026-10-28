@@ -48,5 +48,7 @@ export const gallery = {
     { src: "/images/community/education-support-1.jpeg", ratio: "549 / 426", alt: "Children in a school courtyard receiving workbooks from Foundation volunteers seated at a table.", caption: "Workbooks for schoolchildren near Yarnal." },
     { src: "/images/community/education-support-2.jpeg", ratio: "1152 / 648", alt: "Schoolchildren in uniform holding their new books, with teachers and Foundation members, in front of a school banner.", caption: "Books and stationery, handed over at school." },
     { src: "/images/community/relief-distribution-3.jpeg", ratio: "1032 / 502", alt: "Masked volunteers handing a food packet to a woman at her doorway.", caption: "The COVID-19 response, Bengaluru, 2020." },
+    { src: "/images/conservation/palm-leaf-krj-pl-02.jpg", ratio: "2000 / 1124", alt: "A gloved hand holding a single inscribed palm leaf beside a label reading KRJ/PL/02.", caption: "A single palm leaf, labelled KRJ/PL/02." },
+    { src: "/images/conservation/palm-leaf-bundles-shelf.jpg", ratio: "2000 / 1500", alt: "Palm-leaf manuscript bundles tied with cord on a metal shelf, some wrapped in patterned red cloth.", caption: "Palm-leaf bundles on the shelf, April 2024." },
   ] as Photo[],
 };

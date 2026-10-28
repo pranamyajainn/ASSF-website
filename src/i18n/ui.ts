@@ -183,6 +183,7 @@ export const ui = {
     photos: "Photo Gallery",
     videos: "Video Gallery",
     careers: "Careers",
+    reports: "Reports",
   },
   careers: {
     location: "Location",

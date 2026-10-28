@@ -24,9 +24,9 @@ export const whatWeConserve = {
       name: "Palm-leaf manuscripts",
       body: "Text inscribed into prepared palm leaves and bound into units. Over time the leaf itself becomes brittle, cracks and splits — conservation has to work with, not against, that material.",
       image: {
-        src: "/images/conservation/palm-leaf-bundles.jpg",
-        alt: "Palm-leaf manuscripts on a white table: leaves fanned open, and stacked leaves between wooden covers tied with cord.",
-        caption: "Palm-leaf manuscripts laid out for conservation, Shravanabelagola, July 2025.",
+        src: "/images/conservation/palm-leaf-pothi.jpg",
+        alt: "A palm-leaf manuscript close up: long, narrow leaves inscribed with script, stacked and threaded on a string.",
+        caption: "A palm-leaf manuscript, its leaves threaded on a string.",
       },
     },
     {

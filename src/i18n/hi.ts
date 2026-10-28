@@ -902,6 +902,7 @@ export const hi: Translation = {
       photos: "फ़ोटो गैलरी",
       videos: "वीडियो गैलरी",
       careers: "करियर",
+      reports: "रिपोर्ट",
     },
     careers: {
       location: "स्थान",

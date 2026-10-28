@@ -23,6 +23,8 @@ export function isLang(value: unknown): value is Lang {
 /** Put an internal path into an edition: ("/about#scale", "hi") → "/hi/about#scale". */
 export function localizeHref(href: string, lang: Lang): string {
   if (lang === "en" || !href.startsWith("/") || href.startsWith("//")) return href;
+  // Files (a report's PDF, say) are the same in every edition.
+  if (/\.[a-z0-9]{2,4}$/i.test(href.split(/[?#]/)[0])) return href;
   if (href.startsWith("/api") || href.startsWith("/trustee-portal") || href.startsWith("/images")) {
     return href;
   }

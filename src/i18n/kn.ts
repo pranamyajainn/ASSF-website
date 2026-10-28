@@ -901,6 +901,7 @@ export const kn: Translation = {
       photos: "ಫೋಟೋ ಗ್ಯಾಲರಿ",
       videos: "ವೀಡಿಯೊ ಗ್ಯಾಲರಿ",
       careers: "ಉದ್ಯೋಗಾವಕಾಶಗಳು",
+      reports: "ವರದಿಗಳು",
     },
     careers: {
       location: "ಸ್ಥಳ",

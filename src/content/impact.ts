@@ -146,6 +146,7 @@ export const next = {
     { title: "Care for a manuscript", amount: "₹{granthaPrice}", body: "Carries a complete manuscript through conservation.", href: "/donate" },
   ],
   button: { label: "Be part of the work", href: "/donate" },
+  reports: { label: "Read our reports", href: "/reports" },
   closing: {
     latin: "Parasparopagraho Jivanam",
     translation: "All life is bound together in mutual support.",
