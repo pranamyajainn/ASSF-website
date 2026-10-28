@@ -188,7 +188,7 @@ export const ui = {
     location: "Location",
     apply: "Apply by email",
     /** The subject line an application email opens with. */
-    subject: "Application: {role}",
+    subject: "Application – {role} – [Preferred Location]",
     write: "Write to {email}",
   },
   gallery: {
