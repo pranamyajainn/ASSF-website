@@ -267,9 +267,9 @@ export const communityTeaser = {
     { label: "Emergency relief", value: "7,77,534", note: "Meals in Bengaluru's 2020 COVID-19 response; flood relief for 262 families in 2019." },
   ],
   plate: {
-    src: "/images/community/health-camp-team.jpg",
-    alt: "Doctors, nurses and volunteers standing in rows behind an Acharya Shanti Sagar Foundation banner at a free health camp.",
-    caption: "The team at a free health camp.",
+    src: "/images/community/students-rural-health-centre.jpg",
+    alt: "A long line of students and health workers, most in white coats, standing on open ground outside a rural health centre.",
+    caption: "Students at a rural health centre.",
   },
   link: { label: "See Community Services", href: "/community-services" },
 } as const;

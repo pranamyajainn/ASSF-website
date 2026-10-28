@@ -12,13 +12,14 @@ export async function generateMetadata() {
 
 /**
  * Governance, in order: the trustees who carry a named role first, then the
- * founder trustees, then the advisors. The portrait wall keeps the
- * cursor-tilt; the grouping carries the hierarchy, not the photo size.
+ * founder trustees, then the advisors, then the team who do the work. The
+ * portrait wall keeps the cursor-tilt; the grouping carries the hierarchy,
+ * not the photo size.
  */
 export default async function TrusteesPage() {
   const content = await getContent();
   const { ui } = content;
-  const { advisors, pageHero, trustees } = content.trustees;
+  const { advisors, pageHero, team, trustees } = content.trustees;
   const t = content.ui.trustees;
   // Grouped by the English rank (as edited), so the grouping holds in every edition.
   const sourceTrustees = resolveContent("en").trustees.trustees;
@@ -38,6 +39,7 @@ export default async function TrusteesPage() {
             items: [
               { id: "trustees", question: ui.steps.who },
               { id: "advisors", question: ui.steps.advises },
+              { id: "team", question: ui.steps.work },
             ],
           }}
           label={t.heroLabel}
@@ -65,6 +67,14 @@ export default async function TrusteesPage() {
           <Heading>{t.advisorsHeading}</Heading>
           <div className="bleed-margin">
             <PersonGrid people={advisors} columns={5} profileLabels={profile} />
+          </div>
+        </Leaf>
+
+        {/* The people who carry out the work day to day, after those who govern and advise it. */}
+        <Leaf id="team" label={team.label} question={ui.steps.work}>
+          <Heading>{team.heading}</Heading>
+          <div className="bleed-margin">
+            <PersonGrid people={team.members} columns={4} profileLabels={profile} />
           </div>
         </Leaf>
       </main>

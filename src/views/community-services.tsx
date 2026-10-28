@@ -84,7 +84,7 @@ export default async function CommunityServicesPage() {
             </table>
           </div>
 
-          <div className="bleed-margin mt-12 grid gap-4 sm:grid-cols-2">
+          <div className="bleed-margin mt-12 grid gap-4 sm:grid-cols-3">
             {healthcare.images.map((img) => (
               <Plate
                 key={img.src}
@@ -92,7 +92,7 @@ export default async function CommunityServicesPage() {
                 alt={img.alt}
                 caption={img.caption}
                 ratio="16 / 10"
-                sizes="(min-width: 640px) 40vw, 100vw"
+                sizes="(min-width: 640px) 28vw, 100vw"
               />
             ))}
           </div>

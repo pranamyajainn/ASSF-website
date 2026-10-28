@@ -62,7 +62,7 @@ export const plates = {
   rows: [
     [
       { src: "/images/survey-in-progress.jpeg", alt: "A handwritten Devanagari folio on blotting paper, beside a pH indicator strip held in tweezers.", pillar: "Manuscript conservation", caption: "A folio's acidity tested before treatment.", span: 7, ratio: "4 / 3", position: "20% 20%" },
-      { src: "/images/community/health-camp-team.jpg", alt: "Doctors, nurses and volunteers behind an Acharya Shanti Sagar Foundation banner at a free health camp.", pillar: "Community services", caption: "The team at a free health camp.", span: 5, ratio: "20 / 21", position: "52% 50%" },
+      { src: "/images/community/students-rural-health-centre.jpg", alt: "A long line of students and health workers, most in white coats, standing on open ground outside a rural health centre.", pillar: "Community services", caption: "Students at a rural health centre.", span: 5, ratio: "20 / 21", position: "50% 50%" },
     ],
     [
       { src: "/images/rural/samudaya-bhavan-3-completed.jpeg", alt: "The completed Samudaya Bhavan: whitewashed wings with blue railings around a paved courtyard.", pillar: "Rural infrastructure", caption: "The Samudaya Bhavan, Yarnal.", span: 3, ratio: "1 / 1", position: "40% 50%" },

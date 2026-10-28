@@ -91,3 +91,44 @@ export const advisors = [
     image: "/images/trustees/ashok-jetawat.png",
   },
 ] as const;
+
+/**
+ * The people who carry out the Foundation's work, word for word from its
+ * "Team Intro" document (sent by Alka, 28 Oct 2026, for Shri Anil Sethi
+ * ji), in its order and with its photographs. Each card shows the
+ * profile's first sentence; the whole profile opens on demand.
+ */
+export const team = {
+  label: "Team",
+  heading: "Our team",
+  members: [
+    {
+      name: "Alka Mehta",
+      rank: "Manager Operations",
+      body: "Manager – Operations at Acharya Shanti Sagar Foundation (ASSF), bringing over a decade of experience in banking, client relationships, and working across different departments in multinational companies.",
+      bio: ["Manager – Operations at Acharya Shanti Sagar Foundation (ASSF), bringing over a decade of experience in banking, client relationships, and working across different departments in multinational companies. Over the past two years at ASSF, she has been contributing to the planning and development of the Foundation’s manuscript conservation and digitisation projects, along with its community services and rural infrastructure development initiatives. She is committed to preserving India’s cultural heritage and supporting the Foundation’s mission of serving heritage and humanity."],
+      image: "/images/team/alka-mehta.jpg",
+    },
+    {
+      name: "Kartick Kayal",
+      rank: "Lead Conservator",
+      body: "Lead Conservator at Acharya Shanti Sagar Foundation (ASSF), specialising in the conservation and preservation of cultural heritage, particularly palm-leaf and paper manuscripts and paintings.",
+      bio: ["Lead Conservator at Acharya Shanti Sagar Foundation (ASSF), specialising in the conservation and preservation of cultural heritage, particularly palm-leaf and paper manuscripts and paintings. He leads conservation activities, project planning and supervision, treatment documentation, research and development, laboratory management, material and equipment management, and team training. He holds a Bachelor of Fine Arts (BFA) degree and a Master’s degree in Museology, complemented by specialised and advanced training in conservation. He is committed to the scientific and ethical preservation of cultural heritage and the development of sustainable conservation practices."],
+      image: "/images/team/kartick-kayal.jpg",
+    },
+    {
+      name: "Dipanjan Modak",
+      rank: "Conservator",
+      body: "Conservator at Acharya Shanti Sagar Foundation (ASSF), specialising in the conservation and preservation of palm-leaf and paper manuscripts.",
+      bio: ["Conservator at Acharya Shanti Sagar Foundation (ASSF), specialising in the conservation and preservation of palm-leaf and paper manuscripts. His responsibilities include conservation team supervision, laboratory management, documentation, condition assessment, and manuscript conservation at the ASSF Conservation Lab at NIPSAR, Shravanabelagola. He holds an M.Sc. in Museology and has completed specialised training in the Conservation of Cultural Property at NRLC, Lucknow, along with advanced training in the Conservation of Paper: Manuscripts and Miniature Paintings at KIAC under the AKST–Tata Trusts initiative. He is committed to the scientific and ethical preservation of cultural heritage and the development of sustainable conservation practices."],
+      image: "/images/team/dipanjan-modak.jpg",
+    },
+    {
+      name: "Sumanta Shekhar Gayen",
+      rank: "Conservator",
+      body: "Sumanta Shekhar Gayen serves as Paper Manuscript Conservator at Acharya Shanti Sagar Foundation (ASSF), contributing his expertise to the conservation and preservation of cultural heritage, particularly palm-leaf and paper manuscripts.",
+      bio: ["Sumanta Shekhar Gayen serves as Paper Manuscript Conservator at Acharya Shanti Sagar Foundation (ASSF), contributing his expertise to the conservation and preservation of cultural heritage, particularly palm-leaf and paper manuscripts. With 14 years of experience in art conservation, he specialises in oil paintings, paper manuscripts, miniature paintings, scroll paintings, and stone and metal objects. He holds a B.A., B.V.A., and M.A. in Museology, along with a six-month training course in Art Objects Conservation from NRLC, Lucknow. He is committed to the scientific and ethical preservation of cultural heritage and the development of sustainable conservation practices."],
+      image: "/images/team/sumanta-shekhar-gayen.jpg",
+    },
+  ],
+} as const;
