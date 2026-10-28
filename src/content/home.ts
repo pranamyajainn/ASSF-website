@@ -71,6 +71,8 @@ export const hero = {
       title: "Empowering families",
       em: "to learn and rebuild.",
       body: "When a child can keep learning and a family can rebuild its home, the whole community grows stronger.",
+      // What comes next, in the Foundation's words (Alka, 28 Oct 2026, for Shri Anil Sethi ji).
+      upcoming: "Upcoming: Swavalamban Yojana, to empower underprivileged Jain families.",
       // Both figures as the Community Services page gives them.
       fact: "c. 500 students given books and stationery · 262 families helped to rebuild after the 2019 floods",
       link: { label: "How we support education", href: "/community-services#education" },
