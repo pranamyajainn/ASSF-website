@@ -15,23 +15,33 @@ export async function generateMetadata() {
 }
 
 /**
- * Films of the Foundation's work. A film is either one of the site's own
- * recordings — played as the Voices play it, with its captions in all three
- * languages (its poster, size and captions come from the Voices, so they
- * have one source) — or a YouTube link the Foundation added in the site
- * editor. A link that is neither is left off rather than shown broken.
+ * Films of the Foundation's work. A film is one of the site's own
+ * recordings — played as the Voices play it: a Voices recording takes its
+ * poster, size and captions from the Voices, so they have one source; a
+ * clip in /videos/gallery carries its own — or a YouTube link the
+ * Foundation added in the site editor. A link that is none of these is
+ * left off rather than shown broken.
  */
 export default async function VideoGalleryPage() {
   const { videos, home, lang, ui } = await getContent();
   const { gallery, pageHero } = videos;
   const recordings = home.voices.heard.items;
 
-  type Shown = { key: string; film: (typeof gallery.items)[number]; own: (typeof recordings)[number] | null; youtube: string | null };
+  // The site's own clip, from a Voices recording or from the film's own poster, size and length.
+  type Clip = { src: string; poster: string; width: number; height: number; duration: string; tracks: ReturnType<typeof tracksFor> };
+  type Shown = { key: string; film: (typeof gallery.items)[number]; own: Clip | null; youtube: string | null };
   const films = gallery.items.flatMap((film, i): Shown[] => {
     // (A bare YouTube id is tagged in the editor's preview, like any text; links aren't.)
     const url = stripTags(film.url).trim();
-    const own = recordings.find((r) => r.video.src === url);
-    if (own) return [{ key: `own-${i}`, film, own, youtube: null }];
+    const voice = recordings.find((r) => r.video.src === url);
+    if (voice) {
+      const { captions, ...video } = voice.video;
+      return [{ key: `own-${i}`, film, own: { ...video, tracks: tracksFor(captions, lang) }, youtube: null }];
+    }
+    if (url.startsWith("/videos/") && film.poster && film.width && film.height) {
+      const clip = { src: url, poster: film.poster, width: film.width, height: film.height, duration: film.duration ?? "" };
+      return [{ key: `own-${i}`, film, own: { ...clip, tracks: film.captions ? tracksFor(film.captions, lang) : [] }, youtube: null }];
+    }
     const id = youtubeId(url);
     return id ? [{ key: `yt-${i}`, film, own: null, youtube: id }] : [];
   });
@@ -47,20 +57,20 @@ export default async function VideoGalleryPage() {
           {films.length ? (
             <div className="bleed-margin grid items-start gap-x-10 gap-y-14 md:grid-cols-2">
               {films.map(({ key, film, own, youtube }) => {
-                const upright = own ? own.video.height > own.video.width : film.url.includes("/shorts/");
+                const upright = own ? own.height > own.width : film.url.includes("/shorts/");
                 return (
                   <figure key={key} className="min-w-0">
                     <div className={upright ? "max-w-[20rem]" : ""}>
                       {own ? (
                         <VoiceFilm
-                          src={own.video.src}
-                          poster={own.video.poster}
-                          width={own.video.width}
-                          height={own.video.height}
-                          duration={own.video.duration}
+                          src={own.src}
+                          poster={own.poster}
+                          width={own.width}
+                          height={own.height}
+                          duration={own.duration}
                           title={film.title}
                           playLabel={ui.gallery.play}
-                          tracks={tracksFor(own.video.captions, lang)}
+                          tracks={own.tracks}
                           sizes={upright ? "20rem" : "(min-width: 768px) 40vw, 90vw"}
                         />
                       ) : (
