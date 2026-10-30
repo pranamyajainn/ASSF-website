@@ -38,6 +38,22 @@ export const PAYMENT_READY_HOSTS = [
   ...(process.env.NEXT_PUBLIC_DONATE_HOSTS ?? "").split(",").map((h) => h.trim()).filter(Boolean),
 ];
 
+/**
+ * Giving by the Foundation's UPI QR code, while Apna Dharm's checkout can't
+ * take payments (Oct 2026: it offered only Bharat QR and PhonePe wallet, and
+ * both failed). The donor chooses the gift and leaves a name and WhatsApp
+ * number as before; the details are kept privately for the editor's
+ * Insights (and emailed to `notify` once the site can send email), and the
+ * QR code is shown. The QR is the Foundation's IndusInd Bank merchant UPI,
+ * the bank its account is with. `on: false` brings the Apna Dharm checkout back.
+ */
+export const qrGiving = {
+  on: true,
+  upi: "Pos.11404815@indus",
+  image: "/images/give/assf-upi-qr.png",
+  notify: process.env.QR_GIFT_EMAIL || "operations@shantisagarfoundation.org",
+};
+
 /** The smallest gift Apna Dharm's checkout accepts. */
 export const MIN_GIFT = 10;
 

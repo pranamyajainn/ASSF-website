@@ -4,11 +4,11 @@ import { DonateForm } from "@/components/site/donate-form";
 import { Leaf } from "@/components/site/primitives";
 import { getContent } from "@/i18n/content";
 import { pageMetadata } from "@/i18n/metadata";
-import { DONATE_PATH, THANKS_PATH } from "@/lib/donate/config";
+import { DONATE_PATH, qrGiving, THANKS_PATH } from "@/lib/donate/config";
 
 export async function generateMetadata() {
   const { ui } = await getContent();
-  return pageMetadata("donate", DONATE_PATH, ui.donate.lede);
+  return pageMetadata("donate", DONATE_PATH, qrGiving.on ? ui.donate.qrLede : ui.donate.lede);
 }
 
 /**
@@ -19,7 +19,7 @@ export async function generateMetadata() {
 export default async function DonatePage() {
   const { ui, shared, lang, href } = await getContent();
   const t = ui.donate;
-  const { bank } = shared.org;
+  const { bank, displayName } = shared.org;
   return (
     <>
       <Header />
@@ -32,13 +32,14 @@ export default async function DonatePage() {
               {" "}॥
             </span>
           </h1>
-          <p className="mt-5 max-w-[56ch] text-[1.125rem] leading-[1.6] text-ink-soft">{t.lede}</p>
+          <p className="mt-5 max-w-[56ch] text-[1.125rem] leading-[1.6] text-ink-soft">{qrGiving.on ? t.qrLede : t.lede}</p>
           <div className="mt-10">
             <DonateForm
               lang={lang}
               t={t}
               thanksPath={href(THANKS_PATH)}
               bank={{ ...bank, labels: { bank: ui.footer.bank, account: ui.footer.account, ifsc: ui.footer.ifsc } }}
+              payee={displayName}
             />
           </div>
         </Leaf>

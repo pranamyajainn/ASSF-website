@@ -283,6 +283,24 @@ type GiftData = {
   total: number;
   unfinished: number;
   gifts: { at: string; txn: string; status: string; amount: number; category: string; lang: string }[];
+  qrOn: boolean;
+  qr: QrGift[];
+};
+
+type QrGift = {
+  at: string;
+  ref: string;
+  amount: number;
+  category: string;
+  quantity: number;
+  name: string;
+  mobile: string;
+  email: string;
+  taxId: string;
+  address: string;
+  remarks: string;
+  updates: boolean;
+  lang: string;
 };
 
 const GIFT_STATUS: Record<string, { label: string; tone: string }> = {
@@ -318,10 +336,17 @@ function Gifts() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="max-w-3xl text-[0.92rem] text-ink-soft">
-          Gifts made on the website&apos;s donate page, as each donor&apos;s browser heard from the bank. The Foundation&apos;s Apna Dharm account is the record of
-          every gift — donors&apos; names, receipts and settlements are there.
-        </p>
+        {data.qrOn ? (
+          <p className="max-w-3xl text-[0.92rem] text-ink-soft">
+            The donate page now shows the Foundation&apos;s UPI QR code, after each donor leaves a name and WhatsApp number. The bank statement is the record
+            of what was paid; the list below says who meant to give.
+          </p>
+        ) : (
+          <p className="max-w-3xl text-[0.92rem] text-ink-soft">
+            Gifts made on the website&apos;s donate page, as each donor&apos;s browser heard from the bank. The Foundation&apos;s Apna Dharm account is the record
+            of every gift — donors&apos; names, receipts and settlements are there.
+          </p>
+        )}
         <div role="group" aria-label="Period" className="flex gap-1 rounded-full border border-ink/15 bg-white/60 p-1 text-[0.88rem]">
           {[7, 30, 90, 365].map((d) => (
             <button
@@ -336,13 +361,26 @@ function Gifts() {
           ))}
         </div>
       </div>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Stat label="Completed gifts" value={data.completed.toLocaleString("en-IN")} note={`in the last ${data.days} days`} />
-        <Stat label="Given online" value={`₹${data.total.toLocaleString("en-IN")}`} note="the completed gifts together" />
-        <Stat label="Started, not completed" value={data.unfinished.toLocaleString("en-IN")} note="cancelled, failed or unclear" />
-      </div>
+      {data.qrOn ? (
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Stat label="Opened the QR code" value={data.qr.length.toLocaleString("en-IN")} note={`in the last ${data.days} days`} />
+          <Stat
+            label="Amounts chosen"
+            value={`₹${data.qr.reduce((sum, g) => sum + g.amount, 0).toLocaleString("en-IN")}`}
+            note="before paying; check the bank statement"
+          />
+          <Stat label="Completed by Apna Dharm" value={data.completed.toLocaleString("en-IN")} note="earlier online payments" />
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Stat label="Completed gifts" value={data.completed.toLocaleString("en-IN")} note={`in the last ${data.days} days`} />
+          <Stat label="Given online" value={`₹${data.total.toLocaleString("en-IN")}`} note="the completed gifts together" />
+          <Stat label="Started, not completed" value={data.unfinished.toLocaleString("en-IN")} note="cancelled, failed or unclear" />
+        </div>
+      )}
+      {data.qrOn || data.qr.length ? <QrGifts gifts={data.qr} days={data.days} /> : null}
       <section className={card}>
-        <h2 className="font-display text-[1.4rem]">Latest</h2>
+        <h2 className="font-display text-[1.4rem]">{data.qrOn ? "Earlier online payments" : "Latest"}</h2>
         {data.gifts.length ? (
           <ul className="mt-3 divide-y divide-ink/10">
             {data.gifts.map((g) => (
@@ -366,6 +404,51 @@ function Gifts() {
         )}
       </section>
     </div>
+  );
+}
+
+/**
+ * Donors who opened the UPI QR code, newest first. The bank shows the
+ * payment but not who made it; these are the details to match it with.
+ */
+function QrGifts({ gifts, days }: { gifts: QrGift[]; days: number }) {
+  return (
+    <section className={card}>
+      <h2 className="font-display text-[1.4rem]">Gifts by UPI QR code</h2>
+      <p className="mt-1 max-w-3xl text-[0.92rem] text-ink-soft">
+        Each donor below left these details and was then shown the Foundation&apos;s UPI QR code. Match each one with the bank statement (by amount and
+        time), then confirm on WhatsApp and send the receipt. Someone who opened the QR code may not have paid.
+      </p>
+      {gifts.length ? (
+        <ul className="mt-3 divide-y divide-ink/10">
+          {gifts.map((g) => (
+            <li key={g.ref + g.at} className="py-3">
+              <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <span className="text-[1rem]">
+                  ₹{g.amount.toLocaleString("en-IN")} <span className="text-ink-soft">· {g.name}</span>
+                </span>
+                <a href={`https://wa.me/91${g.mobile}`} target="_blank" rel="noreferrer" className="font-mono text-[0.9rem] text-cinnabar underline-offset-4 hover:underline">
+                  +91 {g.mobile}
+                </a>
+              </span>
+              <span className="mt-0.5 block font-mono text-[0.74rem] text-ink-faint">
+                {when(g.at)} · {g.category || "—"}
+                {g.quantity > 1 ? ` × ${g.quantity}` : ""} · {LANG_NAME[g.lang] ?? g.lang} · ref {g.ref}
+              </span>
+              {g.email || g.taxId || g.address || g.remarks || g.updates ? (
+                <span className="mt-1 block text-[0.88rem] text-ink-soft">
+                  {[g.email, g.taxId && `PAN/Aadhaar ${g.taxId}`, g.address, g.remarks && `“${g.remarks}”`, g.updates && "wants email updates"]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 text-ink-soft">No one has opened the QR code in the last {days} days.</p>
+      )}
+    </section>
   );
 }
 

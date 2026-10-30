@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { Lang } from "@/i18n/config";
 import { fill, type UI } from "@/i18n/ui";
-import { MIN_GIFT, PAYMENT_READY_HOSTS, type Category } from "@/lib/donate/config";
+import { MIN_GIFT, PAYMENT_READY_HOSTS, qrGiving, type Category } from "@/lib/donate/config";
 import { EMAIL, giftTotal, MOBILE, newTransactionId, outcomeOf, readPending, startPayment, taxIdKind, writePending } from "@/lib/donate/checkout";
 
 /**
@@ -14,6 +15,9 @@ import { EMAIL, giftTotal, MOBILE, newTransactionId, outcomeOf, readPending, sta
  * pops up. The checks are Apna Dharm's own; the payment is handed to Apna
  * Dharm's script, which opens NTT DATA's checkout. Nothing typed here is
  * stored in the browser.
+ *
+ * While gifts go by the Foundation's UPI QR code (qrGiving), the same form
+ * leaves the donor's details with the Foundation and then shows the QR.
  */
 type Field = "category" | "amount" | "name" | "mobile" | "email" | "taxId";
 
@@ -36,11 +40,14 @@ export function DonateForm({
   t,
   thanksPath,
   bank,
+  payee,
 }: {
   lang: Lang;
   t: UI["donate"];
   thanksPath: string;
   bank: { branch: string; account: string; ifsc: string; labels: { bank: string; account: string; ifsc: string } };
+  /** Whose account the QR code pays, as the donor's UPI app will show it. */
+  payee: string;
 }) {
   const [categories, setCategories] = useState<Category[] | null | "loading">("loading");
   const [categoryId, setCategoryId] = useState("");
@@ -59,12 +66,17 @@ export function DonateForm({
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
-  // Only where Apna Dharm will serve its payment script (see PAYMENT_READY_HOSTS).
+  const [qr, setQr] = useState<{ ref: string; amount: number } | null>(null);
+  const [copied, setCopied] = useState(false);
+  // Only where Apna Dharm will serve its payment script (see PAYMENT_READY_HOSTS); a QR code works anywhere.
   const ready = useSyncExternalStore(
     subscribeNothing,
-    () => PAYMENT_READY_HOSTS.includes(window.location.host),
+    () => qrGiving.on || PAYMENT_READY_HOSTS.includes(window.location.host),
     () => true,
   );
+  useEffect(() => {
+    if (qr) document.getElementById("gift-qr")?.focus();
+  }, [qr]);
 
   useEffect(() => {
     let live = true;
@@ -135,6 +147,30 @@ export function DonateForm({
     }
     if (!category) return;
     setBusy(true);
+    if (qrGiving.on) {
+      const res = await fetch("/api/donate/qr", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          amount: total,
+          category: category.original,
+          quantity: category.perUnit ? quantity : 1,
+          name,
+          mobile: mobile.trim(),
+          email,
+          taxId,
+          address,
+          remarks,
+          updates: updates && !!email.trim(),
+          lang,
+        }),
+      }).catch(() => null);
+      const data = res?.ok ? ((await res.json().catch(() => null)) as { ref?: string } | null) : null;
+      setBusy(false);
+      if (data?.ref) setQr({ ref: data.ref, amount: total });
+      else setFailure(t.qrFailed);
+      return;
+    }
     const txn = newTransactionId();
     const thanksUrl = new URL(`${thanksPath}?txn=${txn}`, window.location.origin).toString();
     writePending(txn, {
@@ -181,9 +217,79 @@ export function DonateForm({
     if (n !== undefined) setQuantity(n);
     setErrors((e) => ({ ...e, category: undefined, amount: undefined }));
   };
-  const payLabel = busy ? t.opening : category && total >= MIN_GIFT ? fill(t.payButton, { amount: inr(total) }) : t.submit;
+  const payLabel = qrGiving.on
+    ? busy
+      ? t.qrOpening
+      : category && total >= MIN_GIFT
+        ? fill(t.qrPayButton, { amount: inr(total) })
+        : t.qrSubmit
+    : busy
+      ? t.opening
+      : category && total >= MIN_GIFT
+        ? fill(t.payButton, { amount: inr(total) })
+        : t.submit;
   const noTaxNote = !taxId.trim() || !address.trim();
   const disabled = busy || !list.length || !ready;
+
+  if (qr) {
+    return (
+      <div className="grid items-start gap-x-14 gap-y-8 md:grid-cols-[minmax(0,17rem)_minmax(0,1fr)]">
+        <figure className="mx-auto w-full max-w-[17rem] md:mx-0">
+          <div className="border border-ink/20 bg-white p-3">
+            <Image src={qrGiving.image} alt={`UPI QR code: ${qrGiving.upi}`} width={720} height={720} unoptimized className="block h-auto w-full" />
+          </div>
+          <a
+            href={qrGiving.image}
+            download="ASSF-UPI-QR.png"
+            className="mt-3 flex min-h-[2.9rem] items-center justify-center border border-ink/30 px-4 text-[1rem] text-ink transition-colors hover:border-cinnabar hover:text-cinnabar"
+          >
+            {t.qrSave}
+          </a>
+        </figure>
+        <div className="min-w-0">
+          <h2 id="gift-qr" tabIndex={-1} className="font-display text-[clamp(1.7rem,1.3rem+1.4vw,2.3rem)] font-medium leading-tight outline-none">
+            {fill(t.qrHeading, { amount: inr(qr.amount) })}
+          </h2>
+          <p className="mt-2 font-mono text-register text-ink-faint">{fill(t.qrPayee, { name: payee })}</p>
+          <p className="mt-5 max-w-[52ch] text-[1.0625rem] leading-relaxed text-ink">{fill(t.qrHow, { amount: inr(qr.amount) })}</p>
+          <p className="mt-3 max-w-[52ch] text-[1rem] leading-relaxed text-ink-soft">{t.qrPhone}</p>
+          <div className="mt-5 flex max-w-md items-stretch border border-ink/25 bg-white/50">
+            <span className="min-w-0 flex-1 px-3.5 py-2.5">
+              <span className="block font-mono text-[0.72rem] text-ink-faint">{t.qrUpi}</span>
+              <span className="block break-all font-mono text-[1.05rem] text-ink">{qrGiving.upi}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() =>
+                navigator.clipboard
+                  ?.writeText(qrGiving.upi)
+                  .then(() => setCopied(true))
+                  .catch(() => {})
+              }
+              className="shrink-0 border-l border-ink/25 px-4 text-[0.95rem] text-cinnabar hover:bg-white/70"
+            >
+              <span aria-live="polite">{copied ? t.qrCopied : t.qrCopy}</span>
+            </button>
+          </div>
+          <p className="mt-6 max-w-[56ch] border-l-2 border-cinnabar/60 pl-4 text-[1rem] leading-relaxed text-ink">{t.qrAfter}</p>
+          <p className="mt-4 font-mono text-register text-ink-faint">
+            {t.reference}: {qr.ref}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setQr(null);
+              setCopied(false);
+            }}
+            className={`${more} mt-6`}
+          >
+            <span className={moreText}>{t.qrBack}</span>
+          </button>
+          <p className="mt-8 max-w-[58ch] font-mono text-register leading-relaxed text-ink-faint">{t.qrSecure}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-x-14 gap-y-12 xl:grid-cols-[minmax(0,1fr)_18rem]">
@@ -439,7 +545,7 @@ export function DonateForm({
             </p>
           ) : null}
           {noTaxNote ? <p className="mt-4 max-w-[58ch] text-[0.9rem] leading-relaxed text-ink-faint">{t.noTaxNote}</p> : null}
-          <p className="mt-3 max-w-[58ch] font-mono text-register leading-relaxed text-ink-faint">{t.secure}</p>
+          <p className="mt-3 max-w-[58ch] font-mono text-register leading-relaxed text-ink-faint">{qrGiving.on ? t.qrSecure : t.secure}</p>
         </div>
       </form>
 
@@ -453,7 +559,7 @@ export function DonateForm({
               {category.perUnit ? ` · ${quantity} × ₹${inr(category.amount)}` : ""}
             </p>
           ) : null}
-          <p className="mt-5 border-t border-ink/15 pt-4 text-[0.9rem] leading-relaxed text-ink-faint">{t.privacy}</p>
+          <p className="mt-5 border-t border-ink/15 pt-4 text-[0.9rem] leading-relaxed text-ink-faint">{qrGiving.on ? t.qrPrivacy : t.privacy}</p>
         </div>
         <div className="xl:mt-8">
           <p className="font-display text-[1.15rem]">{t.bankHeading}</p>
@@ -481,7 +587,7 @@ export function DonateForm({
           disabled={disabled}
           className="min-h-[2.9rem] shrink-0 bg-cinnabar px-5 text-[1rem] text-leaf transition-colors hover:bg-cinnabar-deep disabled:opacity-50"
         >
-          {busy ? t.opening : t.payShort}
+          {busy ? (qrGiving.on ? t.qrOpening : t.opening) : qrGiving.on ? t.qrPayShort : t.payShort}
         </button>
       </div>
     </div>

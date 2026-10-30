@@ -74,6 +74,19 @@ export async function donationCategories(lang: Lang): Promise<Category[]> {
 }
 
 /**
+ * While gifts go by QR code, Apna Dharm being unreachable needn't stop
+ * anyone giving: the same two choices, from the site's own page price.
+ */
+export async function fallbackCategories(lang: Lang, folioPrice: number): Promise<Category[]> {
+  const name = await inEdition("Taadpatra Restoration", lang);
+  const base = { name, min: 1, max: 0, step: 1, fixed: false };
+  return [
+    { ...base, id: "pages", original: `Taadpatra Restoration (₹${folioPrice}/Page)`, amount: folioPrice, perUnit: true, unitLabel: await inEdition("Number of Pages", lang) },
+    { ...base, id: "any", original: "Taadpatra Restoration (Any Amount)", amount: 0, perUnit: false, unitLabel: "" },
+  ];
+}
+
+/**
  * How a payment ended, as the donor's browser heard it from the checkout —
  * for the editor's Insights. No name, number or PAN is kept here; the
  * donor's details are in the Foundation's Apna Dharm account, which is the
