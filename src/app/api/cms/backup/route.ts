@@ -5,6 +5,7 @@ import { readEdits, storage } from "@/lib/cms/store";
 import { zip } from "@/lib/data/zip";
 import { readQuestions, KEEP_DAYS } from "@/lib/insights/questions";
 import { readGifts } from "@/lib/donate/apnadharm";
+import { readQrGifts } from "@/lib/donate/qr";
 import { GROUPS, readMail } from "@/lib/mail/data";
 
 export const runtime = "nodejs";
@@ -29,7 +30,13 @@ export async function GET(req: Request) {
   if (storage === "none") return new Response("The editor isn't connected to storage.", { status: 503 });
 
   try {
-    const [{ edits }, mail, questions, gifts] = await Promise.all([readEdits(), readMail(), readQuestions(KEEP_DAYS), readGifts(KEEP_DAYS)]);
+    const [{ edits }, mail, questions, gifts, qrGifts] = await Promise.all([
+      readEdits(),
+      readMail(),
+      readQuestions(KEEP_DAYS),
+      readGifts(KEEP_DAYS),
+      readQrGifts(KEEP_DAYS),
+    ]);
     const now = new Date();
     const stamp = now.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
     const groupName = (id: string) => GROUPS.find((g) => g.id === id)?.name ?? id;
@@ -45,8 +52,9 @@ export async function GET(req: Request) {
           "emails-sent.csv — every newsletter and report sent from the editor.",
           `visitor-questions.csv — what visitors asked the AI assistant in the last ${KEEP_DAYS} days, and its answers. No one's identity is kept.`,
           "online-gifts.csv — gifts started on the website's donate page in the last year, and how each ended, as the donor's browser heard from the bank. The Foundation's Apna Dharm account is the record of every gift.",
+          "qr-gifts.csv — donors who opened the UPI QR code on the donate page in the last year, with the details they left for their receipt.",
           "",
-          `Downloaded by ${editor.email}. Keep this file private: the mailing list is personal information.`,
+          `Downloaded by ${editor.email}. Keep this file private: the mailing list and the QR donors' details are personal information.`,
         ].join("\r\n"),
       },
       ...locales.map((l) => ({
@@ -68,6 +76,13 @@ export async function GET(req: Request) {
       {
         name: "online-gifts.csv",
         data: csv(["Started", "Reference", "Outcome", "Amount (₹)", "For", "Language"], gifts.map((g) => [g.at, g.txn, g.status, g.amount, g.category, g.lang])),
+      },
+      {
+        name: "qr-gifts.csv",
+        data: csv(
+          ["When", "Reference", "Amount (₹)", "For", "Quantity", "Name", "WhatsApp", "Email", "PAN or Aadhaar", "Address", "Note", "Wants updates", "Language"],
+          qrGifts.map((g) => [g.at, g.ref, g.amount, g.category, g.quantity, g.name, g.mobile, g.email, g.taxId, g.address, g.remarks, g.updates ? "yes" : "", g.lang]),
+        ),
       },
       {
         name: "visitor-questions.csv",
