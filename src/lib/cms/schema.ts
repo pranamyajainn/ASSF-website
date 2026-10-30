@@ -26,6 +26,8 @@ export const HIDDEN_KEYS = new Set([
   "video",
   "id",
   "youtubeId",
+  "menu",
+  "highlight",
 ]);
 
 /** Whole branches the editor leaves alone (schema paths, see `schemaPath`). */
@@ -301,7 +303,7 @@ const SECTION_LABELS: Record<string, string> = {
   "home.survey": "Manuscript survey",
   "shared.org": "Name, contact & bank details",
   "shared.nav": "Menu",
-  "shared.navMore": "Menu — under “More”",
+  "shared.navMore": "Menu — galleries, reports, careers",
   "photos.gallery": "Photographs",
   "videos.gallery": "Films",
   "careers.summary": "Summary line",

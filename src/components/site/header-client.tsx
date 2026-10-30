@@ -49,9 +49,9 @@ function setClean(next: boolean) {
  * - "Listen" reads the page aloud in the edition's language, with the
  *   reader's own device voice, marking each passage as it is read. It is
  *   offered only where the device has a voice for the language.
- * - "More" ends the primary nav on wide screens: the masthead's row is
- *   full, so the further pages (the galleries, careers) open beneath it.
- *   The phone menu lists them with the rest.
+ * - On wide screens, pages sharing a `menu` (the work's three pages, the
+ *   two galleries) open beneath one name in the row, and the page marked
+ *   `highlight` (Careers) is set apart. The phone menu lists every page.
  */
 export function HeaderClient({
   lang,
@@ -68,8 +68,8 @@ export function HeaderClient({
   joinHref,
 }: {
   lang: Lang;
-  nav: readonly { label: string; href: string }[];
-  more: readonly { label: string; href: string }[];
+  nav: readonly NavItem[];
+  more: readonly NavItem[];
   tagline: string;
   brandLine: string;
   name: string;
@@ -185,7 +185,11 @@ export function HeaderClient({
               {/* Home first, so the reader always sees which page they are on:
                   the current one is underlined in red. */}
               <ul className="flex items-center gap-4 2xl:gap-7">
-                {[{ label: t.homeLink, href: homePageHref }, ...nav].map((item) => {
+                {row([{ label: t.homeLink, href: homePageHref }, ...nav, ...more]).map((entry) => {
+                  if ("items" in entry) {
+                    return <DropMenu key={entry.menu} items={entry.items} label={t.menus[entry.menu] ?? entry.menu} pathname={pathname} />;
+                  }
+                  const item = entry;
                   const current =
                     pathname === item.href || (item.href === homePageHref && pathname === homeHref);
                   return (
@@ -193,18 +197,24 @@ export function HeaderClient({
                       <Link
                         href={item.href}
                         aria-current={current ? "page" : undefined}
-                        className={`text-[1.0625rem] transition-colors hover:text-cinnabar ${
-                          current
-                            ? "text-ink underline decoration-cinnabar decoration-2 underline-offset-[7px]"
-                            : "text-ink-soft"
-                        }`}
+                        className={
+                          item.highlight
+                            ? `inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-3.5 py-1 text-[1.0625rem] transition-colors hover:border-cinnabar hover:text-cinnabar ${
+                                current ? "border-cinnabar text-cinnabar" : "border-cinnabar/45 text-ink"
+                              }`
+                            : `whitespace-nowrap text-[1.0625rem] transition-colors hover:text-cinnabar ${
+                                current
+                                  ? "text-ink underline decoration-cinnabar decoration-2 underline-offset-[7px]"
+                                  : "text-ink-soft"
+                              }`
+                        }
                       >
+                        {item.highlight ? <span aria-hidden="true" className="size-1.5 rounded-full bg-cinnabar" /> : null}
                         {item.label}
                       </Link>
                     </li>
                   );
                 })}
-                <MoreMenu items={more} label={t.more} pathname={pathname} />
               </ul>
             </nav>
 
@@ -253,12 +263,33 @@ export function HeaderClient({
   );
 }
 
+type NavItem = { label: string; href: string; menu?: string; highlight?: boolean };
+
+/** The row's entries in order: each page, or one dropdown where pages share a `menu` (at its first page's place). */
+function row(items: readonly NavItem[]): (NavItem | { menu: string; items: NavItem[] })[] {
+  const out: (NavItem | { menu: string; items: NavItem[] })[] = [];
+  const menus = new Map<string, NavItem[]>();
+  for (const item of items) {
+    if (!item.menu) {
+      out.push(item);
+      continue;
+    }
+    const pages = menus.get(item.menu);
+    if (pages) pages.push(item);
+    else {
+      menus.set(item.menu, [item]);
+      out.push({ menu: item.menu, items: menus.get(item.menu)! });
+    }
+  }
+  return out;
+}
+
 /**
- * The primary nav's last item: a disclosure that opens the further pages
- * beneath it. It closes on a choice, on Escape (returning focus to it), and
- * when focus or a tap goes elsewhere.
+ * A name in the row that opens its pages beneath it. It closes on a
+ * choice, on Escape (returning focus to it), and when focus or a tap goes
+ * elsewhere.
  */
-function MoreMenu({ items, label, pathname }: { items: readonly { label: string; href: string }[]; label: string; pathname: string }) {
+function DropMenu({ items, label, pathname }: { items: readonly NavItem[]; label: string; pathname: string }) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLLIElement>(null);
   const button = useRef<HTMLButtonElement>(null);
@@ -297,7 +328,7 @@ function MoreMenu({ items, label, pathname }: { items: readonly { label: string;
         aria-expanded={open}
         aria-controls={id}
         onClick={() => setOpen(!open)}
-        className={`flex cursor-pointer items-center gap-1.5 text-[1.0625rem] transition-colors hover:text-cinnabar ${
+        className={`flex cursor-pointer items-center gap-1.5 whitespace-nowrap text-[1.0625rem] transition-colors hover:text-cinnabar ${
           current ? "text-ink underline decoration-cinnabar decoration-2 underline-offset-[7px]" : "text-ink-soft"
         }`}
       >
@@ -309,7 +340,7 @@ function MoreMenu({ items, label, pathname }: { items: readonly { label: string;
       <ul
         id={id}
         hidden={!open}
-        className="absolute right-0 top-full z-40 mt-4 min-w-[13rem] border border-ink/20 bg-leaf py-2 shadow-[0_12px_30px_-12px_rgb(40_25_10/0.35)]"
+        className="absolute -left-5 top-full z-40 mt-4 min-w-[13rem] border border-ink/20 bg-leaf py-2 shadow-[0_12px_30px_-12px_rgb(40_25_10/0.35)]"
       >
         {items.map((item) => (
           <li key={item.href}>

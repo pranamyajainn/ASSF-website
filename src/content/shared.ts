@@ -44,24 +44,28 @@ export const org = {
 export const folioPrice = 370;
 export const granthaPrice = 37000;
 
+/**
+ * The menu, in the order the Foundation asked for (Alka, 30 Oct 2026, as
+ * agreed with Shubhang): About · Our Work · Impact · Trustees · Gallery ·
+ * Reports & Newsletter · Careers. On wide screens the pages sharing a
+ * `menu` open together under one name (ui.header.menus), and the one marked
+ * `highlight` is set apart; the phone menu and the footer list every page.
+ */
 export const nav = [
   { label: "About", href: "/about" },
-  { label: "Manuscript Conservation", href: "/manuscript-conservation" },
-  { label: "Rural Infrastructure", href: "/rural-infrastructure" },
-  { label: "Community Services", href: "/community-services" },
+  { label: "Manuscript Conservation", href: "/manuscript-conservation", menu: "work" },
+  { label: "Rural Infrastructure", href: "/rural-infrastructure", menu: "work" },
+  { label: "Community Services", href: "/community-services", menu: "work" },
   { label: "Impact", href: "/impact" },
   { label: "Trustees", href: "/trustees" },
 ] as const;
 
-/**
- * The menu's further pages. On wide screens the masthead's row is full, so
- * they sit under "More" at its end; the phone menu and the footer list them
- * with the rest.
- */
+/** The menu's later pages, after the work and the people. */
 export const navMore = [
-  { label: "Photo Gallery", href: "/gallery/photos" },
-  { label: "Video Gallery", href: "/gallery/videos" },
-  { label: "Careers", href: "/careers" },
+  { label: "Photo Gallery", href: "/gallery/photos", menu: "gallery" },
+  { label: "Video Gallery", href: "/gallery/videos", menu: "gallery" },
+  { label: "Reports & Newsletter", href: "/reports" },
+  { label: "Careers", href: "/careers", highlight: true },
 ] as const;
 
 export const languages = [

@@ -22,7 +22,7 @@ export const hi: Translation = {
       { label: "प्रभाव" },
       { label: "न्यासी" },
     ],
-    navMore: [{ label: "फ़ोटो गैलरी" }, { label: "वीडियो गैलरी" }, { label: "करियर" }],
+    navMore: [{ label: "फ़ोटो गैलरी" }, { label: "वीडियो गैलरी" }, { label: "रिपोर्ट और न्यूज़लेटर" }, { label: "करियर" }],
     pillars: [
       {
         label: "पांडुलिपि संरक्षण",
@@ -756,7 +756,7 @@ export const hi: Translation = {
       give: "दान",
       giveOnline: "ऑनलाइन दान करें",
       donate: "दान करें",
-      more: "अधिक",
+      menus: { work: "हमारा कार्य", gallery: "गैलरी" },
     },
     footer: {
       colophon: "पुष्पिका",

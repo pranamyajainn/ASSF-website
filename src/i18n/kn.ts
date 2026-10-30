@@ -24,7 +24,7 @@ export const kn: Translation = {
       { label: "ಪರಿಣಾಮ" },
       { label: "ಟ್ರಸ್ಟಿಗಳು" },
     ],
-    navMore: [{ label: "ಫೋಟೋ ಗ್ಯಾಲರಿ" }, { label: "ವೀಡಿಯೊ ಗ್ಯಾಲರಿ" }, { label: "ಉದ್ಯೋಗಾವಕಾಶಗಳು" }],
+    navMore: [{ label: "ಫೋಟೋ ಗ್ಯಾಲರಿ" }, { label: "ವೀಡಿಯೊ ಗ್ಯಾಲರಿ" }, { label: "ವರದಿಗಳು ಮತ್ತು ಸುದ್ದಿಪತ್ರ" }, { label: "ಉದ್ಯೋಗಾವಕಾಶಗಳು" }],
     pillars: [
       {
         label: "ಹಸ್ತಪ್ರತಿ ಸಂರಕ್ಷಣೆ",
@@ -755,7 +755,7 @@ export const kn: Translation = {
       give: "ದಾನ",
       giveOnline: "ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ದಾನ ಮಾಡಿ",
       donate: "ದಾನ ಮಾಡಿ",
-      more: "ಇನ್ನಷ್ಟು",
+      menus: { work: "ನಮ್ಮ ಕೆಲಸ", gallery: "ಗ್ಯಾಲರಿ" },
     },
     footer: {
       colophon: "ಅಂತ್ಯಲೇಖ",

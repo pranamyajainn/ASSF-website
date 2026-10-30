@@ -28,7 +28,8 @@ export const ui = {
     give: "Give",
     giveOnline: "Give online",
     donate: "Donate",
-    more: "More",
+    /** The masthead's dropdowns, by the `menu` their pages share (content/shared.ts → nav). */
+    menus: { work: "Our Work", gallery: "Gallery" } as Record<string, string>,
   },
   footer: {
     colophon: "Colophon",
