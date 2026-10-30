@@ -53,7 +53,7 @@ export function getMemberProfile(email: string | null | undefined): MemberProfil
   return {
     name: access.name,
     rank: record?.rank ?? (access.role === "trustee" ? "Trustee" : "Advisor"),
-    body: record?.body ?? "",
+    body: record?.bio[0] ?? "",
     image: record?.image ?? null,
     role: access.role,
     email: access.email,
