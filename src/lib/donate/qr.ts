@@ -9,7 +9,7 @@ import { qrGiving } from "./config";
  * payment arrived, but not who made it; so the donor's details, left before
  * the QR is shown, are kept here (sealed, like every line on the
  * private-data branch) for the editor's Insights, where the Foundation
- * matches them to its bank statement and sends the receipt.
+ * matches them to its bank statement, and sends a tax receipt where one is owed.
  */
 export type QrGift = {
   at: string;
@@ -53,7 +53,7 @@ export async function recordQrGift(gift: Omit<QrGift, "at">): Promise<void> {
     `When: ${when} (India time)`,
   ].filter(Boolean);
   const text = [
-    "A donor opened the UPI QR code on the website's donate page. Please check the bank statement for the payment, then send the receipt.",
+    "A donor opened the UPI QR code on the website's donate page. Please check the bank statement for the payment (it may differ from the amount chosen, or not have been made). If the donor gave a PAN or Aadhaar and an address, they are owed a tax receipt.",
     "",
     ...lines,
   ].join("\n");
