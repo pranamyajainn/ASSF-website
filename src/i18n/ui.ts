@@ -292,7 +292,7 @@ export const ui = {
     qrCopy: "Copy",
     qrCopied: "Copied",
     qrSave: "Save QR code",
-    qrAfter: "Once you've paid, the Foundation will confirm your gift on WhatsApp and send your receipt. Please keep the UPI reference number your app shows.",
+    qrAfter: "Thank you. Please keep the UPI reference number your app shows. If you added your PAN or Aadhaar and address, the Foundation will send your tax receipt.",
     qrBack: "Change the gift or your details",
     qrSecure: "You pay from your own UPI app, straight into the Foundation's bank account. This website never sees your bank details.",
     qrPrivacy: "Your details are kept privately for the Foundation, to confirm your gift and send your receipt.",

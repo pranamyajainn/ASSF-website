@@ -417,7 +417,8 @@ function QrGifts({ gifts, days }: { gifts: QrGift[]; days: number }) {
       <h2 className="font-display text-[1.4rem]">Gifts by UPI QR code</h2>
       <p className="mt-1 max-w-3xl text-[0.92rem] text-ink-soft">
         Each donor below left these details and was then shown the Foundation&apos;s UPI QR code. Match each one with the bank statement (by amount and
-        time), then confirm on WhatsApp and send the receipt. Someone who opened the QR code may not have paid.
+        time); someone who opened the QR code may not have paid, or may have paid a different amount. Donors who gave a PAN or Aadhaar and an address
+        are owed a tax receipt.
       </p>
       {gifts.length ? (
         <ul className="mt-3 divide-y divide-ink/10">
