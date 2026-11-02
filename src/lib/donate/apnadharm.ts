@@ -73,15 +73,22 @@ export async function donationCategories(lang: Lang): Promise<Category[]> {
   return out;
 }
 
+/** The two choices' words in each edition, as the live site's translations gave them. */
+const CHOICE_WORDS: Record<Lang, { name: string; unit: string }> = {
+  en: { name: "Taadpatra Restoration", unit: "Number of Pages" },
+  hi: { name: "ताड़पत्र पुनर्स्थापन", unit: "पृष्ठों की संख्या" },
+  kn: { name: "ತಾಳೆಗರಿ ಪುನರುಜ್ಜೀವನ", unit: "ಪುಟಗಳ ಸಂಖ್ಯೆ" },
+};
+
 /**
  * While gifts go by QR code, the choices come from the site, not Apna Dharm:
  * the same two it offers, at the site's own page price.
  */
 export async function fallbackCategories(lang: Lang, folioPrice: number): Promise<Category[]> {
-  const name = await inEdition("Taadpatra Restoration", lang);
-  const base = { name, min: 1, max: 0, step: 1, fixed: false };
+  const words = CHOICE_WORDS[lang];
+  const base = { name: words.name, min: 1, max: 0, step: 1, fixed: false };
   return [
-    { ...base, id: "pages", original: `Taadpatra Restoration (₹${folioPrice}/Page)`, amount: folioPrice, perUnit: true, unitLabel: await inEdition("Number of Pages", lang) },
+    { ...base, id: "pages", original: `Taadpatra Restoration (₹${folioPrice}/Page)`, amount: folioPrice, perUnit: true, unitLabel: words.unit },
     { ...base, id: "any", original: "Taadpatra Restoration (Any Amount)", amount: 0, perUnit: false, unitLabel: "" },
   ];
 }
