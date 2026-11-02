@@ -74,8 +74,8 @@ export async function donationCategories(lang: Lang): Promise<Category[]> {
 }
 
 /**
- * While gifts go by QR code, Apna Dharm being unreachable needn't stop
- * anyone giving: the same two choices, from the site's own page price.
+ * While gifts go by QR code, the choices come from the site, not Apna Dharm:
+ * the same two it offers, at the site's own page price.
  */
 export async function fallbackCategories(lang: Lang, folioPrice: number): Promise<Category[]> {
   const name = await inEdition("Taadpatra Restoration", lang);

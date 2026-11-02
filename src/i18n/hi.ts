@@ -17,8 +17,8 @@ export const hi: Translation = {
     nav: [
       { label: "परिचय" },
       { label: "पांडुलिपि संरक्षण" },
-      { label: "ग्रामीण अवसंरचना" },
       { label: "सामुदायिक सेवाएँ" },
+      { label: "ग्रामीण अवसंरचना" },
       { label: "प्रभाव" },
       { label: "न्यासी" },
     ],

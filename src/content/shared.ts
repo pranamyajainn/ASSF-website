@@ -54,8 +54,8 @@ export const granthaPrice = 37000;
 export const nav = [
   { label: "About", href: "/about" },
   { label: "Manuscript Conservation", href: "/manuscript-conservation", menu: "work" },
-  { label: "Rural Infrastructure", href: "/rural-infrastructure", menu: "work" },
   { label: "Community Services", href: "/community-services", menu: "work" },
+  { label: "Rural Infrastructure", href: "/rural-infrastructure", menu: "work" },
   { label: "Impact", href: "/impact" },
   { label: "Trustees", href: "/trustees" },
 ] as const;
