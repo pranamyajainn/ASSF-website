@@ -112,9 +112,9 @@ export const vaultGate = {
     "ಫೌಂಡೇಶನ್‌ನ ಖಾಸಗಿ ದಾಖಲೆಗಳು.",
   ],
   footnote: [
-    "Only Google accounts the Foundation has authorised can open them.",
-    "इन्हें केवल फ़ाउंडेशन द्वारा अधिकृत Google खाते खोल सकते हैं।",
-    "ಫೌಂಡೇಶನ್ ಅಧಿಕಾರ ನೀಡಿದ Google ಖಾತೆಗಳು ಮಾತ್ರ ಇವುಗಳನ್ನು ತೆರೆಯಬಹುದು.",
+    "Only people the Foundation has authorised can open them.",
+    "इन्हें केवल फ़ाउंडेशन द्वारा अधिकृत लोग खोल सकते हैं।",
+    "ಫೌಂಡೇಶನ್ ಅಧಿಕಾರ ನೀಡಿದವರು ಮಾತ್ರ ಇವುಗಳನ್ನು ತೆರೆಯಬಹುದು.",
   ],
   refused: [
     "You're signed in as {email}, which isn't authorised to open these documents.",
@@ -127,4 +127,48 @@ export const vaultGate = {
     "ಆ Google ಖಾತೆ ಈ ದಾಖಲೆಗಳ ಪಟ್ಟಿಯಲ್ಲಿ ಇಲ್ಲ. ವೆಬ್ ತಂಡಕ್ಕೆ ಸೇರಿಸಲು ಹೇಳಿ, ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
   ],
   switchAccount: ["Sign out and use another account", "साइन आउट करके दूसरा खाता चुनें", "ಸೈನ್ ಔಟ್ ಮಾಡಿ ಬೇರೆ ಖಾತೆ ಬಳಸಿ"],
+};
+
+/**
+ * The emailed sign-in link (lib/vault/link.ts), for trustees whose address
+ * isn't a Google account: the form, its answers, the link page and the email.
+ */
+export const vaultLink = {
+  or: ["Or get a sign-in link by email", "या ईमेल पर साइन-इन लिंक पाएँ", "ಅಥವಾ ಇಮೇಲ್ ಮೂಲಕ ಸೈನ್-ಇನ್ ಲಿಂಕ್ ಪಡೆಯಿರಿ"],
+  label: ["Your email address", "आपका ईमेल पता", "ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸ"],
+  send: ["Email me a sign-in link", "मुझे साइन-इन लिंक ईमेल करें", "ನನಗೆ ಸೈನ್-ಇನ್ ಲಿಂಕ್ ಇಮೇಲ್ ಮಾಡಿ"],
+  sent: [
+    "If that address is on the Foundation's list, a sign-in link is on its way. It works for 15 minutes. If it doesn't arrive, look in the spam folder.",
+    "यदि यह पता फ़ाउंडेशन की सूची में है, तो साइन-इन लिंक भेज दिया गया है। यह 15 मिनट तक काम करेगा। न मिले तो स्पैम फ़ोल्डर देखें।",
+    "ಈ ವಿಳಾಸ ಫೌಂಡೇಶನ್‌ನ ಪಟ್ಟಿಯಲ್ಲಿದ್ದರೆ, ಸೈನ್-ಇನ್ ಲಿಂಕ್ ಕಳುಹಿಸಲಾಗಿದೆ. ಇದು 15 ನಿಮಿಷ ಕೆಲಸ ಮಾಡುತ್ತದೆ. ಬರದಿದ್ದರೆ ಸ್ಪ್ಯಾಮ್ ಫೋಲ್ಡರ್ ನೋಡಿ.",
+  ],
+  bad: ["Please enter a valid email address.", "कृपया सही ईमेल पता लिखें।", "ದಯವಿಟ್ಟು ಸರಿಯಾದ ಇಮೇಲ್ ವಿಳಾಸ ನಮೂದಿಸಿ."],
+  wait: [
+    "Too many requests. Please try again in a few minutes.",
+    "बहुत अधिक अनुरोध। कृपया कुछ मिनट बाद फिर प्रयास करें।",
+    "ಹೆಚ್ಚು ವಿನಂತಿಗಳು. ದಯವಿಟ್ಟು ಕೆಲವು ನಿಮಿಷಗಳ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+  ],
+  failed: [
+    "The email couldn't be sent just now. Please try again shortly.",
+    "अभी ईमेल नहीं भेजा जा सका। कृपया थोड़ी देर बाद फिर प्रयास करें।",
+    "ಈಗ ಇಮೇಲ್ ಕಳುಹಿಸಲು ಆಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+  ],
+  expired: [
+    "That sign-in link has expired or isn't valid. Ask for a new one below.",
+    "यह साइन-इन लिंक पुराना हो गया है या सही नहीं है। नीचे से नया लिंक मँगाएँ।",
+    "ಈ ಸೈನ್-ಇನ್ ಲಿಂಕ್‌ನ ಅವಧಿ ಮುಗಿದಿದೆ ಅಥವಾ ಸರಿಯಿಲ್ಲ. ಕೆಳಗೆ ಹೊಸ ಲಿಂಕ್ ಕೇಳಿ.",
+  ],
+  as: ["Sign in as {email}", "{email} के रूप में साइन इन करें", "{email} ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ"],
+  enter: ["Open the documents", "दस्तावेज़ खोलें", "ದಾಖಲೆಗಳನ್ನು ತೆರೆಯಿರಿ"],
+  subject: "Your sign-in link: the Foundation's trust documents",
+  intro: [
+    "Open this link to sign in to the Foundation's trust documents. It works for 15 minutes.",
+    "फ़ाउंडेशन के न्यास दस्तावेज़ों में साइन इन करने के लिए यह लिंक खोलें। यह 15 मिनट तक काम करेगा।",
+    "ಫೌಂಡೇಶನ್‌ನ ಟ್ರಸ್ಟ್ ದಾಖಲೆಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಈ ಲಿಂಕ್ ತೆರೆಯಿರಿ. ಇದು 15 ನಿಮಿಷ ಕೆಲಸ ಮಾಡುತ್ತದೆ.",
+  ],
+  ignore: [
+    "If you didn't ask for it, you can ignore this email.",
+    "यदि आपने यह नहीं माँगा था, तो इस ईमेल को अनदेखा करें।",
+    "ನೀವು ಇದನ್ನು ಕೇಳಿರದಿದ್ದರೆ, ಈ ಇಮೇಲ್ ಅನ್ನು ನಿರ್ಲಕ್ಷಿಸಿ.",
+  ],
 };
