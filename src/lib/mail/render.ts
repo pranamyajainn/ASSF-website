@@ -77,16 +77,16 @@ export function renderEmail(e: Email): { html: string; text: string } {
     )
     .join("");
   const attachment = e.attachment
-    ? `<p style="margin:6px 0 0;padding:12px 14px;background:${LEAF};font:15px/1.5 ${SERIF};color:${SOFT}">📎 Attached: <strong>${escape(e.attachment)}</strong></p>`
+    ? `<p style="margin:6px 0 0;padding:12px 14px;background-color:${LEAF};font:15px/1.5 ${SERIF};color:${SOFT}">📎 Attached: <strong>${escape(e.attachment)}</strong></p>`
     : "";
   const unsubscribe = e.unsubscribe
     ? `<br>You're receiving this because you're on the Foundation's mailing list. <a href="${escape(e.unsubscribe)}" style="color:${FAINT};text-decoration:underline">Unsubscribe</a>.`
     : "";
   const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${escape(e.subject)}</title></head>
-<body style="margin:0;padding:0;background:${LEAF}">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${LEAF}"><tr><td align="center" style="padding:28px 12px">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:${PAPER};border:1px solid #e3d6b4">
+<body style="margin:0;padding:0;background-color:${LEAF}">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${LEAF}" style="background-color:${LEAF}"><tr><td align="center" style="padding:28px 12px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${PAPER}" style="max-width:600px;background-color:${PAPER};border:1px solid #e3d6b4">
 <tr><td style="padding:26px 32px 18px;border-bottom:3px solid ${CINNABAR}">
 <table role="presentation" cellpadding="0" cellspacing="0"><tr>
 <td style="padding-right:14px;vertical-align:middle"><img src="${escape(e.site)}/icon.png" width="44" height="44" alt="" style="display:block"></td>
