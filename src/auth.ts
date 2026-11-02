@@ -1,7 +1,9 @@
 import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { isEditorEmail } from "@/lib/cms/editors";
 import { isAuthorizedEmail } from "@/lib/trustee-directory";
+import { linkAddress } from "@/lib/vault/link-token";
 import { isVaultEmail } from "@/lib/vault/people";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -11,6 +13,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    // The document vault's emailed link (lib/vault/link-token.ts), for
+    // trustees whose address isn't a Google account. Only the vault's list
+    // can sign in this way.
+    Credentials({
+      id: "email-link",
+      name: "Emailed link",
+      credentials: { token: {} },
+      authorize(credentials) {
+        const email = linkAddress(credentials?.token);
+        return email && isVaultEmail(email) ? { id: email, email, name: email } : null;
+      },
     }),
   ],
   // A week, renewed while it's in use: a laptop left signed in somewhere
@@ -30,7 +44,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // its own list on every request.)
     // Google must also have verified the address: a Google account can be
     // opened under someone else's email, and that must never count as them.
-    async signIn({ user, profile }) {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "email-link") return isVaultEmail(user.email);
       if (profile?.email_verified !== true) return false;
       return isAuthorizedEmail(user.email) || isEditorEmail(user.email) || isVaultEmail(user.email);
     },

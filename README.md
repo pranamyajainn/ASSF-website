@@ -52,7 +52,7 @@ Pushing `main` deploys to Vercel (project `assf-website`).
 | `MAIL_DATA_KEY` | Optional. Encrypts the mailing list; defaults to a key derived from `AUTH_SECRET`. Set it to the old `AUTH_SECRET` before rotating that secret, or the list becomes unreadable. |
 | `CRON_SECRET` | The daily job (`/api/cron/daily`, `vercel.json` → `crons`): Vercel sends it, and the job refuses calls without it. Any long random string. |
 | `BLOB_READ_WRITE_TOKEN` | The document vault (`/vault`): the private Vercel Blob store **assf-vault** (Mumbai), added when the store was connected to the project. |
-| `VAULT_EMAILS` | Optional. Google accounts that may open the document vault, comma-separated. Until it is set, the site editors (`EDITOR_EMAILS`) may. |
+| `VAULT_EMAILS` | Optional. Google accounts (or, with email set up, any address) that may open the document vault, comma-separated. Until it is set, the site editors (`EDITOR_EMAILS`) may. |
 | `NEXT_PUBLIC_SITE_URL` | Optional. Only if the canonical address should differ from Vercel's production domain (e.g. to prefer `https://www.…`). |
 
 **Indexing.** The site tells search engines to stay away (`X-Robots-Tag: noindex`) everywhere
@@ -172,6 +172,12 @@ English, हिन्दी or ಕನ್ನಡ (`?lang=hi|kn`). Same Google sign
 
 - Signed out, `/vault` answers **401** with the sign-in (`unauthorized.tsx`, Next's
   `authInterrupts`); signed in with another account, **403** (`forbidden.tsx`).
+- Trustees whose address isn't a Google account (Yahoo, Rediff, a company domain) can ask for
+  an emailed link instead. It shows once the site can send email (`SMTP_USER` / `SMTP_PASS`).
+  The link (`/vault/link?t=…`, `src/lib/vault/link-token.ts`) is signed with a key derived from
+  `AUTH_SECRET`, names the address, and works for 15 minutes; its page asks for one press, so a
+  mail scanner can't use it. Only addresses on the vault's list get a link, and the form gives
+  the same answer either way. Three links per address and six per visitor per 15 minutes.
 - Files go from the browser straight to the private Blob store, with a ten-minute token from
   `/api/vault/upload` for exactly one new path in one of the four groups (PDF, images, Word,
   Excel; up to 100 MB; never over an existing file). They come back only through

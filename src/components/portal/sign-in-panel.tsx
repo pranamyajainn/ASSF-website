@@ -1,10 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { auth, signIn, signOut } from "@/auth";
 import { GoogleMark } from "@/components/portal/google-mark";
 import { editorsConfigured } from "@/lib/cms/editors";
+import { overLimit } from "@/lib/rate-limit";
+import { emailSignInLink, linksAvailable } from "@/lib/vault/link";
 import { vaultConfigured } from "@/lib/vault/people";
-import { vaultGate } from "@/lib/vault/strings";
+import { vaultGate, vaultLink } from "@/lib/vault/strings";
 
 /**
  * The Google sign-in for the Foundation's private areas: the site editor,
@@ -37,12 +41,34 @@ function Lines({ lines, email, className = "" }: { lines: readonly string[]; ema
   ));
 }
 
-export async function SignInPanel({ area, next, error }: { area: keyof typeof AREAS; next: string; error?: string }) {
+/** What the emailed-link form says after it was used (`?link=` on the sign-in page). */
+const NOTICES = { sent: vaultLink.sent, bad: vaultLink.bad, wait: vaultLink.wait, failed: vaultLink.failed, expired: vaultLink.expired } as const;
+type Notice = keyof typeof NOTICES;
+export const isNotice = (n: string | undefined): n is Notice => !!n && n in NOTICES;
+
+/** A few links per address, and a few more per visitor, so the form can't be used to flood anyone's inbox. */
+const PER_ADDRESS = [{ ms: 15 * 60_000, max: 3 }] as const;
+const PER_VISITOR = [{ ms: 15 * 60_000, max: 6 }, { ms: 60 * 60_000, max: 12 }] as const;
+
+export async function SignInPanel({ area, next, error, notice }: { area: keyof typeof AREAS; next: string; error?: string; notice?: Notice }) {
   const copy = AREAS[area];
   const session = await auth().catch(() => null);
   const email = session?.user?.email;
   const ready = !!process.env.AUTH_SECRET && !!(process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID);
   const back = area === "vault" ? next : "/editor/sign-in";
+  const links = area === "vault" && linksAvailable();
+  const told = notice ?? (error === "CredentialsSignin" ? "expired" : undefined);
+
+  async function emailLink(form: FormData) {
+    "use server";
+    const answer = (n: Notice): never => redirect(`/editor/sign-in?next=${encodeURIComponent(next)}&link=${n}`);
+    const address = String(form.get("email") ?? "").trim().toLowerCase();
+    if (address.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) answer("bad");
+    const h = await headers();
+    const visitor = h.get("x-real-ip") ?? h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+    if (overLimit(`vault-link:${visitor}`, PER_VISITOR) || overLimit(`vault-link:${address}`, PER_ADDRESS)) answer("wait");
+    answer((await emailSignInLink(address)) ? "sent" : "failed");
+  }
 
   return (
     <main className="flex min-h-dvh items-center justify-center bg-board-deep px-5 py-16">
@@ -86,7 +112,11 @@ export async function SignInPanel({ area, next, error }: { area: keyof typeof AR
             </>
           ) : (
             <>
-              {error ? (
+              {links && told ? (
+                <p role="status" className={`mb-5 text-sm leading-relaxed ${told === "sent" ? "text-board-ink/85" : "text-orpiment"}`}>
+                  <Lines lines={NOTICES[told]} />
+                </p>
+              ) : error ? (
                 <p className="mb-5 text-sm leading-relaxed text-orpiment">
                   {error === "AccessDenied" ? <Lines lines={copy.denied} /> : error === "Configuration" ? "Sign-in isn't fully set up yet. Please check back shortly." : "Something went wrong signing you in. Please try again."}
                 </p>
@@ -105,6 +135,27 @@ export async function SignInPanel({ area, next, error }: { area: keyof typeof AR
                   Continue with Google
                 </button>
               </form>
+              {links ? (
+                <form action={emailLink} className="mt-6 border-t border-board-ink/15 pt-5">
+                  <label htmlFor="link-email" className="block text-sm text-board-ink/80">
+                    <Lines lines={vaultLink.or} />
+                  </label>
+                  <input
+                    id="link-email"
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    inputMode="email"
+                    aria-label={vaultLink.label[0]}
+                    placeholder={vaultLink.label[0]}
+                    className="mt-3 w-full border border-board-ink/25 bg-transparent px-4 py-3 text-base text-board-ink placeholder:text-board-ink/40 focus:border-board-ink/60 focus:outline-none"
+                  />
+                  <button type="submit" className="mt-3 w-full border border-board-ink/25 px-5 py-3 text-board-ink hover:bg-white/5">
+                    <Lines lines={vaultLink.send} />
+                  </button>
+                </form>
+              ) : null}
               <p className="mt-4 text-xs leading-relaxed text-board-ink/45">
                 <Lines lines={copy.footnote} />
               </p>
