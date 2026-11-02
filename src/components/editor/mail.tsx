@@ -492,7 +492,8 @@ function Write({ data, onSent, onPeople }: { data: Data; onSent: (sent: Sent[]) 
 
       <div>
         <p className="mb-2 font-display text-[1.1rem]">How it arrives</p>
-        <iframe title="The email, as it arrives" srcDoc={preview} sandbox="" className="h-[44rem] w-full rounded-md border border-ink/15 bg-white" />
+        {/* allow-same-origin: the site's image rule only lets in its own logo, and a frame with no origin has no "own". Scripts stay off. */}
+        <iframe title="The email, as it arrives" srcDoc={preview} sandbox="allow-same-origin" className="h-[44rem] w-full rounded-md border border-ink/15 bg-white" />
         {data.sender ? <p className="mt-2 text-[0.85rem] text-ink-faint">Sent from {data.sender}; replies go to {data.org.email}.</p> : null}
       </div>
     </div>
@@ -884,7 +885,7 @@ function Reports() {
       <div>
         <p className="mb-2 font-display text-[1.1rem]">{preview ? preview.subject : "The report, as it arrives"}</p>
         {preview ? (
-          <iframe title="The report, as it arrives" srcDoc={preview.html} sandbox="" className="h-[46rem] w-full rounded-md border border-ink/15 bg-white" />
+          <iframe title="The report, as it arrives" srcDoc={preview.html} sandbox="allow-same-origin" className="h-[46rem] w-full rounded-md border border-ink/15 bg-white" />
         ) : (
           <p className="rounded-md border border-dashed border-ink/20 bg-white/40 px-5 py-16 text-center text-ink-faint">Press “See this month&apos;s report” to see it, made from today&apos;s records.</p>
         )}

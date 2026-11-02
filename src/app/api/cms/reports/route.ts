@@ -3,8 +3,8 @@ import { GROUPS } from "@/lib/mail/data";
 import { orgForEmail } from "@/lib/mail/org";
 import { renderEmail } from "@/lib/mail/render";
 import { mailMode } from "@/lib/mail/send";
+import { originOf } from "@/lib/mcp/oauth";
 import { buildReport, periodFor, readReportSettings, recipients, sendReport, updateReportSettings, type ReportSettings } from "@/lib/reports/report";
-import { siteUrl } from "@/lib/site";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -68,7 +68,8 @@ export async function POST(req: Request) {
       const { sent } = await sendReport(report, [{ email: editor.email, listed: false }]);
       return sent ? Response.json({ sent: editor.email }) : new Response("The test couldn't be sent.", { status: 502 });
     }
-    const { html } = renderEmail({ subject: report.subject, body: report.body, site: siteUrl.origin, unsubscribe: "#", org: orgForEmail() });
+    // The logo from the address the editor is open on, so the preview frame may show it.
+    const { html } = renderEmail({ subject: report.subject, body: report.body, site: originOf(req), unsubscribe: "#", org: orgForEmail() });
     return Response.json({ subject: report.subject, html });
   } catch (err) {
     if (err instanceof Error && /isn't connected/.test(err.message)) return new Response(err.message, { status: 503 });
