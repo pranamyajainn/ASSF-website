@@ -30,12 +30,17 @@ export async function emailSignInLink(email: string): Promise<boolean> {
       to: email,
       subject: vaultLink.subject,
       text: `${lines.join("\n\n")}\n\n${org.name}`,
-      html: `<div style="font-family:Georgia,serif;font-size:16px;line-height:1.6;color:#1d1a16;max-width:520px">
+      // A whole HTML document, not a fragment: spam filters count a bare fragment against the message.
+      html: `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(vaultLink.subject)}</title></head>
+<body style="margin:0;padding:16px">
+<div style="font-family:Georgia,serif;font-size:16px;line-height:1.6;color:#1d1a16;max-width:520px">
 ${vaultLink.intro.map((l) => `<p style="margin:0 0 10px">${esc(l)}</p>`).join("\n")}
-<p style="margin:22px 0"><a href="${esc(url.href)}" style="display:inline-block;background:#1d1a16;color:#f6efe2;padding:12px 22px;text-decoration:none">${esc(vaultLink.enter[0])}</a></p>
+<p style="margin:22px 0"><a href="${esc(url.href)}" style="display:inline-block;background-color:#1d1a16;color:#f6efe2;padding:12px 22px;text-decoration:none">${esc(vaultLink.enter[0])}</a></p>
 ${vaultLink.ignore.map((l) => `<p style="margin:0 0 6px;color:#6b6257;font-size:14px">${esc(l)}</p>`).join("\n")}
 <p style="margin:22px 0 0;color:#6b6257;font-size:14px">${esc(org.name)}</p>
-</div>`,
+</div>
+</body></html>`,
       replyTo: org.email,
       unsubscribe: null,
       attachment: null,
