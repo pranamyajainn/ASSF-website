@@ -106,7 +106,7 @@ export function HeaderClient({
               {brandLine}
             </p>
 
-            <div className="flex items-center gap-x-3 sm:gap-x-5">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 sm:gap-x-5">
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new Event(OPEN_CHAT_EVENT))}
@@ -115,7 +115,7 @@ export function HeaderClient({
                 {t.ask} <AiStamp className="text-orpiment" />
                 <span className="sr-only">{t.askSr}</span>
               </button>
-              <span aria-hidden="true" className="h-4 w-px bg-board-soft/30" />
+              <span aria-hidden="true" className="hidden h-4 w-px bg-board-soft/30 sm:block" />
 
               <nav aria-label={t.language}>
                 <ul className="flex items-center">
@@ -129,7 +129,7 @@ export function HeaderClient({
                           lang={code}
                           aria-current={active ? "true" : undefined}
                           className={[
-                            "block px-2 py-1 text-[0.95rem] transition-colors sm:px-2.5",
+                            "block px-1.5 py-1 text-[0.95rem] transition-colors sm:px-2.5",
                             code === "kn" ? "font-kannada" : "",
                             active
                               ? "text-board-ink underline decoration-cinnabar decoration-2 underline-offset-[5px]"
@@ -169,7 +169,7 @@ export function HeaderClient({
 
       <header className="border-b border-ink/15">
         <Container>
-          <div className="flex items-center gap-x-8 py-4 lg:py-5">
+          <div className="flex items-center gap-x-4 py-4 sm:gap-x-8 lg:py-5">
             <Link href={homeHref} className="shrink-0" aria-label={`${name} — ${t.home}`}>
               <Image
                 src="/images/logo/assf-logo.png"

@@ -41,7 +41,7 @@ export function MobileNav({
         type="button"
         onClick={() => dialogRef.current?.showModal()}
         aria-haspopup="dialog"
-        className="-ml-4 flex h-11 shrink-0 items-center gap-2 border border-ink/30 px-3 text-ink sm:-ml-2 sm:gap-2.5 sm:px-3.5 xl:hidden"
+        className="-ml-1 flex h-11 shrink-0 items-center gap-2 border border-ink/30 px-3 text-ink sm:-ml-2 sm:gap-2.5 sm:px-3.5 xl:hidden"
       >
         <svg
           viewBox="0 0 24 24"
@@ -55,7 +55,8 @@ export function MobileNav({
         >
           <path d="M3 7h18M3 12h18M3 17h18" />
         </svg>
-        <span className="font-mono text-register">{t.contents}</span>
+        {/* Below 360px the icon alone fits beside Donate; the word stays for screen readers. */}
+        <span className="font-mono text-register max-[360px]:sr-only">{t.contents}</span>
       </button>
 
       <dialog
