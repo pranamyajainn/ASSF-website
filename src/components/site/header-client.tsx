@@ -106,7 +106,7 @@ export function HeaderClient({
               {brandLine}
             </p>
 
-            <div className="flex items-center gap-x-4 sm:gap-x-5">
+            <div className="flex items-center gap-x-3 sm:gap-x-5">
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new Event(OPEN_CHAT_EVENT))}
