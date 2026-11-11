@@ -6,7 +6,7 @@ import { fillBlanks, fillTokens, getAt, pathKey, type Edits, type Json, type Op,
 import { isHidden, PAGES, SECTION_ORDER, schemaPath, sectionLabel, type ModuleName } from "@/lib/cms/schema";
 import { EditorProvider, fieldId, Node, useEditor, type EditorApi } from "./fields";
 import type { Proposal } from "@/lib/mcp/proposal";
-import { applyActions, blankLike, changeList, describeAt, problems, setField, translatedFields, withOps, type Action, type Trees } from "./model";
+import { applyActions, changeList, describeAt, newItem, problems, setField, translatedFields, withOps, type Action, type Trees } from "./model";
 import { Find, Panel, type Selection } from "./panel";
 import { preparePhoto } from "./photo";
 import { MailView } from "./mail";
@@ -272,7 +272,7 @@ function EditorApp({ base, initial, deployed, storage, editor, signOut, proposal
     const list = getAt(current.en, listPath) as Json[];
     const index = atStart ? 0 : list.length;
     api.changeList(listPath, (l) => {
-      const item = blankLike((atStart ? l[0] : l[l.length - 1]) as Json);
+      const item = newItem(listPath, (atStart ? l[0] : l[l.length - 1]) as Json);
       return atStart ? [item, ...l] : [...l, item];
     });
     setSitePage(page);

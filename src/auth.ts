@@ -13,6 +13,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET,
+      // Always ask which account: a browser signed in to one other Gmail would
+      // otherwise be signed in with it every time, and refused every time.
+      authorization: { params: { prompt: "select_account" } },
     }),
     // The document vault's emailed link (lib/vault/link-token.ts), for
     // trustees whose address isn't a Google account. Only the vault's list

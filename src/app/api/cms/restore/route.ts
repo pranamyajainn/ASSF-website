@@ -1,5 +1,6 @@
 import { editorRequest } from "@/lib/cms/access";
 import type { Edits } from "@/lib/cms/edits";
+import { checkRestore } from "@/lib/cms/publish";
 import { Conflict, readEdits, storage, withRetry, writeEdits } from "@/lib/cms/store";
 
 export const runtime = "nodejs";
@@ -20,6 +21,14 @@ export async function POST(req: Request) {
   try {
     return await withRetry(async () => {
       const [{ edits: head, commit }, { edits: old }] = await Promise.all([readEdits(), readEdits(sha)]);
+      const problem = checkRestore(old);
+      if (problem) {
+        console.warn("CMS restore refused", { from: sha, problem });
+        return new Response(
+          "That version can't be brought back as it was: the site has been changed since, and part of it no longer fits. Please ask the web team.",
+          { status: 409 },
+        );
+      }
       // The record of published proposals carries forward: restoring doesn't make one publishable again.
       const next: Edits = { revision: head.revision + 1, updatedAt: new Date().toISOString(), ops: old.ops, applied: head.applied };
       const when = typeof date === "string" ? new Date(date).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }) : sha.slice(0, 7);

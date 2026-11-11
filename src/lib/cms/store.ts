@@ -156,13 +156,26 @@ export async function writeEdits(
 
 export type Publish = { sha: string; message: string; date: string };
 
-/** The latest publishes, newest first. */
+/**
+ * The site was handed to the Foundation on 11 Nov 2026. Publishes before
+ * then were the web team's tests ("testing", a trial headline), and
+ * restoring one would put test words on the site, so History starts here —
+ * with the version the web team left, so the first of the Foundation's own
+ * publishes can still be undone.
+ */
+const HANDOVER = Date.parse("2026-11-11T00:00:00+05:30");
+
+/** The latest publishes, newest first, back to the version handed over. */
 export async function history(): Promise<Publish[]> {
   if (storage !== "github") return [];
   const commits = await github<{ sha: string; commit: { message: string; committer: { date: string } } }[]>(
     `/commits?sha=${branch}&path=${EDITS_FILE}&per_page=25`,
   );
-  return commits.map((c) => ({ sha: c.sha, message: c.commit.message, date: c.commit.committer.date }));
+  const all = commits.map((c) => ({ sha: c.sha, message: c.commit.message, date: c.commit.committer.date }));
+  const since = all.filter((c) => Date.parse(c.date) >= HANDOVER);
+  const handedOver = all.find((c) => Date.parse(c.date) < HANDOVER);
+  // Not a "Site edit:" message, so the editor calls it the site as the web team last set it up.
+  return handedOver ? [...since, { ...handedOver, message: "The site as handed over" }] : since;
 }
 
 /**

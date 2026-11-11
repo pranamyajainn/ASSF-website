@@ -69,7 +69,8 @@ export async function translate(text: string, reference?: Reference | null): Pro
     const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
     const out = JSON.parse(data.choices?.[0]?.message?.content ?? "{}") as { hi?: unknown; kn?: unknown };
     if (typeof out.hi !== "string" || typeof out.kn !== "string") throw new Error("shape");
-    return { hi: out.hi.trim(), kn: out.kn.trim() };
+    // Kannada ends a sentence with a full stop; the model sometimes borrows Hindi's danda.
+    return { hi: out.hi.trim(), kn: out.kn.trim().replace(/\s*।/g, ".") };
   } catch {
     throw new TranslationError("The translation came back garbled — please try again.", 502);
   }

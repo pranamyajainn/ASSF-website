@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getAt, pathKey, type Json, type Path } from "@/lib/cms/edits";
 import { isOpenList, PAGES, schemaPath, sectionLabel } from "@/lib/cms/schema";
 import { fieldId, Node, useEditor } from "./fields";
-import { blankLike, describeAt, itemTitle, NEWEST_FIRST, searchIndex, type Trees } from "./model";
+import { describeAt, itemTitle, NEWEST_FIRST, newItem, searchIndex, type Trees } from "./model";
 
 export type Selection = { path: Path } | { contact: true } | null;
 
@@ -196,7 +196,7 @@ function ItemActions({ item, onSelect }: { item: Path; onSelect: (selection: Sel
         onClick={() => {
           const at = NEWEST_FIRST.has(schemaPath(listPath)) ? index : index + 1;
           api.changeList(listPath, (l) => {
-            l.splice(at, 0, blankLike(l[index] as Json));
+            l.splice(at, 0, newItem(listPath, l[index] as Json));
             return l;
           });
           onSelect({ path: [...listPath, at] });

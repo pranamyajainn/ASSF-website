@@ -60,6 +60,26 @@ export function getAt(tree: unknown, path: Path): unknown {
   return node;
 }
 
+/** An item's kind: an object's field names, or the type of anything else. */
+function kindOf(value: unknown): string {
+  return isObject(value) ? `{${Object.keys(value).sort().join(",")}}` : Array.isArray(value) ? "list" : typeof value;
+}
+
+/**
+ * The item in `list` that `item` is read against: the one in its own place
+ * if it is of the same kind, else the first of the same kind (or `extra`, a
+ * list's template). A list may mix kinds — the video gallery holds YouTube
+ * links and the site's own clips, which carry a poster and size — so an item
+ * added, moved or removed must not be matched with whatever stood in its
+ * place before, or it takes on another kind's fields (or loses its own).
+ */
+export function counterpart(list: readonly unknown[], item: unknown, index: number, extra?: unknown): unknown {
+  if (!isObject(item)) return list[index];
+  const kind = kindOf(item);
+  if (kindOf(list[index]) === kind) return list[index];
+  return list.find((other) => kindOf(other) === kind) ?? (extra !== undefined && kindOf(extra) === kind ? extra : list[index]);
+}
+
 /**
  * `incoming` laid over `current`, keeping `current`'s shape: an object keeps
  * only the keys it already has, and a leaf takes a value of the same kind
@@ -70,7 +90,7 @@ function fit(current: unknown, incoming: unknown, template?: unknown): unknown {
   if (Array.isArray(current)) {
     if (!Array.isArray(incoming)) return current;
     const model = current[0] ?? template;
-    return incoming.map((item, i) => fit(current[i] ?? model, item, model));
+    return incoming.map((item, i) => fit(counterpart(current, item, i, template) ?? model, item, model));
   }
   if (isObject(current)) {
     if (!isObject(incoming)) return current;

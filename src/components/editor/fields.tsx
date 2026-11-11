@@ -4,7 +4,7 @@ import { createContext, useContext, useId, useRef, useState, type ReactNode } fr
 import { localeInfo, locales, type Lang } from "@/i18n/config";
 import { getAt, pathKey, type Json, type Path, type Scope } from "@/lib/cms/edits";
 import { ENUM_KEYS, isHidden, isImagePath, isLongText, isMediaPath, isOpenList, ITEM_TEMPLATES, labelAt, labelFor, schemaPath } from "@/lib/cms/schema";
-import { blankLike, enumOptions, itemTitle, NEWEST_FIRST, type Trees } from "./model";
+import { enumOptions, itemTitle, NEWEST_FIRST, newItem, type Trees } from "./model";
 
 export type EditorApi = {
   /** The edition being edited, or "all" to see the three side by side. */
@@ -486,8 +486,7 @@ function List({ path }: { path: Path }) {
   };
   const add = () => {
     api.changeList(path, (l) => {
-      const model = (newestFirst ? l[0] : l[l.length - 1]) ?? template ?? "";
-      const item = blankLike(model as Json);
+      const item = newItem(path, (newestFirst ? l[0] : l[l.length - 1]) as Json);
       return newestFirst ? [item, ...l] : [...l, item];
     });
     api.toggle([...path, newestFirst ? 0 : list.length], true);

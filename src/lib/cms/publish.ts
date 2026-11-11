@@ -62,6 +62,20 @@ export async function publishOps(
   });
 }
 
+/**
+ * What would stop an earlier version standing on the site as its code is
+ * now, if anything. The site skips an edit whose field has since moved or
+ * changed kind, so restoring such a version would only half bring it back;
+ * it's refused instead, with the reason.
+ */
+export function checkRestore(old: Edits): string | null {
+  const base = locales.map((l) => baseContent(l));
+  const restored = Object.fromEntries(locales.map((l) => [l, editedContent(l, old)])) as Record<Lang, unknown>;
+  // Photographs it uses were committed when it was published.
+  const uploads = new Set(JSON.stringify(old.ops).match(/\/images\/uploads\/\d{4}\/[a-z0-9-]+\.jpg/g) ?? []);
+  return validateOps(old.ops, restored, shapeOf([...base, ...Object.values(restored)]), uploads);
+}
+
 /** What would stop these changes publishing on the site as it stands now, if anything. */
 export async function checkOps(ops: Op[], images: Images): Promise<string | null> {
   const { edits: head } = await readEdits();

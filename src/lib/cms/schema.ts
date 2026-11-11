@@ -87,18 +87,22 @@ export const COLLECTIONS = new Set([
   "community.relief.items[].stats",
   "trustees.trustees",
   "trustees.advisors",
+  "trustees.team.members",
   "photos.gallery.items",
   "videos.gallery.items",
   "careers.openings.items",
 ]);
 
 /**
- * A new item for a collection that may be empty, where there is no item to
- * copy the shape of: Careers starts with no vacancies. The editor's "Add",
- * the AI connector and the server's checks all take the shape from here.
+ * A new item for a collection, where copying a neighbour won't do: Careers
+ * may have no vacancies to copy, and a new film is always a YouTube link —
+ * never a copy of one of the site's own clips, with its poster and size.
+ * The editor's "Add", the AI connector and the server's checks all take the
+ * shape from here.
  */
 export const ITEM_TEMPLATES: Record<string, Json> = {
   "careers.openings.items": { role: "", location: "", openings: "", pay: "", description: "", responsibilities: [], qualifications: [], whyJoin: [] },
+  "videos.gallery.items": { title: "", caption: "", url: "" },
 };
 
 /** Paragraph lists: open, whatever their path. */
@@ -212,6 +216,9 @@ const PATH_LABELS: Record<string, string> = {
   "trustees.advisors[].body": "Short description (on the card)",
   "trustees.trustees[].bio": "Full profile (under “Read full profile”)",
   "trustees.advisors[].bio": "Full profile (under “Read full profile”)",
+  "trustees.team.members": "Team members",
+  "trustees.team.members[].body": "Short description (on the card)",
+  "trustees.team.members[].bio": "Full profile (under “Read full profile”)",
   "home.field.items[].body": "What happened",
   "home.field.items[].title": "Headline",
   "home.field.items[].date": "Date (as it should appear)",
@@ -266,6 +273,7 @@ export const PAGES = [
   { module: "trustees", title: "Trustees", href: "/trustees" },
   { module: "photos", title: "Photo Gallery", href: "/gallery/photos" },
   { module: "videos", title: "Video Gallery", href: "/gallery/videos" },
+  { module: "reports", title: "Reports", href: "/reports" },
   { module: "careers", title: "Careers", href: "/careers" },
   { module: "shared", title: "Site-wide", href: "/" },
   { module: "ui", title: "Buttons & labels", href: "/" },
@@ -314,6 +322,8 @@ const SECTION_LABELS: Record<string, string> = {
   "shared.pillars": "Three pillars (everywhere)",
   "trustees.trustees": "Trustees",
   "trustees.advisors": "Advisors",
+  "trustees.team": "Our team",
+  "reports.list": "Reports",
 };
 
 export function sectionLabel(module: string, key: string): string {

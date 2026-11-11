@@ -105,6 +105,16 @@ export function blankLike(model: Json, key?: string | number): Json {
   return model;
 }
 
+/**
+ * A new item for the list at `listPath`: the list's template where it has
+ * one (a new film is a YouTube link, whichever film it's added beside),
+ * else an empty copy of `model`, the item it's added beside.
+ */
+export function newItem(listPath: Path, model: Json | undefined): Json {
+  const template = ITEM_TEMPLATES[schemaPath(listPath)];
+  return template !== undefined ? clone(template) : blankLike((model ?? "") as Json);
+}
+
 /** Collections where the newest item leads (a news timeline). */
 export const NEWEST_FIRST = new Set(["home.field.items"]);
 
