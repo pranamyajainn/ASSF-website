@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
-import { Container, Heading, InlineLink, Leaf, Lede, PageHero, PageThread, PersonGrid, Plate, Prose } from "@/components/site/primitives";
+import { Heading, InlineLink, Leaf, Lede, PageHero, PersonGrid, Plate, Prose } from "@/components/site/primitives";
 import { VideoLoop } from "@/components/site/video-loop";
 import { getContent } from "@/i18n/content";
 import { pageMetadata } from "@/i18n/metadata";
@@ -19,7 +19,7 @@ export async function generateMetadata() {
 export default async function AboutPage() {
   const { about, conservation, trustees, ui } = await getContent();
   const { ahead, areas, foundation, inspiration, leadership, mvv, namesake, pageHero } = about;
-  const { film } = conservation;
+  const { film } = conservation.process;
   const t = ui.trustees;
   const profile = { open: t.readProfile, close: t.closeProfile };
   return (
@@ -31,20 +31,6 @@ export default async function AboutPage() {
         {/* The page's navigation, in her section names — kept out of the
             hero, as her document asks ("avoid placing a long menu of jump
             links above the fold"). */}
-        <Container>
-          <div className="grid md:grid-cols-[5.5rem_minmax(0,1fr)] lg:grid-cols-[7.5rem_minmax(0,1fr)_16rem]">
-            <div className="hidden md:block" />
-            <div className="ruled min-w-0 pb-4 pl-5 sm:pl-7 lg:pl-12 [&>nav]:mt-0">
-              <PageThread
-                title={ui.steps.thread}
-                items={[inspiration, foundation, mvv, leadership, areas, ahead].map((section, i) => ({
-                  id: ["inspiration", "foundation", "mvv", "leadership", "areas", "ahead"][i],
-                  question: section.label,
-                }))}
-              />
-            </div>
-          </div>
-        </Container>
 
         {/* The namesake, in the archive's own photographs: the ceremony print
             large, two small portraits beside it, then the sutra. */}

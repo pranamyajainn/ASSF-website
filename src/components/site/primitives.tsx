@@ -410,12 +410,12 @@ export function PageHero({
   body,
   supporting,
   plate,
-  thread,
   children,
 }: {
   label?: string;
   question?: string;
   /** The page's sections in reading order, as the questions they answer. */
+  /** No longer shown: the Foundation asked for no "On this page" lists (Nov 2026). */
   thread?: { title: string; items: readonly { id: string; question: string }[] };
   eyebrow: string;
   title: string;
@@ -438,7 +438,6 @@ export function PageHero({
           </h1>
           <p className="mt-8 max-w-[52ch] text-lede text-ink">{body}</p>
           {supporting ? <p className="mt-5 font-display text-[1.25rem] italic leading-snug text-cinnabar">{supporting}</p> : null}
-          {thread ? <PageThread {...thread} /> : null}
           {children}
         </div>
         {plate ? <MarginPlate plate={plate} /> : null}
@@ -447,36 +446,6 @@ export function PageHero({
   );
 }
 
-/**
- * The page in one line: its sections in reading order, each named by the
- * question it answers and linked to it — why, then how, then what, where,
- * how much. Read left to right it is the page's argument; followed, it is
- * the way through it.
- */
-export function PageThread({ title, items }: { title: string; items: readonly { id: string; question: string }[] }) {
-  return (
-    <nav aria-label={title} className="mt-10 max-w-[52rem] border-t border-ink/20 pt-4">
-      <p className="font-mono text-register text-ink-faint">{title}</p>
-      <ol className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-2">
-        {items.map((item, i) => (
-          <li key={item.id} className="flex items-baseline gap-2">
-            {i > 0 ? (
-              <span aria-hidden="true" className="text-cinnabar">
-                →
-              </span>
-            ) : null}
-            <a
-              href={`#${item.id}`}
-              className="font-display text-[1.1rem] text-ink underline decoration-ink/20 decoration-1 underline-offset-4 transition-colors hover:text-cinnabar hover:decoration-cinnabar"
-            >
-              {item.question}
-            </a>
-          </li>
-        ))}
-      </ol>
-    </nav>
-  );
-}
 
 /**
  * A tall photograph that occupies the right margin of a title leaf and runs

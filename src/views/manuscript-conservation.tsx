@@ -1,177 +1,122 @@
+import Image from "next/image";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
-import { GiveNote } from "@/components/site/give-note";
-import { Sites } from "@/components/site/sites";
-import {
-  Gloss,
-  Heading,
-  InlineLink,
-  Leaf,
-  PageHero,
-  Plate,
-  Prose,
-  Register,
-  Verses,
-} from "@/components/site/primitives";
+import { MediaClip } from "@/components/site/media-clip";
+import { Figures, GiveBand, Opener, PhotoCards, PhotoGrid, Steps, Tags } from "@/components/site/page-sections";
+import { Heading, Leaf, Lede } from "@/components/site/primitives";
 import { VideoLoop } from "@/components/site/video-loop";
-import Image from "next/image";
 import { getContent } from "@/i18n/content";
 import { pageMetadata } from "@/i18n/metadata";
 
 export async function generateMetadata() {
   const { conservation } = await getContent();
-  return pageMetadata("conservation", "/manuscript-conservation", conservation.pageHero.body);
+  return pageMetadata("conservation", "/manuscript-conservation", conservation.pageHero.paragraphs[0]);
 }
 
+const badge = { done: "border-ink/40 text-ink", final: "border-cinnabar text-cinnabar", live: "border-cinnabar bg-cinnabar text-leaf" } as const;
+
+/** Numbers in a line set in the scribe's red: "1,399 manuscripts · 1,06,277 folios". */
+function Counted({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\d[\d,]*\+?)/).map((part, i) =>
+        i % 2 ? (
+          <b key={i} className="font-semibold text-cinnabar">
+            {part}
+          </b>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
+/** Manuscript Conservation, after the Foundation's page designs (Nov 2026). */
 export default async function ManuscriptConservationPage() {
-  const { conservation, home, ui, href } = await getContent();
-  const { capacity, film, illuminated, pageHero, process, whatWeConserve } = conservation;
-  const { ledger, mission } = home;
-  const t = ui.conservation;
+  const { conservation, ui } = await getContent();
+  const { pageHero, why, conserve, process, sites, give } = conservation;
   return (
     <>
       <Header />
       <main id="main">
-        <PageHero
-          question={ui.steps.why}
-          thread={{
-            title: ui.steps.thread,
-            items: [
-              { id: "what-we-conserve", question: ui.steps.what },
-              { id: "painted", question: ui.steps.inside },
-              { id: "process", question: ui.steps.how },
-              { id: "sites", question: ui.steps.where },
-              { id: "ledger", question: ui.steps.much },
-              { id: "capacity", question: ui.steps.lasts },
-            ],
-          }}
-          label={t.heroLabel}
-          {...pageHero}
-          plate={{ ...pageHero.plate, position: "50% 55%" }}
-        />
+        <Opener {...pageHero} />
 
-        {/* Two materials, set as the two facing pages of an opened bundle. */}
-        <Leaf id="what-we-conserve" label={whatWeConserve.label} question={ui.steps.what}>
-          <Heading>{whatWeConserve.heading}</Heading>
-          <div className="bleed-margin mt-10 grid border-y border-ink/20 md:grid-cols-2">
-            {whatWeConserve.items.map((item, i) => (
-              <div
-                key={item.name}
-                className={`py-8 ${i === 0 ? "md:border-r md:border-ink/20 md:pr-10" : "border-t border-ink/20 md:border-t-0 md:pl-10"}`}
-              >
-                {/* A photograph of each material, as the Foundation asked (26 Oct 2026). */}
-                <figure className="mb-6">
-                  <div className="relative aspect-[16/9] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15">
-                    <Image src={item.image.src} alt={item.image.alt} fill sizes="(min-width: 768px) 40vw, 92vw" className="object-cover" />
-                  </div>
-                  <figcaption className="mt-2 font-mono text-register text-ink-faint">{item.image.caption}</figcaption>
-                </figure>
-                <h3 className="font-display text-[1.7rem] font-medium leading-tight text-ink">{item.name}</h3>
-                <p className="mt-3 max-w-[46ch] text-[1.0625rem] leading-relaxed text-ink-soft">{item.body}</p>
-              </div>
-            ))}
+        <Leaf id="why" label={why.label} question={why.question}>
+          <Heading>{why.heading}</Heading>
+          <div className="bleed-margin mt-8 grid items-start gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div className="min-w-0">
+              <p className="text-lede text-ink">{why.lede}</p>
+              {why.paragraphs.map((p, i) => (
+                <p key={i} className="mt-4 text-[1.0625rem] leading-[1.65] text-ink">
+                  {p}
+                </p>
+              ))}
+              <Tags items={why.subjects} className="mt-6" />
+            </div>
+            <PhotoGrid items={why.photos} />
           </div>
-          <Prose className="mt-8">
-            <p>{whatWeConserve.note}</p>
-          </Prose>
-          <ul className="bleed-margin mt-8 flex flex-wrap gap-x-3 gap-y-2 font-mono text-register text-ink-soft">
-            {whatWeConserve.subjects.map((subject, i) => (
-              <li key={subject} className="flex items-center gap-3">
-                {i > 0 ? <span aria-hidden="true" className="text-cinnabar">।</span> : null}
-                {subject}
+          <Figures items={why.figures} className="mt-12" />
+        </Leaf>
+
+        <Leaf id="what-we-conserve" label={conserve.label} question={conserve.question}>
+          <Heading>{conserve.heading}</Heading>
+          <Lede>{conserve.lede}</Lede>
+          <PhotoCards items={conserve.cards} />
+        </Leaf>
+
+        <Leaf id="process" label={process.label} question={process.question}>
+          <Heading>{process.heading}</Heading>
+          <Lede>{process.lede}</Lede>
+          <PhotoGrid items={process.photos} columns={4} className="bleed-margin mt-10" />
+          <Steps items={process.steps} className="mt-10" />
+          <VideoLoop className="mt-10 max-w-[45rem]" youtubeId={process.film.youtubeId} title={process.film.heading} watchLabel={ui.common.watchWithSound} />
+        </Leaf>
+
+        <Leaf id="sites" label={sites.label} question={sites.question}>
+          <Heading>{sites.heading}</Heading>
+          <Lede>{sites.lede}</Lede>
+          <ul className="bleed-margin mt-10 grid gap-x-10 gap-y-12 lg:grid-cols-2">
+            {sites.items.map((site) => (
+              <li key={site.name} className="grid min-w-0 gap-5 sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)]">
+                <MediaClip
+                  image={site.image}
+                  clip={site.clip}
+                  watchLabel={site.clipLabel || ui.home.watch}
+                  sizes="(min-width: 640px) 13rem, 92vw"
+                  className="aspect-[4/5] self-start"
+                />
+                <div className="min-w-0">
+                  <span className={`inline-block rounded-full border px-2.5 py-0.5 font-mono text-[0.75rem] ${badge[site.state as keyof typeof badge] ?? badge.done}`}>{site.badge}</span>
+                  <h3 className="mt-2 font-display text-[1.55rem] font-semibold leading-tight text-ink">{site.name}</h3>
+                  <p className="mt-1.5 font-mono text-[0.78rem] leading-relaxed text-ink-soft">{site.meta}</p>
+                  <p className="mt-3 border-t border-dashed border-cinnabar/30 pt-3 text-[1.0625rem] leading-relaxed text-ink">
+                    <Counted text={site.facts} />
+                  </p>
+                  <p className="mt-3 border-t border-dashed border-cinnabar/30 pt-3 text-[1.02rem] leading-relaxed text-ink-soft">{site.body}</p>
+                </div>
               </li>
             ))}
           </ul>
-        </Leaf>
-
-        {/* Painted pages, shown as they would be in a museum case: on the
-            dark board of a bundle's cover, each with its own caption. */}
-        <Leaf id="painted" label={illuminated.label} question={ui.steps.inside}>
-          <Heading>{illuminated.heading}</Heading>
-          <Prose>
-            <p>{illuminated.body}</p>
-          </Prose>
-          <div className="on-dark bleed-margin mt-12 bg-board px-5 pb-4 pt-8 [background-image:var(--weave)] sm:px-8 lg:px-10 lg:pt-10">
-            <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 lg:gap-8">
-              {illuminated.items.map((item) => (
-                <figure key={item.src} className="rise-on-scroll mb-8 break-inside-avoid">
-                  <div className="relative w-full overflow-hidden bg-board-deep shadow-[0_0.6rem_1.6rem_-0.6rem_rgb(0_0_0/0.6)]" style={{ aspectRatio: item.ratio }}>
-                    <Image
-                      src={item.src}
-                      alt={item.alt}
-                      fill
-                      sizes="(min-width: 1024px) 26vw, (min-width: 640px) 44vw, 90vw"
-                      className="object-cover"
-                    />
+          <div className="bleed-margin mt-12 grid gap-8 rounded-[28px] bg-leaf-deep/80 px-7 py-8 md:grid-cols-2 md:rounded-l-[6rem] md:px-12">
+            {sites.next.map((item, i) => (
+              <div key={item.name} className={`flex min-w-0 items-start gap-5 ${i > 0 ? "md:border-l md:border-ink/15 md:pl-8" : ""}`}>
+                {item.image.src ? (
+                  <div className="relative size-28 shrink-0 overflow-hidden rounded-full bg-leaf">
+                    <Image src={item.image.src} alt={item.image.alt} fill sizes="7rem" className="object-cover" />
                   </div>
-                  <figcaption className="mt-3 font-mono text-register text-board-soft">{item.caption}</figcaption>
-                </figure>
-              ))}
-            </div>
-            <p className="border-t border-board-soft/25 py-4 font-mono text-register text-board-soft">{illuminated.source}</p>
+                ) : null}
+                <div className="min-w-0">
+                  <span className="inline-block rounded-full border border-orpiment px-2.5 py-0.5 font-mono text-[0.75rem] text-ink-soft">{item.badge}</span>
+                  <p className="mt-2 font-display text-[1.4rem] font-semibold leading-tight text-ink">{item.name}</p>
+                  <p className="mt-1.5 text-[1.02rem] leading-relaxed text-ink-soft">{item.body}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </Leaf>
 
-        <Leaf id="process" label={process.label} question={ui.steps.how}>
-          <Heading>{process.heading}</Heading>
-          <Prose>
-            <p>{process.intro}</p>
-          </Prose>
-          <dl className="mt-8 grid max-w-[52rem] gap-x-10 gap-y-6 md:grid-cols-2">
-            {process.approaches.map((a) => (
-              <div key={a.name} className="border-l border-cinnabar/60 pl-4">
-                <dt className="font-display text-[1.3rem] font-medium text-ink">{a.name}</dt>
-                <dd className="mt-1 text-[1.0625rem] leading-relaxed text-ink-soft">{a.body}</dd>
-              </div>
-            ))}
-          </dl>
-
-          <p className="mt-16 font-mono text-register text-cinnabar">{process.curativeLabel}</p>
-          <Verses steps={process.steps} className="mt-5" />
-
-          <Plate
-            className="mt-10 max-w-[44rem]"
-            src={mission.plate.src}
-            alt={mission.plate.alt}
-            caption={t.documentationCaption}
-            ratio="16 / 10"
-            imageClassName="object-cover object-[50%_60%]"
-            sizes="(min-width: 1024px) 44rem, 100vw"
-          />
-        </Leaf>
-
-        <Leaf id="film" label={film.label} question={ui.steps.watch}>
-          <Heading>{film.heading}</Heading>
-          <Prose>
-            <p>{film.body}</p>
-          </Prose>
-          <VideoLoop
-            className="bleed-margin mt-10"
-            youtubeId={film.youtubeId}
-            title={film.heading}
-            watchLabel={ui.common.watchWithSound}
-          />
-        </Leaf>
-
-        <Sites />
-
-        <Leaf id="ledger" label={ledger.label} question={ui.steps.much}>
-          <Heading>{ledger.heading}</Heading>
-          <Prose>
-            <p>{ledger.intro}</p>
-          </Prose>
-          <Register entries={ledger.metrics} />
-        </Leaf>
-
-        <Leaf id="capacity" label={capacity.label} question={ui.steps.lasts}>
-          <Heading>{capacity.heading}</Heading>
-          <Prose>
-            <Gloss label={t.recognition}>{capacity.recognition}</Gloss>
-            <p>{capacity.body}</p>
-          </Prose>
-          <InlineLink href={href("/#join")}>{t.joinLink}</InlineLink>
-        </Leaf>
-        <GiveNote about="restore" />
+        <GiveBand {...give} />
       </main>
       <Footer />
     </>

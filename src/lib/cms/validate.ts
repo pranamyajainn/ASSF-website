@@ -88,6 +88,8 @@ function check(value: Json, current: unknown, path: (string | number)[], ctx: Ct
 
   if (isImagePath(current) || (typeof key === "string" && ["src", "image", "portrait"].includes(key) && isImagePath(value))) {
     if (value === "" && ctx.photosLater) return null;
+    // A photo the site already leaves empty somewhere (a "Next" card with no photograph) is optional.
+    if (value === "" && ctx.shape.values.get(schema)?.has("")) return null;
     if (!isImagePath(value)) return `${where}: a photo is needed`;
     const known = [...ctx.shape.values.values()].some((s) => s.has(value));
     if (!known && !(UPLOAD.test(value) && ctx.uploads.has(value))) return `${where}: unknown photo`;

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
-import { Button, Heading, Leaf, Lede, PageHero, PageThread, Prose } from "@/components/site/primitives";
+import { Button, Heading, Leaf, Lede, PageHero, Prose } from "@/components/site/primitives";
 import { getContent } from "@/i18n/content";
 import { pageMetadata } from "@/i18n/metadata";
 
@@ -101,16 +101,6 @@ export default async function ImpactPage() {
               </div>
             ))}
           </dl>
-          <PageThread
-            title={ui.steps.thread}
-            items={[
-              { id: "began", question: thread.began },
-              { id: "preserved", question: thread.preserved },
-              { id: "reached", question: thread.reached },
-              { id: "built", question: thread.built },
-              { id: "next", question: thread.next },
-            ]}
-          />
         </PageHero>
 
         <Leaf id="began" label={began.eyebrow} question={thread.began}>

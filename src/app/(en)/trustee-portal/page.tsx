@@ -9,7 +9,8 @@ import { Meter, PortalSection, ReportCard, StatTile, StatusRow } from "@/compone
 const {
   shared: { org },
   impact: { streams },
-  home: { ledger, sites, standing },
+  home: { ledger, standing },
+  conservation: { sites },
   rural: { projects: ruralProjects },
   community: { healthcare, education, relief },
   trustees: { trustees, advisors },
@@ -120,17 +121,11 @@ export default async function TrusteePortalPage() {
               <div key={site.name} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-t border-board-ink/10 py-3 first:border-t-0">
                 <div>
                   <p className="text-[0.95rem] text-board-ink">{site.name}</p>
-                  <p className="text-sm text-board-ink/55">{site.institution}, {site.place}</p>
+                  <p className="text-sm text-board-ink/55">{site.meta}</p>
                 </div>
                 <div className="text-right">
-                  <p className={`text-sm ${site.status === "Completed" ? "text-board-ink" : "text-orpiment"}`}>
-                    {site.status}
-                  </p>
-                  {site.figures.manuscripts ? (
-                    <p className="text-sm text-board-ink/55">
-                      {site.figures.manuscripts} manuscripts · {site.figures.folios} folios
-                    </p>
-                  ) : null}
+                  <p className={`text-sm ${site.state === "done" ? "text-board-ink" : "text-orpiment"}`}>{site.badge}</p>
+                  <p className="text-sm text-board-ink/55">{site.facts}</p>
                 </div>
               </div>
             ))}

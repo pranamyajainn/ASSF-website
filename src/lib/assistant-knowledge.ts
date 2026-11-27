@@ -17,14 +17,14 @@ import { resolveContent } from "@/i18n/content";
 import type { Passage } from "./assistant-corpus";
 
 // The English edition as published — with the site editor's changes.
-const { shared, home } = resolveContent("en");
+const { shared, home, conservation } = resolveContent("en");
 const { org, pillars } = shared;
 
 const core = `ORGANISATION
 ${org.nameLatin} (${org.nameDeva}) — "${org.tagline}", ${org.brandLine}. Charitable trust, est. ${org.founded}, reg. ${org.registration}. Office: ${org.office}. Contact: ${org.phone}, ${org.email}.
 Pillars: ${pillars.map((p) => `${p.label} — ${p.body}`).join(" | ")}
 Headline figures: ${home.ledger.metrics.map((m) => `${m.label}: ${m.value ?? "not yet published"}`).join("; ")}.
-Sites: ${home.sites.items.map((s) => `${s.name} (${s.institution}), ${s.status.toLowerCase()}`).join("; ")}.
+Sites: ${conservation.sites.items.map((s) => `${s.name} (${s.meta}), ${s.badge.toLowerCase()}`).join("; ")}.
 Still pending (say so if asked, never imply otherwise): 12A/80G, CSR-1, NGO Darpan, FCRA, audited financials.
 Spellings for Hindi/Kannada answers: आचार्य शांति सागर फाउंडेशन / ಆಚಾರ್ಯ ಶಾಂತಿ ಸಾಗರ ಫೌಂಡೇಶನ್; आचार्य श्री 108 शांति सागर जी महाराज / ಆಚಾರ್ಯ ಶ್ರೀ 108 ಶಾಂತಿ ಸಾಗರ ಮಹಾರಾಜರು; ताड़पत्र / ತಾಳೆಗರಿ (palm leaf); पत्र / ಪತ್ರ (a folio — palm leaf or paper; never narrow it to ताड़पत्र / ತಾಳೆಗರಿ); सल्लेखना / ಸಲ್ಲೇಖನ.`;
 
