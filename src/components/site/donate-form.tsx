@@ -27,10 +27,10 @@ const QUICK = [1, 5, 10, 25];
 const subscribeNothing = () => () => {};
 const inr = (n: number) => n.toLocaleString("en-IN", { maximumFractionDigits: 2 });
 const input =
-  "w-full border border-ink/30 bg-leaf px-3.5 py-2.5 text-[1.0625rem] text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-cinnabar aria-[invalid=true]:border-cinnabar";
-const chip = (on: boolean) =>
-  `flex min-h-[4.25rem] cursor-pointer flex-col items-center justify-center border px-3 py-2 text-center transition-colors ${
-    on ? "border-cinnabar bg-white/60 text-ink" : "border-ink/25 text-ink-soft hover:border-ink/50 hover:text-ink"
+  "w-full rounded-md border border-leaf-edge bg-white/55 px-3.5 py-3 text-[1.0625rem] text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-cinnabar aria-[invalid=true]:border-cinnabar";
+const tile = (on: boolean) =>
+  `flex min-h-[5.25rem] cursor-pointer flex-col items-center justify-center rounded-md border px-3 py-3 text-center transition-colors ${
+    on ? "border-cinnabar bg-cinnabar text-leaf" : "border-leaf-edge bg-leaf-deep/70 text-ink hover:border-cinnabar/60"
   }`;
 const more = "group flex cursor-pointer items-baseline gap-2 text-left text-[1rem] text-cinnabar";
 const moreText = "underline decoration-cinnabar/35 underline-offset-[5px] group-hover:decoration-cinnabar";
@@ -39,13 +39,11 @@ export function DonateForm({
   lang,
   t,
   thanksPath,
-  bank,
   payee,
 }: {
   lang: Lang;
   t: UI["donate"];
   thanksPath: string;
-  bank: { branch: string; account: string; ifsc: string; labels: { bank: string; account: string; ifsc: string } };
   /** Whose account the QR code pays, as the donor's UPI app will show it. */
   payee: string;
 }) {
@@ -220,9 +218,7 @@ export function DonateForm({
   const payLabel = qrGiving.on
     ? busy
       ? t.qrOpening
-      : category && total >= MIN_GIFT
-        ? fill(t.qrPayButton, { amount: inr(total) })
-        : t.qrSubmit
+      : t.qrSubmit
     : busy
       ? t.opening
       : category && total >= MIN_GIFT
@@ -292,24 +288,51 @@ export function DonateForm({
   }
 
   return (
-    <div className="grid gap-x-14 gap-y-12 xl:grid-cols-[minmax(0,1fr)_18rem]">
+    <div className="grid items-start gap-x-10 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,25rem)]">
       <form id="gift-form" onSubmit={submit} noValidate className="min-w-0 space-y-10" aria-busy={busy}>
-        {/* The gift */}
+        {/* The gift: a number of folios in one tap, or any amount */}
         <fieldset>
-          <legend className="font-display text-[1.45rem] font-medium leading-tight">{t.steps[0]}</legend>
+          <legend className="sr-only">{t.steps[0]}</legend>
           {categories === "loading" ? (
-            <p className="mt-5 font-mono text-register text-ink-faint" role="status">
+            <p className="font-mono text-register text-ink-faint" role="status">
               {t.loading}
             </p>
           ) : !list.length ? (
-            <p className="mt-5 border-l-2 border-cinnabar pl-4 text-[1.0625rem] leading-relaxed text-ink-soft">{t.unavailable}</p>
+            <p className="border-l-2 border-cinnabar pl-4 text-[1.0625rem] leading-relaxed text-ink-soft">{t.unavailable}</p>
           ) : simple && perUnit ? (
-            category && category === open ? (
-              <div className="mt-5">
-                <label className="block max-w-[16rem]">
-                  <span className="block text-[1rem] text-ink">{t.amount}</span>
+            <div>
+              <div role="radiogroup" aria-label={perUnit.unitLabel} className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {QUICK.filter((n) => n >= perUnit.min && (!perUnit.max || n <= perUnit.max)).map((n, i) => {
+                  const on = category === perUnit && !custom && quantity === n;
+                  return (
+                    <button
+                      key={n}
+                      id={i === 0 ? "gift-category" : undefined}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      onClick={() => {
+                        setCustom(false);
+                        choose(perUnit, n);
+                      }}
+                      className={tile(on)}
+                    >
+                      <span className="font-display text-[1.05rem] font-medium leading-tight">{fill(n === 1 ? t.folioOne : t.folioMany, { n })}</span>
+                      <span className={`mt-1.5 font-display text-[1.2rem] font-semibold leading-none ${on ? "text-orpiment" : "text-cinnabar"}`}>₹{inr(perUnit.amount * n)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {custom && category === perUnit ? (
+                <p className="mt-3 font-mono text-register text-ink">
+                  {fill(quantity === 1 ? t.folioOne : t.folioMany, { n: quantity })} · ₹{inr(perUnit.amount * quantity)}
+                </p>
+              ) : null}
+              {open ? (
+                <label className="mt-5 block">
+                  <span className="block font-mono text-register text-ink-soft">{t.orAny}</span>
                   <span className="relative mt-2 block">
-                    <span aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 font-display text-[1.2rem] text-ink-soft">
+                    <span aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 font-display text-[1.15rem] text-ink-soft">
                       ₹
                     </span>
                     <input
@@ -318,102 +341,22 @@ export function DonateForm({
                       inputMode="numeric"
                       min={MIN_GIFT}
                       step="1"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      className={`${input} pl-8 font-display text-[1.3rem]`}
+                      placeholder={t.amountPlaceholder}
+                      value={category === open ? amount : ""}
+                      onFocus={() => category !== open && choose(open)}
+                      onChange={(e) => {
+                        if (category !== open) choose(open);
+                        setAmount(e.target.value);
+                      }}
+                      className={`${input} pl-8`}
                     />
                   </span>
                 </label>
-                {fieldError("amount")}
-                <button type="button" onClick={() => choose(perUnit)} className={`${more} mt-4`}>
-                  <span className={moreText}>{fill(t.orUnits, { name: perUnit.name, amount: inr(perUnit.amount) })}</span>
-                </button>
-              </div>
-            ) : (
-              <div className="mt-5">
-                <p className="text-[1rem] text-ink">
-                  {perUnit.name} <span className="text-ink-faint">· {fill(t.perUnit, { amount: inr(perUnit.amount) })}</span>
-                </p>
-                <div role="radiogroup" aria-label={perUnit.unitLabel} className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5">
-                  {QUICK.filter((n) => n >= perUnit.min && (!perUnit.max || n <= perUnit.max)).map((n, i) => {
-                    const on = category === perUnit && !custom && quantity === n;
-                    return (
-                      <button
-                        key={n}
-                        id={i === 0 ? "gift-category" : undefined}
-                        type="button"
-                        role="radio"
-                        aria-checked={on}
-                        onClick={() => {
-                          setCustom(false);
-                          choose(perUnit, n);
-                        }}
-                        className={chip(on)}
-                      >
-                        <span className="font-display text-[1.5rem] leading-none">{n}</span>
-                        <span className="mt-1 font-mono text-[0.72rem] text-ink-faint">₹{inr(perUnit.amount * n)}</span>
-                      </button>
-                    );
-                  })}
-                  <button
-                    type="button"
-                    role="radio"
-                    aria-checked={category === perUnit && custom}
-                    onClick={() => {
-                      setCustom(true);
-                      choose(perUnit);
-                    }}
-                    className={chip(category === perUnit && custom)}
-                  >
-                    <span className="text-[1rem] leading-tight">{t.other}</span>
-                  </button>
-                </div>
-                <p className="mt-2 font-mono text-[0.72rem] text-ink-faint">{perUnit.unitLabel}</p>
-                {custom && category === perUnit ? (
-                  <div className="mt-4 flex items-stretch">
-                    <button
-                      type="button"
-                      aria-label="−"
-                      onClick={() => setQuantity((q) => Math.max(perUnit.min, q - perUnit.step))}
-                      className="w-12 border border-ink/30 text-[1.3rem] text-ink hover:border-cinnabar hover:text-cinnabar"
-                    >
-                      −
-                    </button>
-                    <input
-                      {...labelled("amount")}
-                      type="number"
-                      inputMode="numeric"
-                      aria-label={perUnit.unitLabel}
-                      min={perUnit.min}
-                      max={perUnit.max || undefined}
-                      step={perUnit.step}
-                      value={quantity}
-                      onChange={(e) => {
-                        const n = Math.floor(Number(e.target.value) || perUnit.min);
-                        setQuantity(Math.max(perUnit.min, perUnit.max ? Math.min(perUnit.max, n) : n));
-                      }}
-                      className={`${input} w-24 border-x-0 text-center font-display text-[1.25rem]`}
-                    />
-                    <button
-                      type="button"
-                      aria-label="+"
-                      onClick={() => setQuantity((q) => (perUnit.max ? Math.min(perUnit.max, q + perUnit.step) : q + perUnit.step))}
-                      className="w-12 border border-ink/30 text-[1.3rem] text-ink hover:border-cinnabar hover:text-cinnabar"
-                    >
-                      +
-                    </button>
-                  </div>
-                ) : null}
-                {fieldError("amount")}
-                {open ? (
-                  <button type="button" onClick={() => choose(open)} className={`${more} mt-5`}>
-                    <span className={moreText}>{t.orAny}</span>
-                  </button>
-                ) : null}
-              </div>
-            )
+              ) : null}
+              {fieldError("amount")}
+            </div>
           ) : (
-            <div className="mt-5 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label={t.forLabel}>
+            <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label={t.forLabel}>
               {list.map((c, i) => {
                 const on = c.id === categoryId;
                 return (
@@ -424,12 +367,10 @@ export function DonateForm({
                     role="radio"
                     aria-checked={on}
                     onClick={() => choose(c, c.min)}
-                    className={`flex flex-col items-start gap-1.5 border px-4 py-4 text-left transition-colors ${
-                      on ? "border-cinnabar bg-white/55" : "border-ink/25 hover:border-ink/50"
-                    }`}
+                    className={`${tile(on)} !items-start text-left`}
                   >
-                    <span className="font-display text-[1.15rem] leading-snug text-ink">{c.name}</span>
-                    <span className="font-mono text-register text-ink-faint">
+                    <span className="font-display text-[1.15rem] leading-snug">{c.name}</span>
+                    <span className="mt-1 font-mono text-register opacity-80">
                       {c.perUnit ? fill(t.perUnit, { amount: inr(c.amount) }) : c.fixed ? fill(t.fixed, { amount: inr(c.amount) }) : t.anyAmount}
                     </span>
                   </button>
@@ -450,128 +391,129 @@ export function DonateForm({
         {/* The giver: two things asked; the rest on request */}
         <fieldset className="space-y-5">
           <legend className="font-display text-[1.45rem] font-medium leading-tight">{t.steps[1]}</legend>
-          <div className="grid gap-5 sm:grid-cols-2">
-            <label className="block">
-              <span className="block text-[1rem] text-ink">{t.name}</span>
-              <input {...labelled("name")} autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} className={`${input} mt-2`} />
-              {fieldError("name")}
-            </label>
-            <label className="block">
-              <span className="block text-[1rem] text-ink">{t.mobile}</span>
-              <input
-                {...labelled("mobile")}
-                type="tel"
-                inputMode="numeric"
-                autoComplete="tel-national"
-                maxLength={10}
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                className={`${input} mt-2 font-mono tracking-[0.04em]`}
-              />
-              {errors.mobile ? fieldError("mobile") : <span className="mt-1.5 block text-[0.88rem] text-ink-faint">{t.mobileHint}</span>}
-            </label>
-          </div>
+          <label className="block">
+            <span className="block font-mono text-register text-ink-soft">{t.name}</span>
+            <input {...labelled("name")} autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} className={`${input} mt-2`} />
+            {fieldError("name")}
+          </label>
+          <label className="block">
+            <span className="block font-mono text-register text-ink-soft">{t.mobile}</span>
+            <input
+              {...labelled("mobile")}
+              type="tel"
+              inputMode="numeric"
+              autoComplete="tel-national"
+              maxLength={10}
+              placeholder={t.mobilePlaceholder}
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
+              className={`${input} mt-2 font-mono tracking-[0.04em]`}
+            />
+            {errors.mobile ? fieldError("mobile") : <span className="mt-1.5 block text-[0.92rem] text-ink-soft">{t.mobileHint}</span>}
+          </label>
 
-          <div className="space-y-4 border-t border-ink/15 pt-4">
-            <button type="button" aria-expanded={receipt} onClick={() => setReceipt(!receipt)} className={more}>
-              <span aria-hidden="true" className="w-3">
-                {receipt ? "−" : "+"}
-              </span>
-              <span className={moreText}>{t.addReceipt}</span>
-            </button>
-            {receipt ? (
-              <div className="grid gap-5 sm:grid-cols-2">
-                <label className="block">
-                  <span className="block text-[1rem] text-ink">{t.taxId}</span>
-                  <input
-                    {...labelled("taxId")}
-                    autoComplete="off"
-                    maxLength={12}
-                    value={taxId}
-                    onChange={(e) => setTaxId(e.target.value.toUpperCase().replace(/\s/g, "").slice(0, 12))}
-                    className={`${input} mt-2 font-mono uppercase tracking-[0.06em]`}
-                  />
-                  {fieldError("taxId")}
-                </label>
-                <label className="block">
-                  <span className="block text-[1rem] text-ink">{t.address}</span>
-                  <input id="gift-address" autoComplete="street-address" value={address} onChange={(e) => setAddress(e.target.value)} className={`${input} mt-2`} />
-                </label>
-                <p className="text-[0.9rem] leading-snug text-ink-faint sm:col-span-2">{t.taxHint}</p>
-              </div>
-            ) : null}
-
-            <button type="button" aria-expanded={extras} onClick={() => setExtras(!extras)} className={more}>
-              <span aria-hidden="true" className="w-3">
-                {extras ? "−" : "+"}
-              </span>
-              <span className={moreText}>{t.addMore}</span>
-            </button>
-            {extras ? (
-              <div className="grid gap-5 sm:grid-cols-2">
-                <label className="block">
-                  <span className="block text-[1rem] text-ink">{t.email}</span>
-                  <input {...labelled("email")} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className={`${input} mt-2`} />
-                  {fieldError("email")}
-                </label>
-                <label className="block">
-                  <span className="block text-[1rem] text-ink">{t.remarks}</span>
-                  <input maxLength={300} value={remarks} onChange={(e) => setRemarks(e.target.value)} className={`${input} mt-2`} />
-                </label>
-                {email.trim() ? (
-                  <label className="flex cursor-pointer items-start gap-3 text-[1rem] text-ink-soft sm:col-span-2">
-                    <input type="checkbox" checked={updates} onChange={(e) => setUpdates(e.target.checked)} className="mt-1 size-4 accent-[var(--color-cinnabar)]" />
-                    {t.updates}
+          <div className="divide-y divide-ink/15 border-y border-ink/15">
+            <div className="py-3.5">
+              <button type="button" aria-expanded={receipt} onClick={() => setReceipt(!receipt)} className={more}>
+                <span aria-hidden="true" className="w-3">
+                  {receipt ? "−" : "+"}
+                </span>
+                <span className={moreText}>{t.addReceipt}</span>
+              </button>
+              {receipt ? (
+                <div className="mt-4 grid gap-5">
+                  <label className="block">
+                    <span className="block font-mono text-register text-ink-soft">{t.taxId}</span>
+                    <input
+                      {...labelled("taxId")}
+                      autoComplete="off"
+                      maxLength={12}
+                      value={taxId}
+                      onChange={(e) => setTaxId(e.target.value.toUpperCase().replace(/\s/g, "").slice(0, 12))}
+                      className={`${input} mt-2 font-mono uppercase tracking-[0.06em]`}
+                    />
+                    {fieldError("taxId")}
                   </label>
-                ) : null}
-              </div>
-            ) : null}
+                  <label className="block">
+                    <span className="block font-mono text-register text-ink-soft">{t.address}</span>
+                    <input id="gift-address" autoComplete="street-address" value={address} onChange={(e) => setAddress(e.target.value)} className={`${input} mt-2`} />
+                  </label>
+                  <p className="text-[0.92rem] leading-snug text-ink-soft">{t.taxHint}</p>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="py-3.5">
+              <button type="button" aria-expanded={extras} onClick={() => setExtras(!extras)} className={more}>
+                <span aria-hidden="true" className="w-3">
+                  {extras ? "−" : "+"}
+                </span>
+                <span className={moreText}>{t.addMore}</span>
+              </button>
+              {extras ? (
+                <div className="mt-4 grid gap-5">
+                  <label className="block">
+                    <span className="block font-mono text-register text-ink-soft">{t.email}</span>
+                    <input {...labelled("email")} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className={`${input} mt-2`} />
+                    {fieldError("email")}
+                  </label>
+                  <label className="block">
+                    <span className="block font-mono text-register text-ink-soft">{t.remarks}</span>
+                    <input maxLength={300} value={remarks} onChange={(e) => setRemarks(e.target.value)} className={`${input} mt-2`} />
+                  </label>
+                  {email.trim() ? (
+                    <label className="flex cursor-pointer items-start gap-3 text-[1rem] text-ink-soft">
+                      <input type="checkbox" checked={updates} onChange={(e) => setUpdates(e.target.checked)} className="mt-1 size-4 accent-[var(--color-cinnabar)]" />
+                      {t.updates}
+                    </label>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
           </div>
+          {noTaxNote ? <p className="max-w-[58ch] text-[0.9rem] leading-relaxed text-ink-soft">{t.noTaxNote}</p> : null}
         </fieldset>
 
-        {/* Pay */}
-        <div>
-          {!ready ? <p className="mb-5 border-l-2 border-orpiment pl-4 text-[1rem] leading-relaxed text-ink-soft">{t.notHere}</p> : null}
-          <button
-            type="submit"
-            disabled={disabled}
-            className="hidden min-h-[3.25rem] items-center bg-cinnabar px-7 text-[1.0625rem] text-leaf transition-colors hover:bg-cinnabar-deep disabled:cursor-not-allowed disabled:opacity-50 lg:inline-flex"
-          >
-            {payLabel}
-          </button>
+        {/* On a phone or tablet the button is in the bar at the foot of the screen; what it says back is here. */}
+        <div className="space-y-3 lg:hidden">
+          {!ready ? <p className="border-l-2 border-orpiment pl-4 text-[1rem] leading-relaxed text-ink-soft">{t.notHere}</p> : null}
           {failure ? (
-            <p role="alert" className="mt-4 border-l-2 border-cinnabar pl-4 text-[1rem] text-cinnabar">
+            <p role="alert" className="border-l-2 border-cinnabar pl-4 text-[1rem] text-cinnabar">
               {failure}
             </p>
           ) : null}
-          {noTaxNote ? <p className="mt-4 max-w-[58ch] text-[0.9rem] leading-relaxed text-ink-faint">{t.noTaxNote}</p> : null}
-          <p className="mt-3 max-w-[58ch] font-mono text-register leading-relaxed text-ink-faint">{qrGiving.on ? t.qrSecure : t.secure}</p>
+          <p className="max-w-[58ch] text-[0.95rem] leading-relaxed text-ink-soft">{qrGiving.on ? t.qrSecure : t.secure}</p>
+          <p className="max-w-[58ch] text-[0.95rem] leading-relaxed text-ink-soft">{qrGiving.on ? t.qrPrivacy : t.privacy}</p>
         </div>
       </form>
 
-      <aside className="min-w-0 xl:sticky xl:top-8 xl:self-start">
-        <div className="hidden border border-ink/20 bg-white/40 p-6 xl:block">
-          <p className="font-mono text-register text-ink-faint">{t.total}</p>
-          <p className="mt-2 font-display text-[2.6rem] leading-none text-ink">{category && total ? `₹${inr(total)}` : "—"}</p>
+      {/* Your gift: the total, the button, and what happens next — beside the form while it scrolls. */}
+      <aside className="hidden min-w-0 lg:sticky lg:top-8 lg:block lg:self-start">
+        <div className="rounded-xl bg-board p-7 text-board-ink">
+          <p className="font-mono text-register uppercase tracking-[0.1em] text-orpiment">{t.total}</p>
+          <p className="mt-2 font-display text-[3rem] font-semibold leading-none">{category && total ? `₹${inr(total)}` : "—"}</p>
           {category ? (
-            <p className="mt-3 text-[1rem] leading-snug text-ink-soft">
+            <p className="mt-3 text-[1rem] leading-snug text-board-soft">
               {category.name}
               {category.perUnit ? ` · ${quantity} × ₹${inr(category.amount)}` : ""}
             </p>
           ) : null}
-          <p className="mt-5 border-t border-ink/15 pt-4 text-[0.9rem] leading-relaxed text-ink-faint">{qrGiving.on ? t.qrPrivacy : t.privacy}</p>
-        </div>
-        <div className="xl:mt-8">
-          <p className="font-display text-[1.15rem]">{t.bankHeading}</p>
-          <dl className="mt-3 space-y-1 font-mono text-register text-ink-soft">
-            {(["branch", "account", "ifsc"] as const).map((k) => (
-              <div key={k}>
-                <dt className="sr-only">{bank.labels[k === "branch" ? "bank" : k]}</dt>
-                <dd>{bank[k]}</dd>
-              </div>
-            ))}
-          </dl>
-          <p className="mt-3 text-[0.9rem] leading-relaxed text-ink-faint">{t.bankNote}</p>
+          {!ready ? <p className="mt-5 border-l-2 border-orpiment pl-4 text-[0.95rem] leading-relaxed">{t.notHere}</p> : null}
+          <button
+            type="submit"
+            form="gift-form"
+            disabled={disabled}
+            className="mt-6 flex min-h-[3.25rem] w-full items-center justify-center bg-cinnabar px-6 text-[1.0625rem] text-leaf transition-colors hover:bg-cinnabar-deep disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {payLabel}
+          </button>
+          {failure ? (
+            <p role="alert" className="mt-4 text-[1rem] text-cinnabar-light">
+              {failure}
+            </p>
+          ) : null}
+          <p className="mt-5 text-[0.95rem] leading-relaxed text-board-soft">{qrGiving.on ? t.qrSecure : t.secure}</p>
+          <p className="mt-3 text-[0.95rem] leading-relaxed text-board-soft">{qrGiving.on ? t.qrPrivacy : t.privacy}</p>
         </div>
       </aside>
 

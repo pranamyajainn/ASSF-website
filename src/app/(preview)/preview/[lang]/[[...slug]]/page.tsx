@@ -12,6 +12,7 @@ import Careers from "@/views/careers";
 import PhotoGallery from "@/views/photo-gallery";
 import VideoGallery from "@/views/video-gallery";
 import Reports from "@/views/reports";
+import Donate from "@/views/donate";
 
 const VIEWS: Record<string, () => Promise<React.ReactNode> | React.ReactNode> = {
   "": Home,
@@ -24,6 +25,7 @@ const VIEWS: Record<string, () => Promise<React.ReactNode> | React.ReactNode> = 
   "gallery/photos": PhotoGallery,
   "gallery/videos": VideoGallery,
   reports: Reports,
+  donate: Donate,
   careers: Careers,
 };
 

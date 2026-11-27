@@ -10,6 +10,7 @@ import * as impact from "@/content/impact";
 import * as trustees from "@/content/trustees";
 import * as careers from "@/content/careers";
 import * as reports from "@/content/reports";
+import * as donate from "@/content/donate";
 import * as photos from "@/content/photo-gallery";
 import * as videos from "@/content/video-gallery";
 import editsFile from "@/content/edits.json";
@@ -41,6 +42,7 @@ const source = {
   videos: { ...videos },
   careers: { ...careers },
   reports: { ...reports },
+  donate: { ...donate },
   ui,
 };
 

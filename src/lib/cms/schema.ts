@@ -286,6 +286,7 @@ export const PAGES = [
   { module: "videos", title: "Video Gallery", href: "/gallery/videos" },
   { module: "reports", title: "Reports", href: "/reports" },
   { module: "careers", title: "Careers", href: "/careers" },
+  { module: "donate", title: "Donate", href: "/donate" },
   { module: "shared", title: "Site-wide", href: "/" },
   { module: "ui", title: "Buttons & labels", href: "/" },
 ] as const;
@@ -299,6 +300,7 @@ export const SECTION_ORDER: Partial<Record<ModuleName, string[]>> = {
   careers: ["pageHero", "summary", "about", "openings", "locations", "apply"],
   photos: ["pageHero", "gallery"],
   videos: ["pageHero", "gallery"],
+  donate: ["pageHero", "gift", "goes", "ways"],
 };
 
 /** Plain names for sections whose code names say little to a reader. */
@@ -335,6 +337,10 @@ const SECTION_LABELS: Record<string, string> = {
   "trustees.advisors": "Advisors",
   "trustees.team": "Our team",
   "reports.list": "Reports",
+  "donate.pageHero": "Top of the page",
+  "donate.gift": "The gift",
+  "donate.goes": "Where your gift goes",
+  "donate.ways": "Ways to give",
 };
 
 export function sectionLabel(module: string, key: string): string {
