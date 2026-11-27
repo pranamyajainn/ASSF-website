@@ -33,7 +33,7 @@ function MarginMark({ label, question, inline = false }: { label?: string; quest
           {question}
         </span>
       ) : null}
-      {label && !(inline && question) ? (
+      {label ? (
         <span
           className={`block font-mono text-register text-ink-faint ${
             inline ? "" : question ? "mt-1.5 max-w-[6rem]" : "mt-3 max-w-[6rem]"

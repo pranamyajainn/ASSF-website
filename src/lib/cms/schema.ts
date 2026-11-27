@@ -117,7 +117,7 @@ export const COLLECTIONS = new Set([
  * shape from here.
  */
 export const ITEM_TEMPLATES: Record<string, Json> = {
-  "careers.openings.items": { role: "", location: "", openings: "", pay: "", description: "", responsibilities: [], qualifications: [], whyJoin: [] },
+  "careers.openings.items": { role: "", openings: "", pay: "", description: "", location: "", responsibilities: [], qualifications: [] },
   "photos.gallery.folders": { name: "", line: "", subs: [] },
   "photos.gallery.folders[].subs": { name: "", sub: "", note: "", photos: [], videos: [] },
   "photos.gallery.folders[].subs[].photos": { src: "", alt: "" },
@@ -267,10 +267,9 @@ const PATH_LABELS: Record<string, string> = {
   "careers.openings.items[].location": "Location",
   "careers.openings.items[].openings": "How many openings (e.g. 4 openings)",
   "careers.openings.items[].pay": "Monthly remuneration",
-  "careers.openings.items[].description": "Role overview",
+  "careers.openings.items[].description": "The role in one line",
   "careers.openings.items[].responsibilities": "Key responsibilities (one per line)",
   "careers.openings.items[].qualifications": "Qualifications and experience (one per line)",
-  "careers.openings.items[].whyJoin": "Why join (one per line)",
   "careers.openings.empty": "Message when there are no openings",
   "photos.gallery.folders": "Folders",
   "photos.gallery.folders[].subs": "Sub-folders",
@@ -328,7 +327,7 @@ export type ModuleName = (typeof PAGES)[number]["module"];
 export const SECTION_ORDER: Partial<Record<ModuleName, string[]>> = {
   home: ["hero", "pillarsIntro", "mission", "ruralTeaser", "communityTeaser", "ledger", "upClose", "adopt", "voices", "field", "join", "survey", "lineage", "sites", "standing"],
   shared: ["org", "folioPrice", "granthaPrice", "pillars", "nav", "navMore"],
-  careers: ["pageHero", "summary", "about", "openings", "locations", "apply"],
+  careers: ["pageHero", "why", "openings", "locations", "apply"],
   photos: ["pageHero", "gallery"],
   donate: ["pageHero", "gift", "goes", "ways"],
   about: ["pageHero", "guides", "who", "pillars", "journey", "ahead"],
@@ -358,8 +357,7 @@ const SECTION_LABELS: Record<string, string> = {
   "shared.navMore": "Menu — galleries, reports, careers",
   "photos.pageHero": "Latest event (top of the page)",
   "photos.gallery": "Folders of photos and videos",
-  "careers.summary": "Summary line",
-  "careers.about": "About the Foundation",
+  "careers.why": "Why join us",
   "careers.openings": "Open positions",
   "careers.locations": "Work locations",
   "careers.apply": "How to apply",
