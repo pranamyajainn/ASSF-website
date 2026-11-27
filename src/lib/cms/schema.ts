@@ -82,6 +82,7 @@ export const COLLECTIONS = new Set([
   "conservation.sites.next",
   "rural.projects.items",
   "rural.projects.items[].images",
+  "rural.projects.feature.paragraphs",
   "community.healthcare.camps",
   "community.relief.items",
   "community.relief.items[].images",
@@ -105,6 +106,7 @@ export const COLLECTIONS = new Set([
 export const ITEM_TEMPLATES: Record<string, Json> = {
   "careers.openings.items": { role: "", location: "", openings: "", pay: "", description: "", responsibilities: [], qualifications: [], whyJoin: [] },
   "videos.gallery.items": { title: "", caption: "", url: "" },
+  "rural.projects.items[].images": { src: "", alt: "" },
 };
 
 /** Paragraph lists: open, whatever their path. */

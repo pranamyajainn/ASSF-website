@@ -1,81 +1,123 @@
 /**
- * Rural Infrastructure page copy — Foundation's "Rural Infrastructure" doc,
- * rewritten and condensed. Every project here starts from a stated need
- * (a request from the community, a site assessment) rather than a plan to
- * build for its own sake.
+ * Rural Infrastructure, after the Foundation's page designs (Nov 2026): how
+ * the Foundation builds, what it has built, the Shanti Stambh, and how to
+ * be part of it. Words and photographs as the Foundation's preview gives them.
  */
+import { org } from "./shared";
+
+const P = "/images/pages/rural/";
+
 export const pageHero = {
-  eyebrow: "Rural Infrastructure",
-  title: "Creating Spaces That Strengthen Rural Communities",
-  body: "A missing community hall limits gatherings. Distant staff housing keeps teachers from their schools. Poor sanitation affects public health. ASSF starts with what a space needs to enable, then builds or facilitates it.",
+  question: "Rural",
+  label: "Infrastructure",
+  eyebrow: "Our Work · Rural Infrastructure",
+  title: "Building What Villages Ask For",
+  paragraphs: [
+    "Some needs are met in a day. Others need walls and a roof: a hall where a village can gather, a place where a teacher can rest, clean water and sanitation for every family.",
+    "We build only when a community asks, and we build with them, so that what rises belongs to the village and serves it for generations.",
+  ],
+  images: [
+    { src: `${P}hero-infrastructure.jpg`, alt: "The Samudaya Bhavan at Yarnal" },
+    { src: `${P}hosur-2.jpg`, alt: "The teachers' resting space at Hosur" },
+    { src: `${P}sanitation-2.jpg`, alt: "The public sanitation block at Yarnal" },
+  ],
+  figures: [
+    { value: "5", label: "spaces built or brought to life with villages" },
+    { value: "14", label: "rooms for rural teachers to rest" },
+    { value: "419", label: "students in the schools those teachers serve" },
+    { value: "27", label: "guntas of land given by community members for the Bhavan" },
+  ],
 } as const;
 
-/**
- * Each project carries the Foundation's own photographs. The Samudaya
- * Bhavan set runs before → during → after, so the page shows what changed,
- * not only what stands. Several rural image filenames did not match what
- * the pictures show (the "before" file was the finished hall), so captions
- * describe what is visibly in each photograph, and only images whose
- * content plainly fits the project are used. `community-hall-progress`,
- * `staff-quarters-2` and `sanitation-block-1` are held back until the
- * Foundation confirms which project each shows.
- */
+export const method = {
+  question: "How we",
+  label: "build",
+  heading: "Beginning With the Need",
+  lede: "A building is only as good as the life it makes possible. So we start with that life.",
+  steps: [
+    { title: "Listen", body: "A request comes from the village, and we visit to understand it." },
+    { title: "Define", body: "We agree on what the space must make possible, and for whom." },
+    { title: "Plan", body: "Architects and engineers design it to suit the place and its people." },
+    { title: "Build or bring together", body: "We build it ourselves, or work with public bodies to see it done." },
+  ],
+} as const;
+
 export const projects = {
-  label: "Projects",
-  heading: "Infrastructure with a purpose",
+  question: "What we",
+  label: "have built",
+  heading: "Spaces That Serve for Generations",
+  feature: {
+    place: "Yarnal, Hukkeri taluk, Belagavi district",
+    title: "Samudaya Bhavan",
+    paragraphs: [
+      "In February 2019, the Hosur Gram Panchayat wrote to us: the village had no place to come together. Three community members gave 27 guntas of their own land, and on it rose the Samudaya Bhavan, with a community hall, a dining hall, a kitchen and a dharamshala for visitors.",
+      "It was built for the village's gatherings, discourses, cultural programmes and visiting guests.",
+    ],
+    images: [
+      { src: `${P}yarnal-build.jpg`, alt: "The Samudaya Bhavan at Yarnal under construction", caption: "Under construction" },
+      { src: `${P}hero-infrastructure.jpg`, alt: "The completed Samudaya Bhavan at Yarnal", caption: "Complete" },
+    ],
+    credits: [
+      { label: "Land given by", text: "Shri Mahaveer Nilajagi, Shri D. A. Patil and Shri V. S. Doddanavar" },
+      { label: "Designed by", text: "21st Studio, Belagavi" },
+    ],
+  },
+  /** More spaces; one without photographs shows as a dark card. */
   items: [
     {
-      name: "Samudaya Bhavan, Yarnal",
-      body: "The Gram Panchayat of Hosur identified the absence of a community facility as a real gap. ASSF developed a multi-purpose hall on donated land — for gatherings, cultural programmes, discourses and guest accommodation.",
+      place: "Hosur, Belagavi district",
+      title: "A Place for Teachers to Rest",
+      body: "Teachers of a rural Kannada-medium school and an industrial training centre travel in from distant towns. We turned an old building into a 14-room resting space, so the people who teach 419 students have a place of their own to rest.",
       images: [
-        { src: "/images/rural/samudaya-bhavan-1-site.jpeg", alt: "Bare, levelled ground beside a village road.", caption: "Site before development" },
-        { src: "/images/rural/samudaya-bhavan-2-construction.jpeg", alt: "Brick walls and red shuttering of the hall under construction, a worker on the wall.", caption: "Under construction" },
-        { src: "/images/rural/samudaya-bhavan-3-completed.jpeg", alt: "Long, whitewashed wings with blue railings around a paved courtyard.", caption: "Completed" },
+        { src: `${P}hosur-1.jpg`, alt: "The teachers' resting space at Hosur" },
+        { src: `${P}quarters-room.jpg`, alt: "Rooms being partitioned inside the building" },
       ],
     },
     {
-      name: "Community hall renovation, Yarnal",
-      body: "An existing hall had deteriorated with no comparable space nearby. ASSF renovated and expanded it into a functioning space with a reading library, restored for family gatherings and cultural events.",
+      place: "Schools and villages",
+      title: "Clean Sanitation for All",
+      body: "We build toilet blocks for schools and village communities, with special care for women and children. At Yarnal, when residents asked, we worked with the Zilla Panchayat to build public blocks with running water and proper drainage, on land given by the Shri Chandraprabhu Digambar Jain Mandir Committee.",
       images: [
-        { src: "/images/rural/community-hall-complete.jpeg", alt: "A long concrete building, its walls still unpainted, during the works.", caption: "During the works" },
+        { src: `${P}toilet-block.jpg`, alt: "A newly built toilet block" },
+        { src: `${P}sanitation-1.jpg`, alt: "The public sanitation block at Yarnal" },
       ],
     },
     {
-      name: "Staff quarters, Hosur",
-      body: "Teaching staff were commuting from distant towns for lack of housing. ASSF converted an existing building into 14 rooms of staff accommodation, following a site assessment.",
-      images: [
-        { src: "/images/rural/staff-quarters-1.jpeg", alt: "A long, whitewashed single-storey building behind a fence.", caption: "Staff quarters, Hosur" },
-      ],
-    },
-    {
-      name: "Public sanitation, Yarnal",
-      body: "Responding to resident requests, ASSF surveyed the need and worked with the Zilla Panchayat to fund toilet blocks with running water and proper sewage disposal — on land provided by the local Jain Mandir committee.",
-      images: [
-        { src: "/images/rural/sanitation-block-2.jpeg", alt: "A whitewashed toilet block with signboards on its wall.", caption: "Public toilet block, Yarnal" },
-      ],
+      place: "Yarnal, Belagavi district",
+      title: "A Hall Renewed",
+      body: "The village's old community hall, its only gathering place nearby, had worn with time. We renovated and enlarged it, and added a reading library, so families once again gather there for their occasions and celebrations.",
+      images: [] as { src: string; alt: string }[],
     },
   ],
 } as const;
 
 export const shantiStambh = {
-  label: "Cultural landmark",
-  heading: "Shanti Stambh",
+  question: "A landmark",
+  label: "of memory",
+  heading: "The Shanti Stambh",
+  lede: "Some structures shelter people. This one shelters a memory.",
   paragraphs: [
-    "Rural infrastructure can also carry cultural memory forward. ASSF constructed the Shanti Stambh at Yarnal in memory of Pratham Acharya Shri Shantisagarji Maharaj — a six-foot statue above the stambh, with engraved panels depicting his life on all four sides.",
-    "It was inaugurated on 8 February 2020, in the presence of Acharya Shri 108 Vardhaman Sagarji Maharaj and his Sangh, with Dr. D. Veerendra Heggade participating.",
+    "At Yarnal stands the Shanti Stambh, raised in memory of Pratham Acharya Shri Shanti Sagar Ji Maharaj. A six-foot statue of Acharya Shri crowns the pillar, and its four sides carry his life story, engraved for every visitor to read.",
+    "It was inaugurated on 8 February 2020 by Dr. D. Veerendra Heggade, in the presence of Acharya Shri 108 Vardhaman Sagar Ji Maharaj and his Sangh, with Swamijis from Shravanabelagola, Humcha and Nandani.",
   ],
-  image: "/images/rural/shanti-stambh.png",
-  caption: "The Shanti Stambh: the Foundation's drawing of the design.",
+  creditLabel: "Made possible mainly by",
+  credit: "Shri Shobhag Mal Rajendra Kumar Ji Kataria, Ahmedabad",
+  image: { src: `${P}shanti-stambh.jpg`, alt: "Drawing of the Shanti Stambh design", caption: "The Shanti Stambh, Yarnal" },
 } as const;
 
-export const method = {
-  label: "How we work",
-  heading: "Beginning with the need, not the structure",
-  steps: [
-    { title: "Listen & assess", body: "Understand the request from a community or institution, then assess the site." },
-    { title: "Define the purpose", body: "Establish what the facility must enable, and for whom." },
-    { title: "Plan carefully", body: "Develop plans with appropriate architectural and technical input." },
-    { title: "Build or facilitate", body: "Undertake the work directly, or help connect communities with public authorities." },
-    { title: "Create long-term value", body: "Focus on what stays useful to the community after the project ends." },
+export const give = {
+  question: "Be part",
+  label: "of it",
+  heading: "Build With Us",
+  body: "Every space on this page began with a village that asked and many people who gave. The next one can begin with you.",
+  tiers: [
+    { value: "Ask", label: "tell us what your village needs" },
+    { value: "Give", label: "towards a hall, a home or clean water" },
+    { value: "Partner", label: "bring your land, skills or institution" },
   ],
+  buttons: [
+    { label: "Support the mission", href: "/donate" },
+    { label: "Write to us", href: `mailto:${org.email}` },
+  ],
+  next: { text: "Spaces strengthen a village. Livelihoods strengthen a family.", label: "Next: Swavalamban Yojana", href: "/swavalamban-yojana" },
 } as const;

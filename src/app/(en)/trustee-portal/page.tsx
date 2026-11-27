@@ -135,8 +135,8 @@ export default async function TrusteePortalPage() {
         <PortalSection eyebrow="Rural infrastructure" heading="Projects">
           <ul className="grid gap-4 sm:grid-cols-2">
             {ruralProjects.items.map((p) => (
-              <li key={p.name} className="border-t border-board-ink/10 pt-3">
-                <p className="text-[0.95rem] text-board-ink">{p.name}</p>
+              <li key={p.title} className="border-t border-board-ink/10 pt-3">
+                <p className="text-[0.95rem] text-board-ink">{p.title}</p>
                 <p className="mt-1 max-w-[42ch] text-base leading-snug text-board-ink/65">{p.body}</p>
               </li>
             ))}
