@@ -1,4 +1,5 @@
 import { editorRequest } from "@/lib/cms/access";
+import { logActivity } from "@/lib/cms/activity";
 import type { Op } from "@/lib/cms/edits";
 import { BLOB, checkOps, UPLOAD } from "@/lib/cms/publish";
 import { PAGES } from "@/lib/cms/schema";
@@ -71,6 +72,7 @@ export async function POST(req: Request) {
       const proposals = (Array.isArray(b.proposals) ? b.proposals : []).filter((id): id is string => typeof id === "string" && /^[\w-]{8,64}$/.test(id)).slice(0, 20);
       const items = await scheduleSite({ ops, images, note, proposals, date: b.date, by: editor.email });
       console.info("CMS scheduled", { editor: editor.email, date: b.date, changes: ops.length });
+      logActivity(editor.email, "scheduled a publish", `for ${b.date} (${ops.length} change${ops.length === 1 ? "" : "s"})`);
       return Response.json({ items: items.map(view) });
     }
     if (b.kind === "email") {
@@ -88,6 +90,7 @@ export async function POST(req: Request) {
         attachment = { name: String(a.name ?? "report").slice(0, 100), type: String(a.type), data: a.data };
       }
       const items = await scheduleEmail({ subject, body, groups, people, attachment, date: b.date, by: editor.email });
+      logActivity(editor.email, "scheduled an email", `“${subject}” for ${b.date}`);
       return Response.json({ items: items.map(view) });
     }
     return new Response("Invalid request.", { status: 400 });
@@ -103,7 +106,9 @@ export async function DELETE(req: Request) {
   const id = new URL(req.url).searchParams.get("id") ?? "";
   if (!/^[0-9a-f-]{36}$/.test(id)) return new Response("Invalid request.", { status: 400 });
   try {
-    return Response.json({ items: (await cancelScheduled(id)).map(view) });
+    const items = await cancelScheduled(id);
+    logActivity(editor.email, "cancelled a scheduled item");
+    return Response.json({ items: items.map(view) });
   } catch (err) {
     console.error("Cancel failed", err);
     return new Response("It couldn't be cancelled. Please try again.", { status: 502 });

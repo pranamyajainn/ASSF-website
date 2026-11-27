@@ -1,4 +1,5 @@
 import { editorRequest } from "@/lib/cms/access";
+import { logActivity } from "@/lib/cms/activity";
 import type { Edits } from "@/lib/cms/edits";
 import { checkRestore } from "@/lib/cms/publish";
 import { Conflict, readEdits, storage, withRetry, writeEdits } from "@/lib/cms/store";
@@ -24,6 +25,7 @@ export async function POST(req: Request) {
       const problem = checkRestore(old);
       if (problem) {
         console.warn("CMS restore refused", { from: sha, problem });
+        logActivity(editor.email, "tried to restore an earlier version, but it no longer fits", problem);
         return new Response(
           "That version can't be brought back as it was: the site has been changed since, and part of it no longer fits. Please ask the web team.",
           { status: 409 },
@@ -34,6 +36,7 @@ export async function POST(req: Request) {
       const when = typeof date === "string" ? new Date(date).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }) : sha.slice(0, 7);
       const written = await writeEdits(next, [], `Site edit: restored the version of ${when}\n\nPublished from the site editor.`, commit);
       console.info("CMS restore", { revision: next.revision, from: sha, commit: written, editor: editor.email });
+      logActivity(editor.email, "restored an earlier version", `the version of ${when}`);
       return Response.json({ edits: next, commit: written });
     });
   } catch (err) {

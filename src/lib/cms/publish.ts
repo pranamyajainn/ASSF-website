@@ -33,7 +33,7 @@ export async function publishOps(
   ops: Op[],
   images: Images,
   options: { note: string; proposals?: string[]; expect?: number; scheduled?: string },
-): Promise<{ edits: Edits; commit: string | null }> {
+): Promise<{ edits: Edits; commit: string | null; summary: string }> {
   return withRetry(async () => {
     const { edits: head, commit } = await readEdits();
     if (options.expect !== undefined && head.revision !== options.expect) throw new Stale(head.revision);
@@ -58,7 +58,7 @@ export async function publishOps(
     const summary = options.note || `${pages.join(", ")} (${ops.length} change${ops.length === 1 ? "" : "s"})`;
     const message = `Site edit: ${summary}\n\n${options.scheduled ? `Scheduled in the site editor for ${options.scheduled}.` : "Published from the site editor."}`;
     const sha = await writeEdits(next, used, message, commit);
-    return { edits: next, commit: sha };
+    return { edits: next, commit: sha, summary };
   });
 }
 

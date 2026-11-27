@@ -1,8 +1,9 @@
 import "server-only";
-import { applyActions, blankLike, describeAt, itemTitle, NEWEST_FIRST, searchIndex, translatedFields, type Action, type Trees } from "@/components/editor/model";
+import { applyActions, describeAt, itemTitle, NEWEST_FIRST, newItem, searchIndex, translatedFields, type Action, type Trees } from "@/components/editor/model";
 import { locales, localeInfo, type Lang } from "@/i18n/config";
 import { baseContent, editedContent, publishedEdits } from "@/i18n/content";
 import { getAt, mergeOps, type Edits, type Json, type Path, type Scope } from "@/lib/cms/edits";
+import { logActivity, readActivity } from "@/lib/cms/activity";
 import {
   COLLECTIONS,
   ENUM_KEYS,
@@ -430,8 +431,7 @@ const propose: Tool = {
       const at =
         c.position === "start" ? 0 : c.position === "end" ? list.length : typeof c.position === "number" ? Math.max(0, Math.min(c.position, list.length)) : newestFirst ? 0 : list.length;
       const modelIndex = at === 0 ? 0 : list.length - 1;
-      const template = ITEM_TEMPLATES[schemaPath(listPath)];
-      const item = Object.fromEntries(locales.map((l) => [l, blankLike((getAt(trees[l], [...listPath, modelIndex]) ?? template) as Json)])) as Record<Lang, Json>;
+      const item = Object.fromEntries(locales.map((l) => [l, newItem(listPath, getAt(trees[l], [...listPath, modelIndex]) as Json)])) as Record<Lang, Json>;
       const given = c.item ?? {};
       if (typeof item.en === "string") {
         // A list of paragraphs: the item is the text itself.
@@ -636,6 +636,7 @@ const publishTool: Tool = {
     });
     headCache = null;
     console.info("MCP publish", { editor: ctx.email, app: ctx.app, revision, proposal: proposal.id });
+    logActivity(ctx.email, `published through the AI connector (${ctx.app})`, proposal.summary);
     const paths = proposal.actions.map((a) => ("set" in a ? a.set : "add" in a ? a.add : "remove" in a ? a.remove : a.move));
     return [
       `Published: ${proposal.summary}`,
@@ -666,6 +667,7 @@ const undoTool: Tool = {
     });
     headCache = null;
     console.info("MCP undo", { editor: ctx.email, app: ctx.app, undone: latest.sha });
+    logActivity(ctx.email, `undid a publish through the AI connector (${ctx.app})`, what);
     return `Undone: “${what}”. The live site goes back to how it was before it in about two minutes.`;
   },
 };
@@ -758,10 +760,37 @@ const reportTool: Tool = {
   },
 };
 
-export const TOOLS: Tool[] = [overview, search, read, propose, publishTool, undoTool, translateTool, historyTool, questionsTool, checkTool, reportTool];
+const activityTool: Tool = {
+  name: "get_editor_activity",
+  title: "Who did what in the editor",
+  description:
+    "The site editor's lasting activity record: who signed in, opened the editor, published (or tried to), scheduled, restored or sent an email, and when (India time), newest first. Kept permanently; the server's own logs last only about an hour.",
+  inputSchema: {
+    type: "object",
+    properties: { days: { type: "number", description: "How far back to look, in days (default 30, at most 366)." } },
+    additionalProperties: false,
+  },
+  annotations: { readOnlyHint: true, openWorldHint: false },
+  async run(args) {
+    const days = Math.min(366, Math.max(1, Number(args.days) || 30));
+    const rows = await readActivity(days);
+    return json({
+      period: `the last ${days} days`,
+      entries: rows.length,
+      activity: rows.map((r) => ({
+        when: new Date(r.at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }),
+        who: r.who,
+        did: r.did,
+        ...(r.detail ? { detail: r.detail } : {}),
+      })),
+    });
+  },
+};
+
+export const TOOLS: Tool[] = [overview, search, read, propose, publishTool, undoTool, translateTool, historyTool, questionsTool, checkTool, reportTool, activityTool];
 
 export const INSTRUCTIONS = `This server edits the website of Acharya Shanti Sagar Foundation (a Jain charitable trust in Bengaluru), in English, Hindi and Kannada.
 Start with get_site_overview. Read (read_section / search_site) before proposing changes, and use field paths exactly as returned.
 Changes are prepared with propose_changes, which returns a summary and a review link. Show the person what will change and ask. Only when they clearly confirm, publish with publish_changes (passing the review link); never publish without that confirmation. undo_last_publish reverses the latest publish when asked. publish_changes can also schedule changes for a later day (on_date).
-get_visitor_questions shows what visitors ask the site's assistant and what the site doesn't yet answer; check_site lists translations and facts needing attention; get_website_report gives the counted report on visitors, gifts, publishes and emails.
+get_visitor_questions shows what visitors ask the site's assistant and what the site doesn't yet answer; check_site lists translations and facts needing attention; get_website_report gives the counted report on visitors, gifts, publishes and emails; get_editor_activity shows who did what in the editor, and when.
 Never invent figures, names, dates or prices; ask the person when something isn't known. Keep {tokens} such as {folioPrice} as they are.`;

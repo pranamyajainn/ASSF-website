@@ -9,6 +9,7 @@ import { siteUrl } from "@/lib/site";
 import type { Op } from "./edits";
 import { Invalid, publishOps } from "./publish";
 import { readDataFile, storage, withRetry, writeDataFiles, type DataChange } from "./store";
+import { logActivity } from "./activity";
 
 /**
  * Things set to happen on a later day: changes to the site (an announcement
@@ -206,6 +207,7 @@ export async function runDue(now = new Date()): Promise<string[]> {
       `Scheduled ${item.kind === "site" ? "change" : "email"}: ${update.status}`,
     );
     log.push(`${item.kind} ${item.id}: ${update.result}`);
+    logActivity(item.by, item.kind === "site" ? "had a scheduled publish run" : "had a scheduled email go out", update.result);
   }
   return log;
 }

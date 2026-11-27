@@ -1,6 +1,7 @@
 import { editedContent } from "@/i18n/content";
 import { locales } from "@/i18n/config";
 import { editorRequest } from "@/lib/cms/access";
+import { readActivity } from "@/lib/cms/activity";
 import { readEdits, storage } from "@/lib/cms/store";
 import { zip } from "@/lib/data/zip";
 import { readQuestions, KEEP_DAYS } from "@/lib/insights/questions";
@@ -30,12 +31,13 @@ export async function GET(req: Request) {
   if (storage === "none") return new Response("The editor isn't connected to storage.", { status: 503 });
 
   try {
-    const [{ edits }, mail, questions, gifts, qrGifts] = await Promise.all([
+    const [{ edits }, mail, questions, gifts, qrGifts, activity] = await Promise.all([
       readEdits(),
       readMail(),
       readQuestions(KEEP_DAYS),
       readGifts(KEEP_DAYS),
       readQrGifts(KEEP_DAYS),
+      readActivity(366),
     ]);
     const now = new Date();
     const stamp = now.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
@@ -53,6 +55,7 @@ export async function GET(req: Request) {
           `visitor-questions.csv — what visitors asked the AI assistant in the last ${KEEP_DAYS} days, and its answers. No one's identity is kept.`,
           "online-gifts.csv — gifts started on the website's donate page in the last year, and how each ended, as the donor's browser heard from the bank. The Foundation's Apna Dharm account is the record of every gift.",
           "qr-gifts.csv — donors who opened the UPI QR code on the donate page in the last year, with the details they left for their receipt.",
+          "editor-activity.csv — who signed in to the site editor, published, restored, scheduled or sent an email in the last year, and when.",
           "",
           `Downloaded by ${editor.email}. Keep this file private: the mailing list and the QR donors' details are personal information.`,
         ].join("\r\n"),
@@ -68,6 +71,10 @@ export async function GET(req: Request) {
           ["Email", "Name", "Groups", "Unsubscribed", "Added"],
           mail.contacts.map((c) => [c.email, c.name, c.groups.map(groupName).join("; "), c.unsubscribed ?? "", c.added]),
         ),
+      },
+      {
+        name: "editor-activity.csv",
+        data: csv(["When", "Who", "Did", "Detail"], activity.map((a) => [a.at, a.who, a.did, a.detail ?? ""])),
       },
       {
         name: "emails-sent.csv",

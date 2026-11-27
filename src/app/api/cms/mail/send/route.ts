@@ -1,4 +1,5 @@
 import { editorRequest } from "@/lib/cms/access";
+import { logActivity } from "@/lib/cms/activity";
 import { normalise, readMail } from "@/lib/mail/data";
 import { orgForEmail } from "@/lib/mail/org";
 import { renderEmail } from "@/lib/mail/render";
@@ -57,6 +58,7 @@ export async function POST(req: Request) {
   if (b?.test === true) {
     try {
       await send(editor.email, `${site}/unsubscribe?t=preview`);
+      logActivity(editor.email, "sent a test email to themselves", `“${subject}”`);
       return Response.json({ sent: [editor.email], skipped: [], failed: [] });
     } catch (err) {
       console.error("Mail test failed", err);
@@ -87,5 +89,6 @@ export async function POST(req: Request) {
     }
   }
   console.info("Mail batch", { editor: editor.email, sent: sent.length, skipped: skipped.length, failed: failed.length });
+  logActivity(editor.email, "sent an email", `“${subject}” to ${sent.length} ${sent.length === 1 ? "person" : "people"}${failed.length ? `; ${failed.length} failed` : ""}`);
   return Response.json({ sent, skipped, failed });
 }

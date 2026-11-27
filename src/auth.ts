@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import { logActivity } from "@/lib/cms/activity";
 import { isEditorEmail } from "@/lib/cms/editors";
 import { isAuthorizedEmail } from "@/lib/trustee-directory";
 import { linkAddress } from "@/lib/vault/link-token";
@@ -50,7 +51,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account, profile }) {
       if (account?.provider === "email-link") return isVaultEmail(user.email);
       if (profile?.email_verified !== true) return false;
-      return isAuthorizedEmail(user.email) || isEditorEmail(user.email) || isVaultEmail(user.email);
+      const allowed = isAuthorizedEmail(user.email) || isEditorEmail(user.email) || isVaultEmail(user.email);
+      if (isEditorEmail(user.email)) logActivity(user.email!, "signed in");
+      else if (!allowed) logActivity(user.email ?? "unknown", "was refused sign-in", "not on any list");
+      return allowed;
     },
   },
 });

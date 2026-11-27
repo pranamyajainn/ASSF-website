@@ -4,6 +4,7 @@ import { EditorRoot } from "@/components/editor/editor-app";
 import { baseContent, publishedEdits } from "@/i18n/content";
 import { locales, type Lang } from "@/i18n/config";
 import { currentEditor } from "@/lib/cms/access";
+import { logActivity } from "@/lib/cms/activity";
 import { readEdits, storage } from "@/lib/cms/store";
 import { decodeProposal } from "@/lib/mcp/proposal";
 
@@ -18,6 +19,7 @@ export default async function EditorPage({ searchParams }: { searchParams: Promi
   // Keep a review link through sign-in.
   if (!editor) redirect(token ? `/editor/sign-in?next=${encodeURIComponent(`/editor?proposal=${token}`)}` : "/editor/sign-in");
   const proposal = token ? decodeProposal(token) : null;
+  logActivity(editor.email, "opened the editor");
 
   if (storage === "none") {
     return (

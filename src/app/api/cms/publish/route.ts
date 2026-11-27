@@ -1,4 +1,5 @@
 import { editorRequest } from "@/lib/cms/access";
+import { logActivity } from "@/lib/cms/activity";
 import type { Op } from "@/lib/cms/edits";
 import { BLOB, Invalid, publishOps, Stale, UPLOAD } from "@/lib/cms/publish";
 import { Conflict, storage } from "@/lib/cms/store";
@@ -39,11 +40,15 @@ export async function POST(req: Request) {
   if (!Array.isArray(ops) || !ops.length) return new Response("There's nothing to publish.", { status: 400 });
 
   try {
-    const { edits, commit } = await publishOps(ops, images, { note, proposals, expect: baseRevision });
-    // Who published stays in the server logs, not in the public history.
+    const { edits, commit, summary } = await publishOps(ops, images, { note, proposals, expect: baseRevision });
+    // Who published stays in the sealed activity record and server logs, not in the public history.
     console.info("CMS publish", { revision: edits.revision, commit, editor: editor.email, changes: ops.length });
+    logActivity(editor.email, "published", summary);
     return Response.json({ edits, commit });
   } catch (err) {
+    const why =
+      err instanceof Stale ? "someone had published since the editor was opened" : err instanceof Invalid ? err.message : err instanceof Conflict ? "the site changed while publishing" : "a server error";
+    logActivity(editor.email, "tried to publish, but it didn't go through", why);
     if (err instanceof Stale) {
       return Response.json(
         { error: "Someone else published changes while you were editing. Reload to see them — your changes are kept.", revision: err.revision },

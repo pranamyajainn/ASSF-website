@@ -1077,7 +1077,39 @@ function History({ onClose, onRestore }: { onClose: () => void; onRestore: (sha:
           </li>
         ))}
       </ol>
+      <Activity when={when} />
     </Dialog>
+  );
+}
+
+/** Who did what in the editor, the last 90 days (lib/cms/activity.ts): the same record for every editor. */
+function Activity({ when }: { when: (date: string) => string }) {
+  const [rows, setRows] = useState<{ at: string; who: string; did: string; detail?: string }[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    fetch("/api/cms/activity?days=90", { cache: "no-store" })
+      .then(async (res) => (res.ok ? setRows(await res.json()) : setError(await res.text())))
+      .catch(() => setError("The activity record couldn't be loaded."));
+  }, []);
+  return (
+    <section className="mt-8 border-t border-ink/15 pt-5">
+      <h3 className="font-display text-[1.15rem]">Who did what</h3>
+      <p className="mb-3 text-[0.9rem] text-ink-soft">Sign-ins, publishes, restores, schedules and emails in the last 90 days. Kept permanently, and it can&apos;t be changed from the editor.</p>
+      {error ? <p className="text-cinnabar-deep">{error}</p> : null}
+      {!rows && !error ? <p className="text-ink-faint">Loading…</p> : null}
+      {rows && !rows.length ? <p className="text-ink-faint">Nothing yet.</p> : null}
+      <ol className="divide-y divide-ink/10">
+        {rows?.map((r, i) => (
+          <li key={`${r.at}-${i}`} className="py-2.5">
+            <span className="block text-[0.95rem]">
+              {r.who} {r.did}
+              {r.detail ? <span className="text-ink-soft"> — {r.detail}</span> : null}
+            </span>
+            <span className="font-mono text-[0.75rem] text-ink-faint">{when(r.at)}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 
