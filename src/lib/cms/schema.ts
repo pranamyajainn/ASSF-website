@@ -107,6 +107,8 @@ export const COLLECTIONS = new Set([
   "photos.gallery.folders[].subs[].photos",
   "photos.gallery.folders[].subs[].videos",
   "careers.openings.items",
+  "reports.list.items",
+  "reports.press.items",
 ]);
 
 /**
@@ -117,6 +119,7 @@ export const COLLECTIONS = new Set([
  * shape from here.
  */
 export const ITEM_TEMPLATES: Record<string, Json> = {
+  "reports.list.items": { state: "preparing", place: "", facts: "", image: { src: "", alt: "" }, href: "" },
   "careers.openings.items": { role: "", openings: "", pay: "", description: "", location: "", responsibilities: [], qualifications: [] },
   "photos.gallery.folders": { name: "", line: "", subs: [] },
   "photos.gallery.folders[].subs": { name: "", sub: "", note: "", photos: [], videos: [] },
@@ -314,7 +317,7 @@ export const PAGES = [
   { module: "impact", title: "Impact", href: "/impact" },
   { module: "trustees", title: "Our Guiding Lights", href: "/our-guiding-lights" },
   { module: "photos", title: "Gallery", href: "/gallery" },
-  { module: "reports", title: "Reports", href: "/reports" },
+  { module: "reports", title: "Reports & Newsletter", href: "/reports" },
   { module: "careers", title: "Careers", href: "/careers" },
   { module: "donate", title: "Donate", href: "/donate" },
   { module: "shared", title: "Site-wide", href: "/" },
@@ -328,6 +331,7 @@ export const SECTION_ORDER: Partial<Record<ModuleName, string[]>> = {
   home: ["hero", "pillarsIntro", "mission", "ruralTeaser", "communityTeaser", "ledger", "upClose", "adopt", "voices", "field", "join", "survey", "lineage", "sites", "standing"],
   shared: ["org", "folioPrice", "granthaPrice", "pillars", "nav", "navMore"],
   careers: ["pageHero", "why", "openings", "locations", "apply"],
+  reports: ["pageHero", "list", "newsletter", "press"],
   photos: ["pageHero", "gallery"],
   donate: ["pageHero", "gift", "goes", "ways"],
   about: ["pageHero", "guides", "who", "pillars", "journey", "ahead"],
@@ -365,7 +369,9 @@ const SECTION_LABELS: Record<string, string> = {
   "trustees.trustees": "Trustees",
   "trustees.advisors": "Advisors",
   "trustees.team": "Our team",
-  "reports.list": "Reports",
+  "reports.list": "Project reports",
+  "reports.newsletter": "Newsletter (Shanti Sagar Patrika)",
+  "reports.press": "In the news",
   "conservation.sites.items[].state": "State (done, final or live)",
   "conservation.sites.items[].badge": "Badge",
   "conservation.sites.items[].meta": "Institution and dates",

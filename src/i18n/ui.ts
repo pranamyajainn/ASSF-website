@@ -186,7 +186,7 @@ export const ui = {
     photos: "Photo Gallery",
     videos: "Video Gallery",
     careers: "Careers",
-    reports: "Reports",
+    reports: "Reports & Newsletter",
     swavalamban: "Swavalamban Yojana",
     guidingLights: "Our Guiding Lights",
     gallery: "Gallery",

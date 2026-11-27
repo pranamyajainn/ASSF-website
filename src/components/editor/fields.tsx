@@ -577,6 +577,8 @@ function addNoun(path: Path): string {
   if (/images|album|upClose\.items|illuminated\.items/.test(schema)) return "a photo";
   if (schema.endsWith("voices.items")) return "a visitor's words";
   if (schema === "careers.openings.items") return "a vacancy";
+  if (schema === "reports.list.items") return "a report";
+  if (schema === "reports.press.items") return "a clipping";
   if (schema.endsWith("subs[].videos")) return "a video";
   if (schema.endsWith("subs[].photos") || schema === "photos.pageHero.slides") return "a photo";
   if (schema.endsWith("folders[].subs")) return "a sub-folder";
