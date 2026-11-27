@@ -152,6 +152,9 @@ const nextConfig: NextConfig = {
    */
   async redirects() {
     return [
+      // Trustees became Our Guiding Lights (page designs, Nov 2026).
+      { source: "/trustees", destination: "/our-guiding-lights", permanent: true },
+      { source: "/:lang(hi|kn)/trustees", destination: "/:lang/our-guiding-lights", permanent: true },
       { source: "/donation.html", destination: "/donate", permanent: true },
       { source: "/success.php", destination: "/donate/thank-you", permanent: true },
       ...earlierSite.map(([source, destination]) => ({ source, destination, permanent: true })),

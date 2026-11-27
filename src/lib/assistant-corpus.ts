@@ -27,7 +27,7 @@ const PAGES: Record<string, { path: string; page: string }> = {
   rural: { path: "/rural-infrastructure", page: "Rural Infrastructure" },
   community: { path: "/community-services", page: "Community Services" },
   impact: { path: "/impact", page: "Impact" },
-  trustees: { path: "/trustees", page: "Trustees" },
+  trustees: { path: "/our-guiding-lights", page: "Our Guiding Lights" },
   careers: { path: "/careers", page: "Careers" },
 };
 

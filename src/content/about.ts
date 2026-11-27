@@ -1,202 +1,131 @@
 /**
- * About page copy, in the order and words of the Foundation's "About Us —
- * Final Website Copy & Content Structure" document (Oct 2026): who ASSF is,
- * what inspires it, what guides it, who leads it, its three areas of work,
- * the work in practice, and what lies ahead. Programme detail and survey
- * data stay on the programme pages and on Impact, as that document asks.
+ * About Us, in the words and order of the Foundation's page designs (Nov
+ * 2026): our inspiration, what guides us, who we are, what we do, our
+ * journey and what lies ahead. The trustees, advisors and team are on
+ * Our Guiding Lights (content/trustees.ts).
  */
+const P = "/images/pages/about/";
+
+/** §1, Our Inspiration: Acharya Shri, with his portrait. */
 export const pageHero = {
-  eyebrow: "ABOUT THE FOUNDATION",
-  title: "In Service of Heritage and Humanity",
-  body: "Acharya Shanti Sagar Foundation (ASSF) is a non-profit charitable trust established in 2019, inspired by the teachings and legacy of Acharya Shri 108 Shanti Sagar Ji Maharaj. Guided by the values of non-violence, truth, restraint, compassion and service, the Foundation works to preserve India’s manuscript heritage, strengthen rural infrastructure and respond to community needs.",
-  supporting: "Guarding what is ancient. Serving what is present. Building what is needed.",
-  plate: {
-    src: "/images/sites/shravanabelagola.jpeg",
-    alt: "Palm-leaf and paper manuscripts laid out on red cloth at Shravanabelagola, with monks and Foundation members looking on.",
-    caption: "Shravanabelagola, where conservation began on 11 July 2025.",
-    position: "50% 50%",
+  question: "Our",
+  label: "Inspiration",
+  eyebrow: "About Us · Our Inspiration",
+  title: "Pratham Acharya Shri 108 Shanti Sagar Ji Maharaj (1872–1955)",
+  paragraphs: [
+    "Revered as the first Acharya of the twentieth-century revival of the Digambar Jain monastic tradition, Acharya Shri lived a life of rare discipline, non-violence and restraint.",
+    "He cherished the written word. Learning that ancient scriptures, written on palm leaves a thousand years before, were growing fragile and falling prey to insects, he called upon the community to save them. With its devotion, the sacred texts were inscribed on copper sheets to endure for thousands of years.",
+    "His compassion reached every living being and every person in need. That care is the seed of our Foundation, and the light we work by.",
+  ],
+  image: {
+    src: `${P}acharya-shri.jpg`,
+    alt: "Pratham Acharya Shri 108 Shanti Sagar Ji Maharaj, seated in meditation",
+    caption: "Pratham Acharya Shri 108 Shanti Sagar Ji Maharaj",
   },
 } as const;
 
-/** §02, Our Inspiration. */
-export const inspiration = {
-  label: "Our Inspiration",
-  heading: "Acharya Shri 108 Shanti Sagar Ji Maharaj (1872–1955)",
-  paragraphs: [
-    "The Foundation carries the name of Acharya Shri 108 Shanti Sagar Ji Maharaj, a revered Digambar Jain Acharya whose life and teachings continue to inspire a commitment to spiritual discipline, non-violence, restraint and service. Remembered as a leading figure in the revival of the Digambar Jain ascetic tradition in the twentieth century, he represents a way of life grounded in principle, humility and responsibility.",
-    "For ASSF, his legacy is not only a source of inspiration; it is a guide to action. The Foundation seeks to honour that legacy by safeguarding knowledge passed down through generations and by serving communities with care, dignity and compassion.",
+/** §2, What Guides Us: mission, vision and the five principles. */
+export const guides = {
+  question: "What",
+  label: "guides us",
+  heading: "What Guides Us",
+  missionLabel: "Our mission",
+  mission: "To preserve the wisdom of the past, serve the people of the present, and build for the future.",
+  motto: "Preserve. Serve. Build.",
+  visionLabel: "Our vision",
+  vision: "A future in which India's handwritten heritage is safe, read and alive, and the communities who hold it thrive.",
+  principlesLabel: "Our five principles, drawn from Acharya Shri's teaching",
+  principles: [
+    { deva: "अहिंसा", name: "Ahimsa", meaning: "Non-violence", body: "We touch every life, and every fragile leaf, with care that does no harm." },
+    { deva: "सत्य", name: "Satya", meaning: "Truth", body: "Honest work, accurate records and open accounts." },
+    { deva: "अपरिग्रह", name: "Aparigraha", meaning: "Restraint", body: "We use only what the work needs, and pass the rest forward." },
+    { deva: "अनेकान्तवाद", name: "Anekantavada", meaning: "Many-sided understanding", body: "We listen to custodians, scholars and communities before we act." },
+    { deva: "करुणा एवं सेवा", name: "Karuna and Seva", meaning: "Compassion and service", body: "Compassion that becomes action, in a laboratory, a health camp or a village hall." },
   ],
-  quote: {
-    deva: "परस्परोपग्रहो जीवानाम्",
-    latin: "Parasparopagraho Jivanam",
-    translation: "Living beings support one another.",
+} as const;
+
+/** §3, Who we are. */
+export const who = {
+  question: "Who",
+  label: "we are",
+  heading: "In Service of Heritage and Humanity",
+  body: "Acharya Shanti Sagar Foundation is a charitable trust, founded in Bengaluru in 2019 and guided by trustees from public life, industry and Jain institutions. We conserve the manuscripts that carry India's written heritage, stand beside communities wherever they need us, and build the spaces villages ask for. Next, through Swavalamban Yojana, we will help families build livelihoods of their own. Our own team carries every project, from the first visit to the final handover, side by side with the people we serve.",
+  quote: "जीवन धरोहर संरक्षण",
+  translation: "Caring for the wisdom of the past, the people of today and the villages of tomorrow.",
+  image: {
+    src: `${P}three-pillars.jpg`,
+    alt: "Three views of our work: manuscripts conserved and shown to the community, schoolchildren receiving books, and the Samudaya Bhavan at Yarnal",
   },
+  captions: ["Manuscript Conservation", "Community Services", "Rural Infrastructure"],
 } as const;
 
-/** §03, About the Foundation. */
-export const foundation = {
-  label: "About the Foundation",
-  heading: "An Institution Rooted in Values, Working for People",
-  paragraphs: [
-    "Established in 2019, Acharya Shanti Sagar Foundation is a charitable trust working at the intersection of cultural preservation and community service. Its work reflects a simple conviction: safeguarding the knowledge inherited from the past and strengthening the conditions in which people live today are connected responsibilities.",
-    "The Foundation’s work has developed across three areas: manuscript conservation, rural infrastructure and community services. Together, these areas bring its guiding values into practice—preserving fragile cultural resources, supporting essential community needs and contributing to a more compassionate and resilient society.",
-    "ASSF works with custodians, local institutions, specialists and communities, recognising that lasting results depend on respect for local knowledge, careful stewardship of resources and sustained engagement.",
-  ],
-} as const;
-
-/** §05, Our Leadership. The people are the trustees and advisors on /trustees. */
-export const leadership = {
-  label: "Our Leadership",
-  heading: "Trustees and Advisory Board",
-  paragraphs: [
-    "The Foundation is guided by its Board of Trustees, who provide governance, institutional stewardship and strategic direction. An Advisory Board brings relevant experience and specialist perspectives to support the Foundation’s work and long-term priorities.",
-    "Together, they help ensure that the Foundation’s programmes remain aligned with its purpose, are informed by appropriate expertise and are carried out with responsibility and care.",
-  ],
-  trusteesLabel: "Board of Trustees",
-  advisorsLabel: "Advisory Board",
-} as const;
-
-/** §06, Our Areas of Work: three equal cards, one photograph each. */
-export const areas = {
-  label: "Our Areas of Work",
-  heading: "Three Areas. One Commitment.",
-  intro: "Our work takes shape through three connected areas. Each responds to a different need, while reflecting the same commitment to heritage, dignity and service.",
+/** §4, What We Do: the three pillars. */
+export const pillars = {
+  question: "What",
+  label: "we do",
+  heading: "What We Do",
+  lede: "Three pillars, growing from one root of care.",
+  more: "Read more",
   items: [
-    {
-      title: "Manuscript Conservation",
-      tagline: "Preserving Knowledge Written by Hand",
-      body: "We work to preserve fragile palm-leaf and handwritten-paper manuscripts, protecting the knowledge they carry for future generations.",
-      link: { label: "Explore Manuscript Conservation", href: "/manuscript-conservation" },
-      image: { src: "/images/conservation/palm-leaf-before.jpeg", alt: "A damaged handwritten manuscript with a loss torn through its lower lines, photographed beside a slip marked BEFORE.", position: "50% 40%" },
-    },
-    {
-      title: "Rural Infrastructure",
-      tagline: "Creating Spaces That Serve Communities",
-      body: "We support rural communities through essential facilities and infrastructure that strengthen access, dignity and everyday community life.",
-      link: { label: "Explore Rural Infrastructure", href: "/rural-infrastructure" },
-      image: { src: "/images/rural/samudaya-bhavan-3-completed.jpeg", alt: "The completed Samudaya Bhavan at Yarnal: long, whitewashed wings with blue railings around a paved courtyard.", position: "40% 50%" },
-    },
-    {
-      title: "Community Services",
-      tagline: "Responding Where the Need Is Immediate",
-      body: "We support communities through initiatives such as healthcare, education assistance and emergency relief, shaped by local needs.",
-      link: { label: "Explore Community Services", href: "/community-services" },
-      image: { src: "/images/community/students-rural-health-centre.jpg", alt: "A long line of students and health workers, most in white coats, standing on open ground outside a rural health centre.", position: "50% 50%" },
-    },
+    { title: "Manuscript Conservation", body: "Bringing fragile palm-leaf and paper manuscripts back to health, folio by folio, in the care of their own custodians.", href: "/manuscript-conservation" },
+    { title: "Community Services", body: "Health camps, support for schoolchildren and relief in hard times, offered with dignity wherever the need arises.", href: "/community-services" },
+    { title: "Rural Infrastructure", body: "Community halls, a resting space for rural teachers and clean sanitation, built with the villages that asked for them.", href: "/rural-infrastructure" },
   ],
 } as const;
 
-/**
- * §08, Looking Ahead. It ends on the Foundation's film (moved here when
- * §07, Our Work in Practice, was dropped at Alka's request, 26 Oct 2026).
- */
+/** §5, Our Journey: a year-by-year timeline in three columns, one per pillar. */
+export const journey = {
+  question: "Our",
+  label: "Journey",
+  heading: "Seven Years of Growing Service",
+  lede: "Three pillars, growing side by side. Each step grew from the one before.",
+  columns: { manuscripts: "Manuscripts", community: "Community", villages: "Villages" },
+  founded: "6 February 2019 · Acharya Shanti Sagar Foundation is constituted in Bengaluru",
+  years: [
+    { year: "2019", manuscripts: [], community: ["Five free health camps", "Flood relief for six villages", "Books for 500 schoolchildren"], villages: ["Teachers' resting space, Hosur", "Samudaya Bhavan, Yarnal"] },
+    { year: "2020", manuscripts: [], community: ["7,77,534 meals shared in the lockdown"], villages: ["Shanti Stambh inaugurated"] },
+    { year: "2022", manuscripts: ["First laboratory opens at Kumbhoj"], community: [], villages: [] },
+    { year: "2024", manuscripts: ["Kumbhoj completed: 1,399 objects, fully digitized", "Karanja Lad laboratory opens"], community: [], villages: [] },
+    { year: "2025", manuscripts: ["Shravanabelagola begins: 2,695 granthas", "Gurukul Ashram collection completed"], community: [], villages: [] },
+    { year: "2026", manuscripts: ["MOU with the Shravanabelagola Matha trust", "Balatkar Gan Mandir collection completed", "MoU with the Sengan Temple", "Plans placed before the Government of Karnataka"], community: [], villages: [] },
+  ] as { year: string; manuscripts: string[]; community: string[]; villages: string[] }[],
+  today: {
+    year: "Today",
+    manuscripts: ["Two laboratories at work"],
+    community: ["Swavalamban Yojana, coming next"],
+    villages: ["Ready for the next village"],
+  },
+  figures: [
+    { value: "2,49,896+", label: "folios conserved by hand" },
+    { value: "7,77,534", label: "meals shared in the lockdown" },
+    { value: "3,500+", label: "people cared for at free health camps" },
+    { value: "14", label: "rooms for rural teachers to rest" },
+  ],
+} as const;
+
+/** §6, Looking Ahead: the survey, the next sites, the film and the closing line. */
 export const ahead = {
-  label: "Looking Ahead",
-  heading: "Preserving the Past. Serving the Present. Preparing for the Future.",
+  question: "Looking",
+  label: "Ahead",
+  heading: "The Pages Yet to Turn",
+  lede: "Manuscripts are the heart of our work because they cannot wait. Written by hand centuries ago, each one is the only copy of its kind, and time, damp and insects work on it every day. Our field survey of Jain collections across three states shows how much is still in our hands to save.",
+  figures: [
+    { value: "18", label: "repositories surveyed in Karnataka, Maharashtra and Tamil Nadu" },
+    { value: "12,681", label: "manuscripts recorded" },
+    { value: "17,14,928", label: "folios recorded" },
+    { value: "2,560", label: "manuscripts already safe in our care" },
+  ],
   paragraphs: [
-    "Much remains to be done. Fragile manuscripts continue to require careful preservation, communities continue to need essential support, and the knowledge carried across generations deserves to remain accessible to those who follow.",
-    "Acharya Shanti Sagar Foundation will continue to build on its experience, work alongside custodians and communities, and pursue its mission with care, responsibility and a long-term view.",
+    "At Shravanabelagola, our laboratory will carry all 2,695 palm-leaf granthas through to safety. At Karanja Lad, our laboratory now turns to the Sengan Temple collection, under an MoU signed on 24 October 2026. At Moodbidri and Karkala, where our journey first began, 4,472 granthas are ready for care.",
+    "And the circle of care keeps widening. Through Swavalamban Yojana, our coming scheme, we will help families build livelihoods of their own and stand on their own feet with dignity.",
+    "There is a place on this road for you.",
   ],
   closing: "Preserving the wisdom of the past. Empowering the communities of today. Inspiring a more compassionate tomorrow.",
   links: [
-    { label: "Explore Our Work", href: "/#pillars" },
-    { label: "View Our Projects", href: "/impact#preserved" },
-    { label: "Contact the Foundation", href: "#contact" },
+    { label: "Support the mission", href: "/donate" },
+    { label: "Explore our work", href: "/#pillars" },
+    { label: "Write to us", href: "#contact" },
   ],
-} as const;
-
-/**
- * The Foundation’s namesake, in the historical photographs the repo holds
- * (reference/acharya-shantisagar/README.md). The 1955 portrait is public
- * domain; the other two are reproduced from DigJainWiki with credit, as the
- * README directs. The ceremony photograph’s caption was printed onto the
- * image in Hindi; it is cropped off and set here as text, with a
- * translation.
- */
-export const namesake = {
-  label: "The name we carry",
-  album: [
-    {
-      src: "/images/lineage/acharya-shantisagar-mahadhaval-ceremony.jpg",
-      ratio: "988 / 778",
-      alt: "Black-and-white group photograph: the Acharya seated behind a carved stand that bears a garlanded scripture, with a garlanded man and others standing around him.",
-      captionDeva: "ग्रंथराज ‘महाधवल’ के समर्पण पश्चात् आचार्य श्री के समक्ष लेखक को ‘धर्म दिवाकर’ की पदवी से अलंकृत करते हुए",
-      caption: "After the dedication of the scripture Mahadhaval, the writer is honoured with the title ‘Dharma Divakar’ in the Acharya's presence. Photograph via DigJainWiki.",
-    },
-    {
-      src: "/images/lineage/acharya-shantisagar-1955.jpg",
-      ratio: "297 / 402",
-      alt: "Black-and-white close-up of Acharya Shanti Sagar Ji Maharaj in old age.",
-      caption: "Kunthalgiri, 1955, during his Sallekhana. Public domain, via Wikimedia Commons.",
-    },
-    {
-      src: "/images/lineage/acharya-shantisagar-seated.jpg",
-      ratio: "385 / 548",
-      alt: "A worn sepia print of the Acharya seated cross-legged in meditation, outdoors.",
-      caption: "Seated in meditation. Photograph via DigJainWiki.",
-    },
-  ],
-} as const;
-
-/**
- * The work in plates: the Foundation's own photographs across the three
- * pillars, composed as a catalogue plate page — two rows of equal height
- * built from unequal widths, not a grid of identical tiles.
- */
-export const plates = {
-  label: "In plates",
-  heading: "The work, as it looks",
-  rows: [
-    [
-      { src: "/images/survey-in-progress.jpeg", alt: "A handwritten Devanagari folio on blotting paper, beside a pH indicator strip held in tweezers.", pillar: "Manuscript conservation", caption: "A folio's acidity tested before treatment.", span: 7, ratio: "4 / 3", position: "20% 20%" },
-      { src: "/images/community/students-rural-health-centre.jpg", alt: "A long line of students and health workers, most in white coats, standing on open ground outside a rural health centre.", pillar: "Community services", caption: "Students at a rural health centre.", span: 5, ratio: "20 / 21", position: "50% 50%" },
-    ],
-    [
-      { src: "/images/rural/samudaya-bhavan-3-completed.jpeg", alt: "The completed Samudaya Bhavan: whitewashed wings with blue railings around a paved courtyard.", pillar: "Rural infrastructure", caption: "The Samudaya Bhavan, Yarnal.", span: 3, ratio: "1 / 1", position: "40% 50%" },
-      { src: "/images/conservation/manuscript-detail.png", alt: "An opened volume of handwritten Devanagari paper folios, with ruled margins and red highlighting.", pillar: "Manuscript conservation", caption: "Handwritten paper folios, ruled and numbered in the margin.", span: 5, ratio: "5 / 3", position: "50% 55%" },
-      { src: "/images/community/education-support-2.jpeg", alt: "Schoolchildren in uniform with teachers and Foundation members, in front of a school banner.", pillar: "Community services", caption: "Education support near Yarnal.", span: 4, ratio: "4 / 3", position: "50% 50%" },
-    ],
-  ],
-} as const;
-
-export const philosophy = {
-  label: "Philosophy",
-  heading: "Heritage and humanity, bound together",
-  paragraphs: [
-    "Preserving an ancient manuscript protects knowledge carried across generations. Strengthening a rural community helps create the conditions in which people can live, learn and grow with dignity. For the Foundation, these are not two missions — they are one.",
-  ],
-  quote: {
-    deva: "परस्परोपग्रहो जीवानाम्",
-    latin: "Parasparopagraho Jivanam",
-    translation: "All life is bound together in mutual support.",
-    source: "Tattvārtha Sūtra 5.21",
-  },
-} as const;
-
-/** §04, Our Mission, Vision and Values. */
-export const mvv = {
-  label: "Our Mission, Vision and Values",
-  heading: "What Guides Us",
-  mission: {
-    label: "Mission",
-    body: "To preserve India’s manuscript heritage through scientific conservation and digitisation, strengthen rural communities through essential infrastructure, and respond to community needs through compassionate and practical service.",
-  },
-  vision: {
-    label: "Vision",
-    body: "To build a future where India’s civilizational wisdom and social responsibility coexist as living forces—where knowledge is preserved, communities are empowered, and heritage becomes a foundation for sustainable and inclusive progress.",
-  },
-  valuesLabel: "Our Values",
-  values: [
-    { deva: "अहिंसा", name: "Ahimsa", meaning: "Non-violence", body: "We seek to minimise harm and act with care in our decisions, relationships and programmes." },
-    { deva: "सत्य", name: "Satya", meaning: "Truth", body: "We value integrity, accuracy and transparency in preserving knowledge, serving communities and stewarding entrusted resources." },
-    { deva: "अपरिग्रह", name: "Aparigraha", meaning: "Responsible restraint", body: "We use resources thoughtfully and responsibly, keeping our purpose and the needs of communities at the centre of our work." },
-    { deva: "अनेकान्तवाद", name: "Anekantavada", meaning: "Many-sided understanding", body: "We approach people, institutions and traditions with humility, recognising that different perspectives can deepen understanding." },
-    { deva: "करुणा एवं सेवा", name: "Karuna & Seva", meaning: "Compassion and service", body: "We put our values into action through practical work that protects heritage, supports dignity and responds to human need." },
-  ],
-  principle: {
-    label: "Our guiding principle",
-    body: "“Parasparopagraho Jivanam”—living beings support one another. It expresses the interconnectedness that underlies both our commitment to heritage and our commitment to humanity.",
-  },
 } as const;
 
 /** The survey, state by state: shown on Impact ("Where it began"). */
@@ -220,5 +149,3 @@ export const scale = {
   ],
   note: "These collections are held by temples, maths and traditional institutions that have safeguarded them for generations. A further 49 copper-plate records (Moodbidri), 28 archival books (Karanja Lad) and 125 printed books (Nandani) were recorded separately, as they are not manuscripts.",
 } as const;
-
-export const closingLine = "In Service of Heritage and Humanity";

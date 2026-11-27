@@ -328,22 +328,24 @@ export function PersonGrid({
   columns = 3,
   className = "mt-12",
   profileLabels,
+  side = false,
 }: {
   people: readonly Person[];
   columns?: 3 | 4 | 5;
+  side?: boolean;
   className?: string;
   /** When given, people with a full `bio` get a "read full profile" sheet. */
   profileLabels?: ProfileLabels;
 }) {
   const cols = {
-    3: "grid-cols-2 lg:grid-cols-3",
+    3: side ? "md:grid-cols-2 xl:grid-cols-3" : "grid-cols-2 lg:grid-cols-3",
     4: "grid-cols-2 lg:grid-cols-4",
     5: "grid-cols-2 md:grid-cols-3 xl:grid-cols-5",
   }[columns];
   return (
     <ul className={`grid gap-x-6 gap-y-12 sm:gap-x-8 ${cols} ${className}`}>
       {people.map((person) => (
-        <PersonCard key={person.name} person={person} labels={profileLabels} />
+        <PersonCard key={person.name} person={person} labels={profileLabels} side={side} />
       ))}
     </ul>
   );

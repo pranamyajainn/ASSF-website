@@ -77,7 +77,17 @@ export const COLLECTIONS = new Set([
   "home.upClose.items",
   "home.voices.items",
   "home.board.members",
-  "about.namesake.album",
+  "about.guides.principles",
+  "about.pillars.items",
+  "about.journey.years",
+  "about.journey.years[].manuscripts",
+  "about.journey.years[].community",
+  "about.journey.years[].villages",
+  "about.journey.today.manuscripts",
+  "about.journey.today.community",
+  "about.journey.today.villages",
+  "about.journey.figures",
+  "about.ahead.figures",
   "conservation.sites.items",
   "conservation.sites.next",
   "rural.projects.items",
@@ -107,6 +117,13 @@ export const ITEM_TEMPLATES: Record<string, Json> = {
   "careers.openings.items": { role: "", location: "", openings: "", pay: "", description: "", responsibilities: [], qualifications: [], whyJoin: [] },
   "videos.gallery.items": { title: "", caption: "", url: "" },
   "rural.projects.items[].images": { src: "", alt: "" },
+  "about.journey.years": { year: "", manuscripts: [], community: [], villages: [] },
+  "about.journey.years[].manuscripts": "",
+  "about.journey.years[].community": "",
+  "about.journey.years[].villages": "",
+  "about.journey.today.manuscripts": "",
+  "about.journey.today.community": "",
+  "about.journey.today.villages": "",
 };
 
 /** Paragraph lists: open, whatever their path. */
@@ -286,7 +303,7 @@ export const PAGES = [
   { module: "swavalamban", title: "Swavalamban Yojana", href: "/swavalamban-yojana" },
   { module: "community", title: "Community Services", href: "/community-services" },
   { module: "impact", title: "Impact", href: "/impact" },
-  { module: "trustees", title: "Trustees", href: "/trustees" },
+  { module: "trustees", title: "Our Guiding Lights", href: "/our-guiding-lights" },
   { module: "photos", title: "Photo Gallery", href: "/gallery/photos" },
   { module: "videos", title: "Video Gallery", href: "/gallery/videos" },
   { module: "reports", title: "Reports", href: "/reports" },
@@ -306,6 +323,8 @@ export const SECTION_ORDER: Partial<Record<ModuleName, string[]>> = {
   photos: ["pageHero", "gallery"],
   videos: ["pageHero", "gallery"],
   donate: ["pageHero", "gift", "goes", "ways"],
+  about: ["pageHero", "guides", "who", "pillars", "journey", "ahead", "scale"],
+  trustees: ["pageHero", "board", "trustees", "advisory", "advisors", "team"],
 };
 
 /** Plain names for sections whose code names say little to a reader. */

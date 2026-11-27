@@ -19,7 +19,8 @@ export type ProfileLabels = { open: string; close: string };
  * Touch devices simply never fire `mousemove`, so the card sits still and
  * legible there — nothing is lost, only the flourish.
  */
-export function PersonCard({ person, labels }: { person: Person; labels?: ProfileLabels }) {
+/** `side`: the portrait, arched, beside the words (Our Guiding Lights). */
+export function PersonCard({ person, labels, side = false }: { person: Person; labels?: ProfileLabels; side?: boolean }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDialogElement>(null);
   const hasProfile = Boolean(labels && person.bio && person.bio.length > 0);
@@ -49,8 +50,8 @@ export function PersonCard({ person, labels }: { person: Person; labels?: Profil
   }
 
   return (
-    <li className="group">
-      <div className="outline outline-1 -outline-offset-1 outline-ink/15" style={{ perspective: "1000px" }}>
+    <li className={`group ${side ? "grid grid-cols-[6.5rem_minmax(0,1fr)] items-start gap-x-4 sm:grid-cols-[7.5rem_minmax(0,1fr)]" : ""}`}>
+      <div className={side ? "overflow-hidden rounded-t-full rounded-b-md" : "outline outline-1 -outline-offset-1 outline-ink/15"} style={{ perspective: "1000px" }}>
         <div
           ref={mountRef}
           onMouseMove={handleMove}
@@ -67,7 +68,8 @@ export function PersonCard({ person, labels }: { person: Person; labels?: Profil
           <div className="person-glow" aria-hidden="true" />
         </div>
       </div>
-      <div className="mt-4 border-t border-ink/20 pt-3 transition-colors duration-300 group-hover:border-cinnabar">
+      <div className="min-w-0">
+      <div className={side ? "" : "mt-4 border-t border-ink/20 pt-3 transition-colors duration-300 group-hover:border-cinnabar"}>
         <h3 className="font-display text-[1.2rem] font-medium leading-snug text-ink">{person.name}</h3>
         <p className="mt-1.5 font-mono text-register text-cinnabar">{person.rank}</p>
       </div>
@@ -85,6 +87,7 @@ export function PersonCard({ person, labels }: { person: Person; labels?: Profil
           <Profile ref={profileRef} person={person} labels={labels} />
         </>
       ) : null}
+      </div>
     </li>
   );
 }

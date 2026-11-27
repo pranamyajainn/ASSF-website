@@ -22,7 +22,7 @@ const VIEWS: Record<string, () => Promise<React.ReactNode> | React.ReactNode> = 
   "rural-infrastructure": Rural,
   "community-services": Community,
   impact: Impact,
-  trustees: Trustees,
+  "our-guiding-lights": Trustees,
   "gallery/photos": PhotoGallery,
   "gallery/videos": VideoGallery,
   reports: Reports,

@@ -578,7 +578,7 @@ export const board = {
     { name: "Shri Ashok Kumar Jain", rank: "Founder Trustee", affiliation: "Community and cultural-institution leadership", image: "/images/trustees/oct26/ashok-kumar-jain.jpg" },
     { name: "Prof. D. A. Appa Patil", rank: "Founder Trustee", affiliation: "Educationist, author and scholar of Jain philosophy, literature and spiritual heritage", image: "/images/trustees/oct26/appa-patil.jpg" },
   ],
-  link: { label: "Meet all our trustees and advisors", href: "/trustees" },
+  link: { label: "Meet all our trustees and advisors", href: "/our-guiding-lights" },
 } as const;
 
 /**

@@ -10,7 +10,7 @@ const PAGES = [
   "/rural-infrastructure",
   "/community-services",
   "/impact",
-  "/trustees",
+  "/our-guiding-lights",
   "/gallery/photos",
   "/gallery/videos",
   "/careers",

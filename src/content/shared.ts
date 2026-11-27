@@ -57,7 +57,7 @@ export const nav = [
   { label: "Community Services", href: "/community-services", menu: "work" },
   { label: "Rural Infrastructure", href: "/rural-infrastructure", menu: "work" },
   { label: "Impact", href: "/impact" },
-  { label: "Trustees", href: "/trustees" },
+  { label: "Our Guiding Lights", href: "/our-guiding-lights" },
 ] as const;
 
 /** The menu's later pages, after the work and the people. */
