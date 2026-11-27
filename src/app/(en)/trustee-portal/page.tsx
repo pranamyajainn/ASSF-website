@@ -12,7 +12,7 @@ const {
   home: { ledger, standing },
   conservation: { sites },
   rural: { projects: ruralProjects },
-  community: { healthcare, education, relief },
+  community: { pageHero: communityHero, education, relief },
   trustees: { trustees, advisors },
 } = resolveContent("en");
 
@@ -145,21 +145,21 @@ export default async function TrusteePortalPage() {
 
         <PortalSection eyebrow="Community services" heading="Healthcare, education, relief">
           <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-            {healthcare.totals.map((t) => (
+            {communityHero.figures.map((t) => (
               <StatTile key={t.label} label={t.label} value={t.value} />
             ))}
           </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             <div className="border-t border-board-ink/10 pt-4">
               <p className="text-sm text-board-ink/70">Education support</p>
-              <p className="mt-2 max-w-[42ch] text-base leading-snug text-board-ink/70">{education.body}</p>
+              <p className="mt-2 max-w-[42ch] text-base leading-snug text-board-ink/70">{education.paragraphs[0]}</p>
             </div>
             <div className="border-t border-board-ink/10 pt-4">
               <p className="text-sm text-board-ink/70">Emergency relief</p>
               <ul className="mt-2 space-y-2">
                 {relief.items.map((r) => (
-                  <li key={r.name} className="text-base leading-snug text-board-ink/70">
-                    <span className="text-board-ink">{r.name}</span> — {r.body}
+                  <li key={r.title} className="text-base leading-snug text-board-ink/70">
+                    <span className="text-board-ink">{r.title}</span> — {r.body}
                   </li>
                 ))}
               </ul>

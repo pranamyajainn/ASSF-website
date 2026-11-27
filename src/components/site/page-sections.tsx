@@ -20,6 +20,7 @@ export function Opener({
   title,
   paragraphs,
   image,
+  images,
   figures,
 }: {
   question?: string;
@@ -27,12 +28,15 @@ export function Opener({
   eyebrow?: string;
   title: string;
   paragraphs: readonly string[];
+  /** One photograph with its caption — or `images`: two (an arched one beside a wide one) or three (a mosaic). */
   image?: Photo;
+  images?: readonly Photo[];
   figures?: readonly Figure[];
 }) {
+  const pictured = !!image?.src || !!images?.length;
   return (
     <Leaf id="top" label={label} question={question} innerClassName="!pt-10 md:!pt-14 lg:!pt-16">
-      <div className={`bleed-margin grid items-center gap-x-10 gap-y-10 ${image?.src ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""}`}>
+      <div className={`bleed-margin grid items-center gap-x-10 gap-y-10 ${pictured ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""}`}>
         <div className="min-w-0">
           {eyebrow ? <p className="font-mono text-register text-cinnabar">{eyebrow}</p> : null}
           <h1 className="inked ink-on-load mt-4 max-w-[16ch] text-balance font-display text-title font-medium tracking-[-0.015em]">
@@ -54,10 +58,38 @@ export function Opener({
             </div>
             {image.caption ? <figcaption className="mt-3 font-mono text-register text-ink-soft">{image.caption}</figcaption> : null}
           </figure>
+        ) : images?.length ? (
+          <Collage images={images} />
         ) : null}
       </div>
       {figures?.length ? <Figures items={figures} className="mt-12" /> : null}
     </Leaf>
+  );
+}
+
+/** Two photographs side by side (the first arched), or three as a mosaic: one tall, two stacked. */
+function Collage({ images }: { images: readonly Photo[] }) {
+  const pic = (photo: Photo, className: string, sizes: string) => (
+    <div className={`relative overflow-hidden bg-leaf-deep shadow-[0_18px_34px_-24px_rgb(0_0_0/0.65)] ${className}`}>
+      <Image src={photo.src} alt={photo.alt} fill priority sizes={sizes} className="object-cover" />
+    </div>
+  );
+  if (images.length >= 3) {
+    const [a, b, c] = images;
+    return (
+      <div className="grid min-w-0 grid-cols-[3fr_2fr] grid-rows-2 gap-3">
+        {pic(a, "row-span-2 aspect-[3/4] rounded-t-full rounded-b-lg", "(min-width: 1024px) 20rem, 55vw")}
+        {pic(b, "rounded-lg", "(min-width: 1024px) 13rem, 38vw")}
+        {pic(c, "rounded-lg", "(min-width: 1024px) 13rem, 38vw")}
+      </div>
+    );
+  }
+  const [a, b] = images;
+  return (
+    <div className="grid min-w-0 grid-cols-[1.1fr_1fr] items-center gap-3">
+      {pic(a, "aspect-[4/5] rounded-t-[10rem] rounded-b-lg", "(min-width: 1024px) 18rem, 48vw")}
+      {b ? pic(b, "aspect-[4/5] rounded-lg", "(min-width: 1024px) 16rem, 44vw") : null}
+    </div>
   );
 }
 
@@ -205,5 +237,28 @@ export function GiveBand({
         </div>
       ) : null}
     </Leaf>
+  );
+}
+
+/** Newspaper clippings in a row, each opening full size; a vertical label at the left. */
+export function Press({ label, items, caption, className = "" }: { label: string; items: readonly { src: string; alt: string }[]; caption?: string; className?: string }) {
+  return (
+    <figure className={`bleed-margin ${className}`}>
+      <div className="flex gap-4 border-t border-ink/15 pt-5">
+        <p className="hidden shrink-0 font-mono text-[0.75rem] uppercase tracking-[0.12em] text-cinnabar [writing-mode:vertical-rl] [transform:rotate(180deg)] sm:block">{label}</p>
+        <ul className="grid flex-1 grid-cols-2 gap-3 md:grid-cols-4">
+          {items.map((clip) => (
+            <li key={clip.src}>
+              <a href={clip.src} target="_blank" rel="noopener" className="block">
+                <div className="relative aspect-[3/4] overflow-hidden bg-white shadow-[0_10px_24px_-14px_rgb(0_0_0/0.55)] transition-transform hover:-translate-y-0.5">
+                  <Image src={clip.src} alt={clip.alt} fill sizes="(min-width: 768px) 16rem, 46vw" className="object-cover object-top" />
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {caption ? <figcaption className="mt-3 font-mono text-register text-ink-soft">{caption}</figcaption> : null}
+    </figure>
   );
 }

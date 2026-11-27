@@ -1,98 +1,149 @@
 /**
- * Community Services page copy. Figures reconcile across the Community
- * Services, Impact Page and Mission/Vision/Values documents — the aggregate
- * healthcare totals equal the sum of the named camps, so both are shown.
- *
- * Not included: the "Community Empowerment Scheme" (education loans,
- * micro-business loans, etc.) described in the Mission/Vision/Values
- * document. That programme is explicitly marked there as in planning, with
- * no confirmed launch date — publishing loan amounts and timelines for a
- * programme that does not yet exist would overstate what the Foundation
- * currently offers, so it is left out until it launches.
+ * Community Services, after the Foundation's page designs (Nov 2026): how
+ * the Foundation serves, its health camps, education support and relief,
+ * and how to be part of it. Words and photographs as the Foundation's
+ * preview gives them.
  */
+import { org } from "./shared";
+
+const P = "/images/pages/community/";
+
 export const pageHero = {
-  eyebrow: "Community Services",
-  title: "Service Where It Is Needed",
-  body: "Heritage work does not stand apart from human need. ASSF responds to healthcare, education and emergency needs directly — understanding what a community requires, then acting on it.",
-  plate: {
-    src: "/images/community/students-rural-health-centre.jpg",
-    alt: "A long line of students and health workers, most in white coats, standing on open ground outside a rural health centre.",
-    caption: "Students at a rural health centre.",
-    position: "50% 50%",
-  },
-} as const;
-
-export const healthcare = {
-  label: "Healthcare",
-  heading: "Taking specialist care closer to villages",
-  body: "Free medical camps bring doctors and diagnostics to communities where specialist care is otherwise out of reach — with follow-up, not just a single day's consultation.",
-  totals: [
-    { label: "Beneficiaries screened", value: "3,500+" },
-    { label: "Cataract surgeries", value: "250+" },
-    { label: "Heart bypass surgeries", value: "5" },
-    { label: "Spectacles distributed", value: "463+" },
-    { label: "Health camps organised", value: "5" },
+  question: "Community",
+  label: "Services",
+  eyebrow: "Our Work · Community Services",
+  title: "Standing With Families When It Matters Most",
+  paragraphs: [
+    "The compassion that guards a fragile leaf also reaches out to people. When a village needs a doctor, a school needs books, or a city needs food, we go, and we go together with those who share the same care.",
+    "Every effort begins by listening to the community, and every one is carried through until the help has truly arrived.",
   ],
-  camps: [
-    { place: "Irkal, Raichur", beneficiaries: "463", detail: "Cardiology, nephrology, neurology, ophthalmology — 5 heart bypasses, 35 cataract surgeries" },
-    { place: "Dadagadapura, Mandya", beneficiaries: "1,100", detail: "Orthopaedic, cardiac, ENT, dental, ophthalmology — 463 spectacles, 138 cataract surgeries" },
-    { place: "Yarnal, Belagavi", beneficiaries: "1,800", detail: "Cardiology, ophthalmology, gynaecology, dentistry — 78 cataract cases treated" },
-  ],
-  note: "Also included: dengue and chikungunya prevention camps for 48 beneficiaries, and blood-donation drives screening 178 participants and collecting 78 units.",
   images: [
-    { src: "/images/community/health-screening.jpeg", alt: "A nurse recording an ECG for a man lying on a camp bed.", caption: "Diagnostic screening at a camp." },
-    { src: "/images/community/health-consultation.jpeg", alt: "A doctor consulting patients at a table beneath Kannada camp banners.", caption: "Specialist consultation, free of charge." },
-    { src: "/images/community/health-camp-outreach.jpg", alt: "Health workers seated at tables checking blood pressure and taking down details for women and children at a community health camp.", caption: "Community health camp outreach." },
+    { src: `${P}relief-2.jpg`, alt: "A volunteer handing a meal packet to a woman at her doorstep" },
+    { src: `${P}camp-banner.jpg`, alt: "Volunteers and medical students at a free health camp in Belagavi district" },
   ],
-} as const;
-
-export const education = {
-  label: "Education support",
-  heading: "Helping children continue to learn",
-  body: "ASSF studied schools around Yarnal and identified three serving children from economically disadvantaged backgrounds. Nearly 500 students received books and stationery — support chosen after understanding what each school actually needed.",
-  image: "/images/community/education-support-2.jpeg",
-  imageAlt: "Schoolchildren in uniform with teachers and Foundation members, in front of a school banner.",
-} as const;
-
-/**
- * Every relief photograph in the archive shows masked volunteers, so they
- * belong to the 2020 COVID-19 response; the 2019 flood entry has none rather
- * than borrowing one.
- */
-export const relief = {
-  label: "Emergency relief",
-  heading: "Standing with communities in crisis",
-  items: [
-    {
-      name: "North Karnataka & Maharashtra floods, 2019",
-      body: "Across Athani, Gokak, Sangli, Bagalkot, Raibag, Bhoj, Chikkodi and Mudlagi in Belgaum District, and in Kolhapur District, Maharashtra, ASSF reached six villages with 2,000 food kits and 500 clothing kits, then extended direct financial support to 262 families rebuilding their homes.",
-      stats: [
-        { value: "2,000", label: "food kits" },
-        { value: "500", label: "clothing kits" },
-        { value: "262", label: "families supported to rebuild" },
-      ],
-    },
-    {
-      name: "COVID-19 response, Bengaluru, 2020",
-      body: "With Sakal Digambar Jain Samaj and volunteer networks, ASSF distributed 7,77,534 cooked meals and 2,795 food-grain kits across Bengaluru between 1 April and 3 May 2020.",
-      image: "/images/community/relief-distribution-3.jpeg",
-      imageAlt: "Masked volunteers handing a food packet to a woman at her doorway.",
-      stats: [
-        { value: "7,77,534", label: "cooked meals" },
-        { value: "2,795", label: "food-grain kits" },
-      ],
-    },
+  figures: [
+    { value: "3,500+", label: "people cared for at free health camps" },
+    { value: "500", label: "schoolchildren given books and stationery" },
+    { value: "7,77,534", label: "meals shared in the lockdown" },
+    { value: "262", label: "flood-hit families helped to rebuild" },
   ],
 } as const;
 
 export const method = {
-  label: "How we work",
-  heading: "Practical, and community-led",
+  question: "How we",
+  label: "serve",
+  heading: "Listening First, Then Serving",
+  lede: "Our help is shaped by the people it is meant for.",
   steps: [
-    { title: "Understand", body: "Identify the need through direct engagement with local institutions." },
-    { title: "Respond", body: "Provide support that addresses that specific need." },
-    { title: "Collaborate", body: "Work with doctors, hospitals, schools, volunteers and local networks." },
-    { title: "Reach", body: "Take assistance to communities with otherwise limited access." },
-    { title: "Follow through", body: "Connect people with the next step, where further care is needed." },
+    { title: "Understand", body: "We visit, listen and learn what is truly needed." },
+    { title: "Respond", body: "We bring the right help, quickly and with dignity." },
+    { title: "Collaborate", body: "We work with doctors, schools, panchayats and fellow trusts." },
+    { title: "Follow through", body: "We stay until the care is complete, from treatment to recovery." },
   ],
+} as const;
+
+export const healthcare = {
+  question: "Health",
+  label: "camps",
+  heading: "Specialist Care, Closer to Home",
+  lede: "For a family in a village, a specialist can be a day's journey and a month's earnings away. So we bring the specialists to them.",
+  body: "With hospitals and fellow organisations, we have held free camps with cardiologists, eye surgeons, paediatricians, gynaecologists and dentists. Those who needed surgery were taken onward for free treatment, and medicines and spectacles were given on the spot.",
+  images: [
+    { src: `${P}camp-mandya.jpg`, alt: "Children at the free health camp in Dadagadapura, Mandya", caption: "Dadagadapura, Mandya, 30 June 2019." },
+    { src: `${P}camp-children.jpg`, alt: "Children being checked by a doctor at a health camp", caption: "Care for the youngest, at one of our camps." },
+  ],
+  camps: [
+    { date: "14 March 2019", place: "Irkal, Raichur", value: "463", unit: "people cared for", detail: "5 free heart surgeries · 35 cataract surgeries · 137 spectacles" },
+    { date: "17 April 2019", place: "Bengaluru", value: "178", unit: "heart screenings", detail: "On Mahaveer Jayanti · 78 units of blood donated" },
+    { date: "30 June 2019", place: "Dadagadapura, Mandya", value: "1,100", unit: "people cared for", detail: "463 spectacles · 138 cataract surgeries · 35 doctors" },
+    { date: "11 July 2019", place: "Yarnal, Belagavi", value: "1,800", unit: "people cared for", detail: "78 cataract cases treated free of cost" },
+    { date: "16 August 2019", place: "Yarnal, Hosur, Bastvad", value: "48", unit: "women and children", detail: "Dengue and chikungunya prevention drops" },
+  ],
+  partnersLabel: "Together with",
+  partners: "KLES Dr. Prabhakar Kore Hospital · Sapthagiri Hospital · Rudra Gowda Eye Hospital · Lions Blood Bank · Bharatesh Education Trust · Karnataka Jain Association · and many more",
+} as const;
+
+export const education = {
+  question: "Education",
+  label: "support",
+  heading: "Helping Children Keep Learning",
+  image: { src: `${P}books-yarnal.jpg`, alt: "Schoolchildren near Yarnal holding their new books" },
+  paragraphs: [
+    "A child who stays in school carries a whole family forward. We visited schools around Yarnal, understood what each one needed, and gave books and stationery to nearly 500 students across three schools.",
+    "From 2019 to 2021, we also supported deserving children through their schooling, chosen with care from requests sent by parents and schools, including around 120 children helped through six years of study.",
+  ],
+  figures: [
+    { value: "500", label: "students with books and stationery" },
+    { value: "3", label: "village schools near Yarnal" },
+    { value: "120", label: "children supported for six years" },
+  ],
+  strip: [
+    { src: `${P}books-yarnal-2.jpg`, alt: "Children receiving books from our team" },
+    { src: `${P}education.jpg`, alt: "Young schoolchildren holding their new books" },
+    { src: `${P}books-yarnal-3.jpg`, alt: "Book distribution at a village school" },
+  ],
+  stripCaption: "Books and stationery for village schools near Yarnal.",
+} as const;
+
+export const relief = {
+  question: "In hard",
+  label: "times",
+  heading: "Beside Families in Hard Times",
+  lede: "When floods rose and the city stood still, we went to the doorsteps of the families who needed us.",
+  items: [
+    {
+      date: "August 2019 · Belagavi district",
+      title: "When the Floods Came",
+      body: "As floods swept North Karnataka, our volunteers carried survival kits to six villages: Yamgarni, Budiyal, Ugar, Shirgur, Kusnal and Yarnal. We then helped 262 families whose homes were damaged to begin rebuilding.",
+      images: [
+        { src: `${P}flood-kit.jpg`, alt: "An elderly woman receiving a relief kit" },
+        { src: `${P}flood-sacks.jpg`, alt: "Relief kits ready for families in a flood-hit village" },
+      ],
+      stats: [
+        { value: "2,000", label: "food kits" },
+        { value: "500", label: "clothing and blanket kits" },
+        { value: "262", label: "families helped to rebuild" },
+      ],
+    },
+    {
+      date: "1 April to 3 May 2020 · Bengaluru",
+      title: "When the City Stood Still",
+      body: "Through the lockdown, together with Sakal Digambar Jain Samaj and fifteen fellow organisations, we shared meals and grain with families across the city, to everyone in need, whoever they were.",
+      images: [
+        { src: `${P}covid-kits.jpg`, alt: "Volunteers handing grain kits to women" },
+        { src: `${P}relief-1.jpg`, alt: "A volunteer handing a food packet to a woman" },
+      ],
+      stats: [
+        { value: "7,77,534", label: "meal packets" },
+        { value: "2,795", label: "grain kits" },
+        { value: "16", label: "organisations, one effort" },
+      ],
+    },
+  ],
+  pressLabel: "In the news",
+  press: [
+    { src: `${P}press-6.jpg`, alt: "Vijayavani newspaper report on lockdown relief" },
+    { src: `${P}press-8.jpg`, alt: "Kannada Prabha newspaper report on lockdown relief" },
+    { src: `${P}press-7.jpg`, alt: "Newspaper report on community kitchens" },
+    { src: `${P}press-78.jpg`, alt: "Mandya newspaper report on the health camp" },
+  ],
+  pressCaption: "Our relief and health camps, as reported in Vijayavani, Kannada Prabha and local papers.",
+} as const;
+
+export const give = {
+  question: "Be part",
+  label: "of it",
+  heading: "Many Hands, One Kindness",
+  body: "Every camp, every book and every meal here was made possible by many people giving together. There is a place for you too.",
+  tiers: [
+    { value: "Give", label: "towards the next camp or a child's schooling" },
+    { value: "Volunteer", label: "at camps and community drives" },
+    { value: "Tell us", label: "about a village or school that needs help" },
+  ],
+  buttons: [
+    { label: "Support the mission", href: "/donate" },
+    { label: "Volunteer with us", href: "/careers" },
+    { label: "Write to us", href: `mailto:${org.email}` },
+  ],
+  next: { text: "Some needs are met in a day. Others are built to last for generations.", label: "Next: Rural Infrastructure", href: "/rural-infrastructure" },
 } as const;
