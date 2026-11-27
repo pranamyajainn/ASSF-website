@@ -497,22 +497,6 @@ figure[data-plate] figcaption::before {
   color: var(--color-cinnabar);
 }
 
-/* Verse-numbered lists: each step ends as a verse does, ॥१॥. */
-ol[data-verses] {
-  counter-reset: verse;
-}
-
-ol[data-verses] > li {
-  counter-increment: verse;
-}
-
-ol[data-verses] [data-verse-end]::after {
-  content: "\00a0॥" counter(verse, devanagari) "॥";
-  content: "\00a0॥" counter(verse, devanagari) "॥" / "";
-  color: var(--color-cinnabar);
-  white-space: nowrap;
-}
-
 /* ---------------------------------------------------------- portraits */
 
 /*
@@ -863,11 +847,6 @@ html[lang="hi"] figure[data-plate] figcaption::before {
 html[lang="kn"] figure[data-plate] figcaption::before {
   content: "ಚಿತ್ರ " counter(plate, kannada) "\2002";
   content: "ಚಿತ್ರ " counter(plate, kannada) "\2002" / "";
-}
-
-html[lang="kn"] ol[data-verses] [data-verse-end]::after {
-  content: "\00a0॥" counter(verse, kannada) "॥";
-  content: "\00a0॥" counter(verse, kannada) "॥" / "";
 }
 
 /* Courier's monospaced space is twice a Devanagari or Kannada word gap;

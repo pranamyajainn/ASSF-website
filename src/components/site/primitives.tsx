@@ -137,19 +137,6 @@ export function Prose({ children, className = "" }: { children: ReactNode; class
 }
 
 /**
- * A marginal gloss: the evidence beside the claim. Floats into the right
- * margin on wide screens; inline below that.
- */
-export function Gloss({ label, children }: { label?: string; children: ReactNode }) {
-  return (
-    <aside className="gloss">
-      {label ? <span className="block text-cinnabar">{label}</span> : null}
-      <span className={label ? "mt-1 block" : "block"}>{children}</span>
-    </aside>
-  );
-}
-
-/**
  * A number the Foundation has not supplied yet.
  *
  * The site this replaces printed zeroes, and nothing ships until real counts
@@ -286,34 +273,6 @@ export async function Register({
   );
 }
 
-/**
- * A numbered method, set as verses: each step closes with ॥n॥ in red, the
- * way a verse closes in a manuscript. Two columns on wide screens, read
- * down then across.
- */
-export function Verses({
-  steps,
-  className = "mt-10",
-}: {
-  steps: readonly { title: string; body: string }[];
-  className?: string;
-}) {
-  return (
-    <ol data-verses className={`max-w-[60rem] gap-x-14 md:columns-2 ${className}`}>
-      {steps.map((step) => (
-        <li key={step.title} className="mb-7 break-inside-avoid border-t border-ink/15 pt-4">
-          <h3 className="font-display text-[1.3rem] font-medium leading-snug text-ink">
-            {step.title}
-          </h3>
-          <p data-verse-end className="mt-1.5 text-[1.0625rem] leading-relaxed text-ink-soft">
-            {step.body}
-          </p>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
 type Person = { name: string; rank: string; body?: string; bio?: readonly string[]; image: string };
 
 /**
@@ -393,90 +352,6 @@ export function Plate({
       {caption ? (
         <figcaption className="mt-3 max-w-[52ch] font-mono text-register text-ink-faint">
           {caption}
-        </figcaption>
-      ) : null}
-    </figure>
-  );
-}
-
-/**
- * The first leaf of every page: title, lede, and — where the page has one —
- * a tall photograph that sits in the right margin and runs off the edge of
- * the screen. The home page's hero is a richer version of the same leaf.
- */
-export function PageHero({
-  label,
-  question,
-  eyebrow,
-  title,
-  body,
-  supporting,
-  plate,
-  children,
-}: {
-  label?: string;
-  question?: string;
-  /** The page's sections in reading order, as the questions they answer. */
-  /** No longer shown: the Foundation asked for no "On this page" lists (Nov 2026). */
-  thread?: { title: string; items: readonly { id: string; question: string }[] };
-  eyebrow: string;
-  title: string;
-  body: string;
-  /** A short line set under the body, before the page's thread. */
-  supporting?: string;
-  plate?: { src: string; alt: string; caption?: string; position?: string };
-  children?: ReactNode;
-}) {
-  return (
-    <Leaf id="top" label={label ?? eyebrow} question={question} innerClassName="!pt-10 md:!pt-14 lg:!pt-20">
-      <div className={plate ? "xl:grid xl:grid-cols-[minmax(0,1fr)_5rem] xl:gap-x-12" : ""}>
-        <div className="min-w-0">
-          <p className="font-mono text-register text-ink-faint">{eyebrow}</p>
-          <h1 className="inked ink-on-load mt-5 max-w-[17ch] text-balance font-display text-display font-medium tracking-[-0.015em]">
-            {title}
-            <span className="text-cinnabar" aria-hidden="true">
-              {" "}॥
-            </span>
-          </h1>
-          <p className="mt-8 max-w-[52ch] text-lede text-ink">{body}</p>
-          {supporting ? <p className="mt-5 font-display text-[1.25rem] italic leading-snug text-cinnabar">{supporting}</p> : null}
-          {children}
-        </div>
-        {plate ? <MarginPlate plate={plate} /> : null}
-      </div>
-    </Leaf>
-  );
-}
-
-
-/**
- * A tall photograph that occupies the right margin of a title leaf and runs
- * off the edge of the screen — the one place a plate is allowed to break the
- * page's margins. Its grid track sits inside the text column; `bleed-right`
- * carries it out across the margin to the viewport.
- */
-export function MarginPlate({
-  plate,
-}: {
-  plate: { src: string; alt: string; caption?: string; position?: string };
-}) {
-  return (
-    <figure data-plate className="bleed-right mt-12 flex flex-col xl:mt-0">
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-leaf-deep sm:aspect-[16/9] xl:aspect-auto xl:min-h-[32rem] xl:flex-1">
-        <Image
-          src={plate.src}
-          alt={plate.alt}
-          fill
-          loading="eager"
-          fetchPriority="high"
-          sizes="(min-width: 1280px) 30rem, 100vw"
-          className="object-cover"
-          style={{ objectPosition: plate.position ?? "center" }}
-        />
-      </div>
-      {plate.caption ? (
-        <figcaption className="mt-3 max-w-[38ch] pr-5 font-mono text-register text-ink-faint sm:pr-8">
-          {plate.caption}
         </figcaption>
       ) : null}
     </figure>

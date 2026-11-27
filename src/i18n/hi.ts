@@ -15,14 +15,15 @@ export const hi: Translation = {
       brandLine: "विरासत और मानवता की सेवा में",
     },
     nav: [
-      { label: "परिचय" },
+      { label: "हमारे बारे में" },
+      { label: "हमारे मार्गदर्शक" },
+      { label: "प्रभाव" },
       { label: "पांडुलिपि संरक्षण" },
       { label: "सामुदायिक सेवाएँ" },
       { label: "ग्रामीण अवसंरचना" },
-      { label: "प्रभाव" },
-      { label: "न्यासी" },
+      { label: "स्वावलंबन योजना" },
     ],
-    navMore: [{ label: "फ़ोटो गैलरी" }, { label: "वीडियो गैलरी" }, { label: "रिपोर्ट और न्यूज़लेटर" }, { label: "करियर" }],
+    navMore: [{ label: "गैलरी" }, { label: "रिपोर्ट और न्यूज़लेटर" }, { label: "करियर" }],
     pillars: [
       {
         label: "पांडुलिपि संरक्षण",
@@ -407,7 +408,7 @@ export const hi: Translation = {
       give: "दान",
       giveOnline: "ऑनलाइन दान करें",
       donate: "दान करें",
-      menus: { work: "हमारा कार्य", gallery: "गैलरी" },
+      menus: { about: "हमारे बारे में", work: "हमारा कार्य" },
     },
     footer: {
       colophon: "पुष्पिका",

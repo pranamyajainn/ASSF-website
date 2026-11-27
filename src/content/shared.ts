@@ -45,19 +45,20 @@ export const folioPrice = 370;
 export const granthaPrice = 37000;
 
 /**
- * The menu, in the order the Foundation asked for (Alka, 30 Oct 2026, as
- * agreed with Shubhang): About · Our Work · Impact · Trustees · Gallery ·
- * Reports & Newsletter · Careers. On wide screens the pages sharing a
+ * The menu, as the Foundation's brief of 27 Nov 2026 groups it: About Us ▾ ·
+ * Our Work ▾ (with Swavalamban Yojana) · Gallery · Reports & Newsletter ·
+ * Careers, with Donate beside it. On wide screens the pages sharing a
  * `menu` open together under one name (ui.header.menus), and the one marked
  * `highlight` is set apart; the phone menu and the footer list every page.
  */
 export const nav = [
-  { label: "About", href: "/about" },
+  { label: "About Us", href: "/about", menu: "about" },
+  { label: "Our Guiding Lights", href: "/our-guiding-lights", menu: "about" },
+  { label: "Impact", href: "/impact", menu: "about" },
   { label: "Manuscript Conservation", href: "/manuscript-conservation", menu: "work" },
   { label: "Community Services", href: "/community-services", menu: "work" },
   { label: "Rural Infrastructure", href: "/rural-infrastructure", menu: "work" },
-  { label: "Impact", href: "/impact" },
-  { label: "Our Guiding Lights", href: "/our-guiding-lights" },
+  { label: "Swavalamban Yojana", href: "/swavalamban-yojana", menu: "work" },
 ] as const;
 
 /** The menu's later pages, after the work and the people. */
