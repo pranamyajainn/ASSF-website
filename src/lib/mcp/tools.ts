@@ -764,7 +764,7 @@ const activityTool: Tool = {
   name: "get_editor_activity",
   title: "Who did what in the editor",
   description:
-    "The site editor's lasting activity record: who signed in, opened the editor, published (or tried to), scheduled, restored or sent an email, and when (India time), newest first. Kept permanently; the server's own logs last only about an hour.",
+    "The site editor's lasting activity record: who signed in, opened the editor, published (or tried to), scheduled, restored or sent an email, and when (India time), newest first. Kept permanently; the server's own logs last only about a day.",
   inputSchema: {
     type: "object",
     properties: { days: { type: "number", description: "How far back to look, in days (default 30, at most 366)." } },

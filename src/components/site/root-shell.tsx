@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { ReactNode } from "react";
 import { ChatWidget } from "@/components/chat/chat-widget";
 import { resolveContent } from "@/i18n/content";
@@ -23,6 +24,8 @@ export function RootShell({ lang, children }: { lang: Lang; children: ReactNode 
       <body>
         {children}
         <ChatWidget lang={lang} strings={ui.chat} email={shared.org.email} />
+        {/* Vercel Web Analytics: page views by page and country, no cookies, no one identified. */}
+        <Analytics />
       </body>
     </html>
   );

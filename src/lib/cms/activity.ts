@@ -5,7 +5,7 @@ import { appendLine, readLines } from "@/lib/data/lines";
 /**
  * What happens in the site editor, kept for good: who signed in, opened the
  * editor, published (or tried to), scheduled, restored or sent an email, and
- * when. Server logs on the current Vercel plan last about an hour; this is
+ * when. Server logs on the current Vercel plan (Pro) last about a day; this is
  * the lasting record, so "who changed what, last month" has an answer.
  *
  * Sealed day files on the private-data branch (`activity/`), like visitor

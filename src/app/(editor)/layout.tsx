@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { fontVariables } from "@/components/site/fonts";
 import "../globals.css";
@@ -11,7 +12,11 @@ export const metadata: Metadata = {
 export default function EditorLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={fontVariables}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Counts visits to /editor and the vault by day (no one identified); who did what is in the activity record. */}
+        <Analytics />
+      </body>
     </html>
   );
 }
