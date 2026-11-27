@@ -64,7 +64,6 @@ export const HIDDEN_BRANCHES = new Set([
   "home.adopt.wall",
   "home.board",
   "home.join.body",
-  "home.field.lede",
 ]);
 
 /**
@@ -74,6 +73,7 @@ export const HIDDEN_BRANCHES = new Set([
  */
 export const COLLECTIONS = new Set([
   "home.field.items",
+  "home.field.journey",
   "home.upClose.items",
   "home.voices.items",
   "home.board.members",
@@ -219,9 +219,20 @@ const PATH_LABELS: Record<string, string> = {
   "trustees.team.members": "Team members",
   "trustees.team.members[].body": "Short description (on the card)",
   "trustees.team.members[].bio": "Full profile (under “Read full profile”)",
+  "home.field.items": "Latest",
+  "home.field.journey": "From our journey",
   "home.field.items[].body": "What happened",
-  "home.field.items[].title": "Headline",
+  "home.field.items[].title": "Headline (optional)",
   "home.field.items[].date": "Date (as it should appear)",
+  "home.field.items[].kind": "Kind (optional, e.g. Event)",
+  "home.field.items[].clip": "Video — a YouTube link (optional; the photo is its cover)",
+  "home.field.items[].length": "Video length (e.g. 1 min)",
+  "home.field.journey[].body": "What happened",
+  "home.field.journey[].title": "Headline (optional)",
+  "home.field.journey[].date": "Date or year (as it should appear)",
+  "home.field.journey[].kind": "Kind (optional)",
+  "home.field.journey[].clip": "Video — a YouTube link (optional; the photo is its cover)",
+  "home.field.journey[].length": "Video length (e.g. 1 min)",
   "home.ledger.metrics[].note": "Note under the figure",
   "home.ledger.metrics[].label": "What the figure counts",
   "careers.openings.items": "Vacancies",
@@ -300,7 +311,7 @@ const SECTION_LABELS: Record<string, string> = {
   "home.mission": "Three pillars — manuscripts photo",
   "home.ruralTeaser": "Three pillars — rural photos",
   "home.communityTeaser": "Three pillars — community photo",
-  "home.field": "News & updates",
+  "home.field": "News and events",
   "home.lineage": "The Acharya (on the About page)",
   "home.sites": "Sites (on the Conservation page)",
   "home.voices": "Voices & films",

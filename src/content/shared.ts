@@ -23,7 +23,7 @@ export const org = {
   sealDeva: "शांति सागरम्",
   founded: 2019,
   registration: "GAN-4-00431-2018-19",
-  phone: "+91 8095588411",
+  phone: "+91 73492 51566",
   email: "info@shantisagarfoundation.org",
   office:
     "A1, Office Building, 2nd Floor, Epsilon Residential Villas, Yamlur Main Road, next to CGI, Bengaluru 560037, Karnataka",

@@ -1,7 +1,7 @@
 import Image from "next/image";
+import { MediaClip } from "./media-clip";
 import { Heading, InlineLink, Leaf, Lede, Pending } from "./primitives";
 import { getContent } from "@/i18n/content";
-import { fill } from "@/i18n/ui";
 
 /**
  * The home page as the opening of a book rather than the whole book: each
@@ -12,8 +12,9 @@ import { fill } from "@/i18n/ui";
  */
 
 /**
- * Mission and vision: the Foundation's two statements beside a photograph
- * of the work, second on the page, before the pillars that carry them out.
+ * What guides us: the mission in large type, the vision under it, and the
+ * five values as tiles beside them — each in Devanagari, its name and one
+ * line; the fifth spans the row (page designs, Nov 2026).
  */
 export async function Purpose() {
   const { home, ui } = await getContent();
@@ -21,72 +22,72 @@ export async function Purpose() {
   return (
     <Leaf id="purpose" label={purpose.label} question={ui.steps.why}>
       <Heading>{purpose.heading}</Heading>
-      <div className="bleed-margin mt-12 grid items-start gap-x-12 gap-y-10 border-t border-ink/20 pt-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        <div className="grid gap-y-10">
-          {[purpose.mission, purpose.vision].map((part) => (
-            <div key={part.label} className="min-w-0">
-              <p className="font-mono text-register text-cinnabar">{part.label}</p>
-              <p className="mt-4 text-pretty font-display text-[clamp(1.3rem,1.1rem+0.7vw,1.7rem)] leading-[1.4] text-ink">{part.body}</p>
-            </div>
-          ))}
+      <div className="bleed-margin mt-10 grid items-start gap-x-12 gap-y-10 border-t border-ink/20 pt-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+        <div className="min-w-0">
+          <p className="font-mono text-register text-cinnabar">{purpose.mission.label}</p>
+          <p className="mt-3 text-pretty font-display text-[clamp(1.6rem,1.2rem+1.4vw,2.4rem)] font-medium leading-[1.2] text-ink">{purpose.mission.body}</p>
+          <p className="mt-9 font-mono text-register text-cinnabar">{purpose.vision.label}</p>
+          <p className="mt-3 text-pretty font-display text-[clamp(1.2rem,1.1rem+0.4vw,1.4rem)] leading-[1.45] text-ink">{purpose.vision.body}</p>
+          <InlineLink href={purpose.link.href} className="mt-7">
+            {purpose.link.label} →
+          </InlineLink>
         </div>
-        <figure className="min-w-0">
-          <div className="relative aspect-[4/3] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15">
-            <Image src={purpose.plate.src} alt={purpose.plate.alt} fill sizes="(min-width: 1024px) 34vw, 92vw" className="object-cover" style={{ objectPosition: "50% 45%" }} />
-          </div>
-          <figcaption className="mt-3 font-mono text-register text-ink-faint">{purpose.plate.caption}</figcaption>
-        </figure>
+        <div className="min-w-0">
+          <p className="font-mono text-register text-cinnabar">{purpose.valuesLabel}</p>
+          <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+            {purpose.values.map((value, i) => (
+              <li
+                key={value.name}
+                className={`rounded-xl border border-leaf-edge/60 bg-leaf-deep/70 px-4 py-4 ${i === purpose.values.length - 1 && purpose.values.length % 2 === 1 ? "sm:col-span-2" : ""}`}
+              >
+                <p lang="hi" className="font-display text-[1.05rem] leading-snug text-cinnabar">
+                  {value.deva}
+                </p>
+                <p className="mt-1 font-display text-[1.15rem] font-medium leading-snug text-ink">{value.name}</p>
+                <p className="mt-1.5 text-[0.98rem] leading-relaxed text-ink-soft">{value.body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <InlineLink href={purpose.link.href} className="mt-10">
-        {purpose.link.label} →
-      </InlineLink>
     </Leaf>
   );
 }
 
 /**
- * What we do: the three pillars as three photographs, each with its name,
- * one line, one counted fact (the same fact the hero glosses), and the way
- * to its page. The whole card is the link.
+ * What we do: the three pillars as three cards, each a photograph, its name,
+ * a title, a few lines, one counted fact and the way to its page.
  */
 export async function WhatWeDo() {
-  const { home, shared, ui, href } = await getContent();
-  const { pillarsIntro, mission, ruralTeaser, communityTeaser, hero } = home;
-  const plates = [mission.plate, ruralTeaser.sequence[ruralTeaser.sequence.length - 1], communityTeaser.plate];
-  // The hero's lines gloss one counted fact per pillar: preserving (conservation), serving (community), building (rural).
-  const facts = [hero.lines[0]?.gloss, hero.lines[2]?.gloss, hero.lines[1]?.gloss];
+  const { home, ui, href } = await getContent();
+  const { pillarsIntro } = home;
   return (
     <Leaf id="pillars" label={pillarsIntro.label} question={ui.steps.what}>
       <Heading>{pillarsIntro.heading}</Heading>
       <Lede>{pillarsIntro.body}</Lede>
       <ul className="bleed-margin mt-12 grid gap-x-8 gap-y-12 md:grid-cols-3">
-        {shared.pillars.map((pillar, i) => {
-          const plate = plates[i];
-          return (
-            <li key={pillar.slug} className="min-w-0">
-              <a href={href(`/${pillar.slug}`)} className="group block">
-                {plate ? (
-                  <div className="relative aspect-[4/3] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15">
-                    <Image
-                      src={plate.src}
-                      alt={plate.alt}
-                      fill
-                      sizes="(min-width: 768px) 30vw, 92vw"
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                    />
-                  </div>
-                ) : null}
-                <p className="mt-5 font-mono text-register text-cinnabar">{pillar.label}</p>
-                <h3 className="mt-2 text-balance font-display text-[clamp(1.4rem,1.2rem+0.6vw,1.75rem)] leading-tight text-ink">{pillar.tagline}</h3>
-                <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-soft">{pillar.body}</p>
-                {facts[i] ? <p className="mt-4 border-l-2 border-orpiment pl-3 font-mono text-register text-ink">{facts[i]}</p> : null}
-                <span className="mt-5 inline-block text-[1.0625rem] text-cinnabar underline decoration-cinnabar/35 underline-offset-[6px] transition-colors group-hover:decoration-cinnabar">
-                  {fill(ui.common.explore, { name: pillar.label })} →
-                </span>
-              </a>
-            </li>
-          );
-        })}
+        {pillarsIntro.cards.map((card) => (
+          <li key={card.label} className="min-w-0">
+            <a href={href(card.link.href)} className="group block">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[3px] bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15">
+                <Image
+                  src={card.image.src}
+                  alt={card.image.alt}
+                  fill
+                  sizes="(min-width: 768px) 30vw, 92vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
+              </div>
+              <p className="mt-5 font-mono text-register text-cinnabar">{card.label}</p>
+              <h3 className="mt-2 text-balance font-display text-[clamp(1.4rem,1.2rem+0.6vw,1.75rem)] leading-tight text-ink">{card.title}</h3>
+              <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-soft">{card.body}</p>
+              {card.fact ? <p className="mt-4 border-l-[3px] border-orpiment py-0.5 pl-3 font-mono text-register leading-relaxed text-ink">{card.fact}</p> : null}
+              <span className="mt-5 inline-block font-mono text-register text-ink underline decoration-cinnabar/70 decoration-1 underline-offset-4 transition-colors group-hover:text-cinnabar">
+                {card.link.label} →
+              </span>
+            </a>
+          </li>
+        ))}
       </ul>
     </Leaf>
   );
@@ -247,18 +248,36 @@ export async function LiveSites() {
               <span className="inline-flex items-center gap-1.5 text-cinnabar">
                 <span aria-hidden="true" className="size-2 rounded-full bg-cinnabar" />
                 {liveSites.status}
+                {site.since ? ` · ${site.since}` : null}
               </span>
-              {site.since ? <span className="text-ink-faint">{site.since}</span> : null}
             </p>
             <h3 className="mt-3 font-display text-[clamp(1.6rem,1.3rem+1vw,2.2rem)] font-medium leading-tight text-ink">{site.name}</h3>
             <p className="mt-1 font-mono text-register text-ink-soft">
               {site.institution} · {site.region}
             </p>
             <p className="mt-4 max-w-[52ch] text-[1.0625rem] leading-relaxed text-ink-soft">{site.body}</p>
-            <div className="mt-6 grid grid-cols-[3fr_2fr] gap-3">
+            {site.progress.total > 0 ? (
+              <div className="mt-5">
+                <div
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={site.progress.total}
+                  aria-valuenow={site.progress.done}
+                  aria-label={site.progress.label}
+                  className="h-2.5 overflow-hidden rounded-full bg-leaf-edge/35"
+                >
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-cinnabar to-orpiment"
+                    style={{ width: `${Math.min(100, Math.round((site.progress.done / site.progress.total) * 100))}%` }}
+                  />
+                </div>
+                <p className="mt-2 font-mono text-register text-ink-soft">{site.progress.label}</p>
+              </div>
+            ) : null}
+            <div className="mt-6 grid grid-cols-[3fr_2fr] items-start gap-3">
               {site.photos.map((photo) => (
                 <figure key={photo.src} className="min-w-0">
-                  <div className="relative aspect-[5/6] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-[3px] bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15">
                     <Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 1024px) 22rem, 60vw" className="object-cover" />
                   </div>
                   <figcaption className="mt-2 font-mono text-[0.75rem] leading-snug text-ink-faint">{photo.caption}</figcaption>
@@ -275,31 +294,44 @@ export async function LiveSites() {
   );
 }
 
-/** From the field: the three latest notes, side by side, short, each with its photograph. */
+/**
+ * News and events: the latest four, newest first, then four from the
+ * Foundation's journey — each card a photograph or a short video, its date
+ * and place, and a few lines (page designs, Nov 2026).
+ */
 export async function News() {
-  const { home, ui } = await getContent();
+  const { home, ui, href } = await getContent();
   const { field } = home;
+  const rows = [
+    { label: field.latestLabel, items: field.items.slice(0, 4) },
+    { label: field.journeyLabel, items: field.journey.slice(0, 4) },
+  ].filter((row) => row.items.length);
   return (
     <Leaf id="field" label={field.label} question={ui.steps.news}>
-      <Heading>{field.heading}</Heading>
-      <ol className="bleed-margin mt-10 grid gap-x-8 gap-y-8 border-t border-ink/20 pt-8 md:grid-cols-3">
-        {field.items.slice(0, 3).map((item) => (
-          <li key={item.title} className="min-w-0">
-            {item.image ? (
-              <div className="relative mb-5 aspect-[4/3] overflow-hidden bg-leaf-deep outline outline-1 -outline-offset-1 outline-ink/15">
-                <Image src={item.image.src} alt={item.image.alt} fill sizes="(min-width: 768px) 30vw, 92vw" className="object-cover" />
-              </div>
-            ) : null}
-            <p className="font-mono text-register text-ink-faint">
-              {item.date ?? <Pending width="3rem" label={ui.common.dateToVerify} />} · {item.place}
-            </p>
-            <h3 lang="hi" className="mt-3 line-clamp-3 text-pretty font-display text-[1.3rem] leading-[1.4] text-ink">
-              {item.title}
-            </h3>
-            <p className="mt-2.5 line-clamp-3 text-[1rem] leading-relaxed text-ink-soft">{item.body}</p>
-          </li>
-        ))}
-      </ol>
+      <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+        <Heading>{field.heading}</Heading>
+        <InlineLink href={href(field.link.href)}>{field.link.label} →</InlineLink>
+      </div>
+      <Lede>{field.lede}</Lede>
+      {rows.map((row) => (
+        <div key={row.label} className="bleed-margin mt-12">
+          <p className="font-mono text-register uppercase tracking-[0.08em] text-ink">{row.label}</p>
+          <ol className="mt-3 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+            {row.items.map((item, i) => (
+              <li key={`${item.date}-${i}`} className="min-w-0 border-t-2 border-cinnabar/80 pt-4">
+                <MediaClip image={item.image} clip={item.clip} length={item.length} watchLabel={ui.home.watch} sizes="(min-width: 1024px) 16rem, (min-width: 640px) 45vw, 92vw" />
+                <p className="mt-4 font-mono text-register leading-relaxed text-cinnabar">{[item.date, item.place, item.kind].filter(Boolean).join(" · ")}</p>
+                {item.title ? (
+                  <p lang="hi" className="mt-2 text-pretty font-display text-[1.15rem] leading-[1.45] text-ink">
+                    {item.title}
+                  </p>
+                ) : null}
+                <p className="mt-2 text-[1rem] leading-relaxed text-ink-soft">{item.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
     </Leaf>
   );
 }

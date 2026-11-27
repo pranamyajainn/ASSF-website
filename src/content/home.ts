@@ -13,137 +13,133 @@
 import { org, type Pending } from "./shared";
 
 /**
- * The headline is the Foundation's approved one ("Final Homepage Content",
- * §1). Each clause carries an interlinear gloss — the figure that makes the
- * claim specific — the way a commented manuscript glosses its main text.
+ * The first leaf: the Foundation's headline, then six banners, each one part
+ * of the work in a line a visitor reads in a few seconds, over one main
+ * photograph and a small inset (Foundation's page designs, Nov 2026). Every
+ * banner carries its own words, figures, link and photographs, so each is
+ * edited in one place.
  */
 export const hero = {
   label: "The Foundation",
-  lines: [
-    { text: "Preserving Wisdom.", gloss: "1,34,545 folios conserved at Kumbhoj and Karanja Lad" },
-    { text: "Serving People.", gloss: "7,77,534 cooked meals, Bengaluru, 1 April – 3 May 2020" },
-    { text: "Building for the Future.", gloss: "14 rooms of staff quarters at Hosur; a Samudaya Bhavan at Yarnal" },
-  ],
-  body: `Acharya Shanti Sagar Foundation is a charitable foundation established in ${org.founded}, working to preserve India's manuscript heritage, strengthen rural communities and respond to practical human needs.`,
-  registration: `Registered trust, Bengaluru — ${org.registration}`,
-  /** The Foundation's own hero actions ("Final Homepage Content", §1). */
+  lines: [{ text: "Preserving Wisdom." }, { text: "Serving People." }, { text: "Building for the Future." }],
+  body: "Inspired by Pratham Acharya Shri Shanti Sagar Ji Maharaj, Acharya Shanti Sagar Foundation began in Bengaluru in 2019 to serve in the same spirit of compassion. From free health camps in Karnataka's villages, to community halls built at a village's request, to laboratories where fragile palm leaves are made whole again, our work has one aim: to leave every community stronger, and its heritage safer, for the generations to come.",
+  registration: "Registered charitable trust, Bengaluru · NGO DARPAN KA/2021/0292288",
   primary: { label: "Explore our work", href: "#pillars" },
   secondary: { label: "Support the mission", href: "/donate" },
-  /**
-   * Banners, after the Foundation's own hero banners: each says one thing
-   * about the work in a line a visitor can read in a few seconds, over the
-   * Foundation's own photographs of it. The first two headlines are the
-   * Foundation's own banner copy. The last is Empowerment, in place of the
-   * Acharya at the Foundation's request: only the education support and
-   * flood-rebuilding help it has actually given (the planned "Community
-   * Empowerment Scheme" stays out until it launches). Photographs, captions
-   * and figures are drawn from the rest of the site, so each has one source.
-   */
   banners: [
-    {
-      key: "conservation",
-      tab: "Manuscripts",
-      eyebrow: "Manuscript conservation",
-      title: "These pages have",
-      em: "survived centuries.",
-      body: "Will they survive the next one? We're making sure the answer is yes.",
-    },
     {
       key: "community",
       tab: "Community",
-      eyebrow: "Community services",
-      title: "Committed to community,",
-      em: "rooted in action.",
-      body: "From medical camps to flood and pandemic relief, our work speaks through service.",
+      eyebrow: "Serving People",
+      title: "Free care for families",
+      em: "who need it most.",
+      body: "Free health camps with specialist doctors, and books and stationery for schoolchildren in the villages around Yarnal.",
+      fact: "3,500+ people cared for at five free health camps · About 500 students given books and stationery",
+      link: { label: "See community services", href: "/community-services" },
+      images: [
+        { src: "/images/pages/home/education.jpg", alt: "ASSF team handing books and stationery to schoolchildren near Yarnal", caption: "Books for schools near Yarnal" },
+        { src: "/images/pages/home/camp-banner.jpg", alt: "ASSF volunteers and medical students at a free health camp in Belagavi district", caption: "" },
+      ],
     },
     {
       key: "rural",
       tab: "Villages",
-      eyebrow: "Rural infrastructure",
-      title: "Spaces that strengthen",
-      em: "rural communities.",
-      body: "A community hall, housing for teachers, public sanitation — built for what a village needs.",
+      eyebrow: "Building for the Future",
+      title: "Spaces built for",
+      em: "what villages need.",
+      body: "A community hall, a resting space for rural teachers and clean public sanitation, each planned with the people who will use it.",
+      fact: "Samudaya Bhavan, Yarnal · a 14-room resting space for teachers at Hosur",
+      link: { label: "See rural infrastructure", href: "/rural-infrastructure" },
+      images: [
+        { src: "/images/pages/home/hero-infrastructure.jpg", alt: "Samudaya Bhavan, Yarnal", caption: "Samudaya Bhavan, Yarnal" },
+        { src: "/images/pages/home/yarnal-build.jpg", alt: "The Bhavan under construction", caption: "" },
+      ],
+    },
+    {
+      key: "conservation",
+      tab: "Manuscripts",
+      eyebrow: "Preserving Wisdom",
+      title: "Centuries of learning,",
+      em: "safe for centuries more.",
+      body: "We set up a laboratory beside each collection and conserve every folio by hand, so the manuscripts stay with their custodians.",
+      fact: "2,49,896 folios conserved at Kumbhoj, Karanja Lad and Shravanabelagola",
+      link: { label: "How a manuscript is conserved", href: "/manuscript-conservation#process" },
+      images: [
+        { src: "/images/pages/home/hero-conservation.jpg", alt: "Mending a palm leaf, Shravanabelagola", caption: "Mending a palm leaf, Shravanabelagola" },
+        { src: "/images/pages/home/sbg-granthas.jpg", alt: "Granthas laid out for assessment", caption: "" },
+      ],
     },
     {
       key: "empowerment",
       tab: "Empowerment",
       eyebrow: "Empowerment",
-      title: "Empowering families",
-      em: "to learn and rebuild.",
-      body: "When a child can keep learning and a family can rebuild its home, the whole community grows stronger.",
-      // What comes next, in the Foundation's words (Alka, 28 Oct 2026, for Shri Anil Sethi ji).
-      upcoming: "Upcoming: Swavalamban Yojana, to empower underprivileged Jain families.",
-      // Both figures as the Community Services page gives them.
-      fact: "c. 500 students given books and stationery · 262 families helped to rebuild after the 2019 floods",
-      link: { label: "How we support education", href: "/community-services#education" },
+      title: "Helping families",
+      em: "stand strong again.",
+      body: "Relief for families through the 2019 floods and the 2020 lockdown, reaching their doorsteps when they needed it most.",
+      fact: "262 families helped to rebuild after the floods · 2,795 grain kits shared in the lockdown",
+      link: { label: "How we support families", href: "/community-services#relief" },
       images: [
-        {
-          src: "/images/community/education-support-1.jpeg",
-          alt: "Children in a school courtyard receiving workbooks from Foundation volunteers seated at a table.",
-          caption: "Workbooks for schoolchildren near Yarnal.",
-          position: "35% 50%",
-        },
-        {
-          src: "/images/community/education-support-2.jpeg",
-          alt: "Schoolchildren in uniform holding their new books, with teachers and Foundation members, in front of a school banner.",
-          caption: "Books and stationery, handed over at school.",
-          position: "50% 45%",
-        },
+        { src: "/images/pages/home/relief-1.jpg", alt: "An ASSF volunteer handing food to a woman during the 2020 lockdown in Bengaluru", caption: "Lockdown relief, Bengaluru, 2020" },
+        { src: "/images/pages/home/relief-3.jpg", alt: "Relief reaching a family in need during the lockdown", caption: "" },
       ],
     },
     {
-      // The Foundation's own campaign card, after its earlier site's
-      // "One life, one page" banner (Website Changes sheet, rows 8–9). The
-      // price is given once, from shared.ts; no tribute amount.
+      key: "swavalamban",
+      tab: "Swavalamban",
+      eyebrow: "Launching soon · Swavalamban Yojana",
+      title: "Helping families",
+      em: "stand on their own feet.",
+      body: "Our coming scheme for members of the Jain community who need a helping hand: skills and small-business support for women and men, and education loans for deserving students.",
+      fact: "For women · For men · For students",
+      link: { label: "Discover Swavalamban Yojana", href: "/swavalamban-yojana" },
+      images: [
+        { src: "/images/pages/home/swavalamban-art.jpg", alt: "Illustration of one large lamp lighting many small lamps, with the words Swavalamban Yojana", caption: "" },
+        { src: "/images/pages/home/swavalamban-icons.jpg", alt: "Illustrations for skills, livelihood and education", caption: "" },
+      ],
+    },
+    {
+      // The Foundation's own campaign card ("One life, one page"). The price is given once, in shared.ts.
       key: "campaign",
       tab: "One Life, One Page",
       eyebrow: "Jain Tadpatra Restoration Mission",
       title: "One life,",
       em: "one page.",
-      body: "Conserving one folio costs ₹{folioPrice}. Each page you restore keeps a piece of written knowledge for the generations after us.",
+      body: "Conserving one folio costs ₹{folioPrice}. Each page you restore keeps a piece of written knowledge alive for the generations after us.",
       fact: "₹{folioPrice} a page · ₹{granthaPrice} for a whole grantha of about 100 folios",
       link: { label: "Restore a page", href: "/donate?pages=1" },
       images: [
-        {
-          src: "/images/work/mending-palm-leaf.jpg",
-          alt: "A man in a white shirt working on a palm leaf laid on a padded board.",
-          caption: "Working on a palm leaf, Shravanabelagola.",
-          position: "50% 35%",
-        },
-        {
-          src: "/images/work/workshop-table.jpg",
-          alt: "Conservators in white coats and visitors gathered around a table of palm leaves.",
-          caption: "Conservators and visitors at the palm-leaf table.",
-          position: "50% 50%",
-        },
+        { src: "/images/pages/home/folio-after.jpg", alt: "A folio after joining and mending", caption: "A folio after joining and mending" },
+        { src: "/images/pages/home/paper-conserved.jpg", alt: "A conserved manuscript in its wrapper", caption: "" },
       ],
     },
   ],
 } as const;
 
 /**
- * Mission and vision, second on the home page (Website Changes sheet, row
- * 11), in the words of the Foundation's "About Us — Final Website Content"
- * document, §04.
+ * Mission, vision and the five values, second on the home page, in the
+ * Foundation's words (page designs, Nov 2026). The five values are tiles;
+ * the fifth spans the row.
  */
 export const purpose = {
   label: "Mission and vision",
   heading: "What guides us",
   mission: {
     label: "Our mission",
-    body: "To preserve India's manuscript heritage through scientific conservation and digitisation, strengthen rural communities through essential infrastructure, and respond to community needs through compassionate and practical service.",
+    body: "To preserve the wisdom of the past, serve the people of the present, and build for the future.",
   },
   vision: {
     label: "Our vision",
-    body: "To build a future where India's civilizational wisdom and social responsibility coexist as living forces — where knowledge is preserved, communities are empowered, and heritage becomes a foundation for sustainable and inclusive progress.",
+    body: "A future in which India's handwritten heritage is safe, read and alive, and the communities who hold it thrive.",
   },
-  /** A photograph for the section (Alka's suggestion, 26 Oct 2026). */
-  plate: {
-    src: "/images/work/inauguration-bundles.jpg",
-    alt: "Munis and Foundation members around tables of palm-leaf bundles and cloth-wrapped manuscripts on red cloth.",
-    caption: "The first manuscripts laid out for conservation at Shravanabelagola, July 2025.",
-  },
-  link: { label: "Our values", href: "/about#mvv" },
+  valuesLabel: "Our values",
+  values: [
+    { deva: "अहिंसा", name: "Ahimsa", body: "We touch every life, and every fragile leaf, with care that does no harm." },
+    { deva: "सत्य", name: "Satya", body: "Honest work, accurate records and open accounts." },
+    { deva: "अपरिग्रह", name: "Aparigraha", body: "We use only what the work needs, and pass the rest forward." },
+    { deva: "अनेकान्तवाद", name: "Anekantavada", body: "We listen to custodians, scholars and communities before we act." },
+    { deva: "करुणा एवं सेवा", name: "Karuna and Seva", body: "Compassion that becomes action, in a laboratory, a health camp or a village hall." },
+  ],
+  link: { label: "Read our story", href: "/about" },
 } as const;
 
 export const mission = {
@@ -175,12 +171,41 @@ export const mission = {
   link: { label: "How a manuscript is conserved", href: "/manuscript-conservation#process" },
 } as const;
 
-/** Condensed intro to the three pillars — full detail lives on their own pages. */
+/** The three pillars: a line on how they belong together, then one card each (page designs, Nov 2026). */
 export const pillarsIntro = {
   label: "What we do",
   heading: "Three pillars, one purpose",
-  body: "Heritage and humanity are bound together: preserving a manuscript protects knowledge carried across generations; strengthening a village helps people live, learn and grow with dignity.",
+  body: "For us, compassion takes three forms. We keep alive the wisdom our ancestors wrote by hand, we stand beside families when they need it most, and we build the spaces villages ask for. Each one makes the others stronger.",
   principal: "Today, manuscript conservation is the Foundation's principal programme.",
+  cards: [
+    {
+      label: "Manuscript Conservation",
+      title: "Keeping Ancient Wisdom Alive",
+      body: "Palm leaves and handwritten pages carry centuries of thought, art and science. Our conservators clean, mend and record every folio by hand, so this wisdom reaches the generations to come.",
+      fact: "2,49,896 folios conserved at Kumbhoj, Karanja Lad and Shravanabelagola",
+      link: { label: "Explore Manuscript Conservation", href: "/manuscript-conservation" },
+      image: {
+        src: "/images/pages/home/folio-before-after.jpg",
+        alt: "Palm-leaf manuscript PL/244 at Shravanabelagola: broken leaves before treatment, and the same leaves mended onto supporting strips after",
+      },
+    },
+    {
+      label: "Community Services",
+      title: "Standing With Families When It Matters Most",
+      body: "When illness, floods or a pandemic strike, we arrive with doctors, food and care. From free medical camps to meals shared at the doorstep, every family is served with dignity.",
+      fact: "3,500+ people at five free health camps · 7,77,534 meals shared in 2020",
+      link: { label: "Explore Community Services", href: "/community-services" },
+      image: { src: "/images/pages/home/relief-2.jpg", alt: "ASSF volunteers handing a meal packet to a woman at her doorstep during the 2020 lockdown" },
+    },
+    {
+      label: "Rural Infrastructure",
+      title: "Building What Villages Ask For",
+      body: "A hall where a whole village can gather. A place where teachers can rest. Clean, safe sanitation. Spaces built with the community, to serve for generations.",
+      fact: "Samudaya Bhavan at Yarnal · a 14-room resting space for teachers at Hosur",
+      link: { label: "Explore Rural Infrastructure", href: "/rural-infrastructure" },
+      image: { src: "/images/pages/home/sanitation-1.jpg", alt: "The public sanitation block at Yarnal, built with the Zilla Panchayat" },
+    },
+  ],
 } as const;
 
 export const ledger = {
@@ -548,29 +573,32 @@ export const upClose = {
 export const liveSites = {
   label: "Live sites",
   heading: "Where the work is live now",
-  lede: "Two conservation sites are running today: one at Shravanabelagola in Karnataka and one at Karanja Lad in Maharashtra. At each, the lab is set up beside the collection, so the manuscripts never leave their custodians.",
+  lede: "Right now, in two laboratories, centuries of learning are being carefully handed forward. Each lab sits beside its collection, so the manuscripts heal in the care of the very people who have guarded them for generations.",
   status: "Live",
   sites: [
     {
       name: "Shravanabelagola",
       region: "Hassan district, Karnataka",
       institution: "Bahubali Prakrit Bhawan",
-      since: "Since 11 July 2025",
-      body: "A collection of 2,695 palm-leaf granthas, 3,65,520 folios — one of the Foundation's largest continuing programmes. 309 granthas and 31,987 folios conserved so far.",
+      since: "since 11 July 2025",
+      body: "2,695 palm-leaf granthas holding 3,65,520 folios: one of the largest collections we have ever cared for. Every month, around 3,300 more folios are cleaned, mended and safely housed.",
+      // The bar under the text: how far along, as two counts.
+      progress: { done: 378, total: 2695, label: "378 granthas · 38,590 folios conserved, as of 30 September 2026" },
       photos: [
-        { src: "/images/work/bundles-red-cloth.jpg", ratio: "1600 / 1066", alt: "Palm-leaf bundles and cloth-wrapped manuscripts laid out in rows on red cloth.", caption: "Palm-leaf bundles laid out at the start of the programme, July 2025." },
-        { src: "/images/work/munis-reading.jpg", ratio: "1429 / 1800", alt: "Three munis bending over an open paper manuscript in a tray.", caption: "Munis reading a paper manuscript at the inauguration." },
+        { src: "/images/pages/home/lab-shravanabelagola.jpg", ratio: "4 / 3", alt: "The conservation laboratory at Bahubali Prakrit Bhawan", caption: "The laboratory at Bahubali Prakrit Bhawan." },
+        { src: "/images/pages/home/swamiji-lab.jpg", ratio: "4 / 3", alt: "Revered visitors arriving at the Shravanabelagola laboratory", caption: "Revered visitors at the lab." },
       ],
     },
     {
       name: "Karanja Lad",
       region: "Washim district, Maharashtra",
-      institution: "Shri Mulsang Balatkar Gan Mandir",
-      since: "",
-      body: "Conservation of the temple's collection, carried out in the lab the Foundation built at Karanja Lad after completing the Gurukul's 28,268 folios.",
+      institution: "Shri Mahaveer Gurukul Ashram laboratory",
+      since: "since October 2024",
+      body: "Karanja Lad holds four historic manuscript repositories. Our laboratory has made two of them whole: the Gurukul Ashram, and the Balatkar Gan Mandir with its 940 manuscripts and 76,761 folios, where only its 30 large illustrated paintings are now receiving their final care. In October 2026, we signed an MoU to conserve the collection of the Sengan Temple.",
+      progress: { done: 2, total: 4, label: "2 of 4 repositories completed · Sengan Temple next" },
       photos: [
-        { src: "/images/work/lab-rolls.jpg", ratio: "1351 / 1800", alt: "Rolls of paper laid on a blue cloth in a bright conservation room.", caption: "The conservation room at Karanja Lad." },
-        { src: "/images/work/karanja-exhibition.jpg", ratio: "1600 / 1201", alt: "A building entrance under a maroon Foundation banner announcing an exhibition of palm-leaf and paper Jinvani.", caption: "The Foundation's exhibition of palm-leaf and paper Jinvani, Karanja Lad." },
+        { src: "/images/pages/home/munis-lab.jpg", ratio: "4 / 3", alt: "Revered Munis observing treatment at the Karanja Lad laboratory", caption: "Revered Munis at the Karanja Lad lab." },
+        { src: "/images/pages/home/paper-cleaning.jpg", ratio: "4 / 3", alt: "A conservator cleaning a paper folio", caption: "Cleaning a paper folio by hand." },
       ],
     },
   ],
@@ -621,33 +649,33 @@ export const board = {
   link: { label: "Meet all our trustees and advisors", href: "/trustees" },
 } as const;
 
+/**
+ * News and events: the latest, newest first ("Add a news update" adds here),
+ * then a row from the Foundation's journey (page designs, Nov 2026). A card
+ * shows its photograph, or a short video when `clip` holds a YouTube link
+ * (or one of the site's own recordings in /videos) — the photograph is then
+ * its cover. `title` is an optional headline, as the Foundation's own news
+ * posts give it (often in Hindi).
+ */
 export const field = {
-  label: "From the field",
-  heading: "From the field",
-  lede: "The work continues beyond completed projects. Conservation teams are in the field now, at Shravanabelagola and Karanja Lad.",
+  label: "News and events",
+  heading: "News and Events",
+  lede: "Every season brings a new chapter. Here is the latest from our laboratories, our partners and our community.",
+  link: { label: "See all news and events", href: "/gallery/photos" },
+  latestLabel: "Latest",
+  journeyLabel: "From our journey",
   items: [
-    {
-      date: "11 July 2025",
-      place: "Shravanabelagola",
-      title: "श्रवणबेलगोला में अति प्राचीन ताड़ पत्र व हस्त लिखित शास्त्रों के संरक्षण एवं संवर्धन का कार्य प्रारंभ।",
-      body: "Conservation begins at Bahubali Prakrit Bhawan, Shravanabelagola — 2,695 granthas and 3,65,520 folios, one of the Foundation's largest continuing programmes.",
-      image: { src: "/images/sites/shravanabelagola.jpeg", alt: "Palm-leaf and paper manuscripts laid out on red cloth at Shravanabelagola, with monks and Foundation members looking on." },
-    },
-    {
-      date: "15 November 2024",
-      place: "Parsola, Rajasthan",
-      title: "अदृश्य भक्ति के दर्शन: शांति सागर महोत्सव का आलोक",
-      body: "The Mahotsav procession at Parsola, 13 October 2024.",
-      image: { src: "/images/field/parsola-procession.jpeg", alt: "Men in white dhotis with flags and a banner bearing the Acharya's portrait, before a temple at Parsola." },
-    },
-    {
-      date: "13 November 2024",
-      place: "India Post",
-      title: "आचार्य श्री शांति सागर जी पर विशेष ₹5 डाक टिकट का शुभ विमोचन",
-      body: "Release of the ₹5 commemorative stamp and first-day cover for Acharya Shri Shanti Sagar Ji.",
-      image: { src: "/images/stamp-first-day-cover.jpeg", alt: "India Post first-day cover bearing the ₹5 commemorative stamp for Acharya Shanti Sagar Ji Maharaj." },
-    },
-  ] as { date: Pending<string>; place: string; title: string; body: string; image?: { src: string; alt: string } }[],
+    { date: "24 October 2026", place: "Karanja Lad", kind: "Event", title: "", body: "An MoU with the Sengan Temple opens the third of Karanja Lad's four historic collections to conservation, after the Gurukul Ashram and the Balatkar Gan Mandir.", image: { src: "/images/pages/home/team-karanja.jpg", alt: "The ASSF conservation team at Karanja Lad" }, clip: "", length: "1 min" },
+    { date: "October 2026", place: "Bengaluru", kind: "", title: "", body: "Our plans to complete the Shravanabelagola collection, and to begin at Moodbidri and Karkala, are placed before the Government of Karnataka.", image: { src: "/images/pages/home/sbg-lab-visit.jpg", alt: "Guests examining a conserved scroll at Shravanabelagola" }, clip: "", length: "" },
+    { date: "2 June 2026", place: "Shravanabelagola", kind: "", title: "", body: "An MOU with the Shravanabelagola Matha trust strengthens our shared care for 2,695 palm-leaf granthas.", image: { src: "/images/pages/home/palm-cleaning.jpg", alt: "A palm-leaf folio being cleaned at the laboratory" }, clip: "", length: "" },
+    { date: "13 November 2024", place: "India Post", kind: "", title: "आचार्य श्री शांति सागर जी पर विशेष ₹5 डाक टिकट का शुभ विमोचन", body: "A commemorative stamp and first-day cover honour Acharya Shri Shanti Sagar Ji.", image: { src: "/images/pages/home/india-post-stamp.jpg", alt: "₹5 India Post commemorative stamp for Acharya Shri Shanti Sagar Ji" }, clip: "", length: "" },
+  ],
+  journey: [
+    { date: "2019", place: "Belagavi, Mandya, Raichur, Bengaluru", kind: "", title: "", body: "Free health camps with specialist doctors cared for more than 3,500 people, with cataract surgeries, spectacles and medicines given free.", image: { src: "/images/pages/home/camp-banner.jpg", alt: "Volunteers and medical students at a free health camp in Belagavi district" }, clip: "", length: "" },
+    { date: "April to May 2020", place: "Bengaluru", kind: "", title: "", body: "Alongside 15 fellow organisations, we shared 7,77,534 meal packets and 2,795 grain kits with families across the city.", image: { src: "/images/pages/home/relief-1.jpg", alt: "A volunteer handing a food packet to a woman during the lockdown" }, clip: "", length: "" },
+    { date: "Yarnal", place: "Belagavi district", kind: "", title: "", body: "The Samudaya Bhavan, a community hall and dharamshala built at the request of the village, on land given by its own families.", image: { src: "/images/pages/home/hero-infrastructure.jpg", alt: "Samudaya Bhavan, Yarnal" }, clip: "", length: "" },
+    { date: "Hosur", place: "Belagavi district", kind: "", title: "", body: "An old building turned into a 14-room resting space for the teachers of a rural school and training centre.", image: { src: "/images/pages/home/hosur-1.jpg", alt: "The teachers' resting space at Hosur" }, clip: "", length: "" },
+  ],
 } as const;
 
 export const survey = {

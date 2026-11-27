@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type To
 
 export type BannerImage = { src: string; alt: string; caption?: string; position?: string };
 export type Banner = {
-  key: "conservation" | "community" | "rural" | "empowerment" | "campaign";
+  key: string;
   tab: string;
   eyebrow: string;
   title: string;
@@ -13,8 +13,6 @@ export type Banner = {
   titleLang?: string;
   body: string;
   translation?: string;
-  /** A line on work that is coming, set apart from what has been done. */
-  upcoming?: string;
   fact: string;
   link: { label: string; href: string };
   images: readonly BannerImage[];
@@ -167,7 +165,8 @@ export function HeroBanners({ banners, strings }: { banners: readonly Banner[]; 
             <path d="M6 3.5 10.5 8 6 12.5" />
           </ReelButton>
         </div>
-        <div className={`grid flex-1 gap-2 sm:gap-3 ${total === 5 ? "grid-cols-5" : "grid-cols-4"}`}>
+        <div className="grid flex-1 gap-2 sm:gap-3"
+          style={{ gridTemplateColumns: `repeat(${total}, minmax(0, 1fr))` }}>
           {banners.map((banner, i) => (
             <button
               key={banner.key}
@@ -202,7 +201,7 @@ export function HeroBanners({ banners, strings }: { banners: readonly Banner[]; 
             </button>
           ))}
         </div>
-        {/* On a phone the five labels don't fit under their bars: name the one showing. */}
+        {/* On a phone the labels don't fit under their bars: name the one showing. */}
         <p aria-hidden="true" className="w-full font-mono text-register text-ink sm:hidden">
           {current.tab}
         </p>
@@ -237,14 +236,9 @@ function BannerLeaf({ banner, eager }: { banner: Banner; eager: boolean }) {
 
         <p className="mt-3 max-w-[38ch] text-[1.0625rem] leading-relaxed text-ink-soft lg:text-lg">{banner.body}</p>
 
-        {banner.upcoming ? (
-          <p className="mt-3 max-w-[40ch] border-l-2 border-orpiment pl-3 text-[1rem] leading-snug text-ink">{banner.upcoming}</p>
+        {banner.fact ? (
+          <p className="mt-4 max-w-[44ch] border-l-[3px] border-orpiment py-0.5 pl-3 font-mono text-register leading-relaxed text-ink">{banner.fact}</p>
         ) : null}
-
-        <p className="mt-4 flex max-w-[44ch] items-baseline gap-3 font-mono text-register text-cinnabar">
-          <span aria-hidden="true" className="h-px w-5 shrink-0 -translate-y-[0.3em] bg-cinnabar/60" />
-          {banner.fact}
-        </p>
 
         <a
           href={banner.link.href}
@@ -259,83 +253,38 @@ function BannerLeaf({ banner, eager }: { banner: Banner; eager: boolean }) {
   );
 }
 
-const tile = "relative min-h-0 overflow-hidden bg-leaf";
-
-/** The photographs, mounted on the leaf, composed for what each shows. */
+/**
+ * The photographs: one main photograph with its caption tag, and a small
+ * inset over its lower corner, framed in the page's paper (Foundation's page
+ * designs, Nov 2026). Every banner shows the same frame.
+ */
 function Collage({ banner, eager }: { banner: Banner; eager: boolean }) {
-  const [a, b, c, d] = banner.images;
-  const img = (image: BannerImage | undefined, sizes: string, extra?: React.CSSProperties) =>
-    image ? (
-      <Image
-        src={image.src}
-        alt={image.alt}
-        fill
-        loading={eager ? "eager" : "lazy"}
-        sizes={sizes}
-        className="object-cover"
-        style={{ objectPosition: image.position ?? "center", ...extra }}
-      />
-    ) : null;
-
-  const frame = "order-first grid h-52 gap-1.5 p-1.5 sm:h-72 lg:order-none lg:h-auto lg:gap-2 lg:p-2";
-
-  if (banner.key === "conservation") {
-    return (
-      <div className={`${frame} grid-cols-[3fr_2fr] grid-rows-2`}>
-        <div className={`${tile} row-span-2`}>{img(a, "(min-width: 1024px) 22rem, 60vw")}</div>
-        <div className={tile}>{img(b, "(min-width: 1024px) 14rem, 40vw")}</div>
-        <div className={tile}>{img(c, "(min-width: 1024px) 14rem, 40vw")}</div>
-      </div>
-    );
-  }
-
-  if (banner.key === "community") {
-    return (
-      <div className={`${frame} grid-cols-2 grid-rows-2`}>
-        {[a, b, c, d].map((image, i) => (
-          <div key={image?.src ?? i} className={tile}>
-            {img(image, "(min-width: 1024px) 18rem, 50vw")}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (banner.key === "rural") {
-    // Before, during, after: the same ground at Yarnal three times.
-    return (
-      <div className={`${frame} grid-cols-3`}>
-        {[a, b, c].map((image, i) => (
-          <div key={image?.src ?? i} className={tile}>
-            {img(image, "(min-width: 1024px) 13rem, 33vw")}
-            {image?.caption ? (
-              <span className="absolute inset-x-1.5 bottom-1.5 bg-leaf/92 px-2 py-1 font-mono text-[0.72rem] leading-snug text-ink lg:inset-x-2 lg:bottom-2 lg:text-register">
-                {image.caption}
-              </span>
+  const [main, inset] = banner.images;
+  return (
+    <div className="order-first px-4 pb-7 pt-4 sm:px-6 lg:order-none lg:py-8 lg:pl-2 lg:pr-9">
+      <div className="relative">
+        {main ? (
+          <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-leaf-deep shadow-[0_18px_34px_-24px_rgb(0_0_0/0.65)]">
+            <Image
+              src={main.src}
+              alt={main.alt}
+              fill
+              loading={eager ? "eager" : "lazy"}
+              sizes="(min-width: 1024px) 32rem, 92vw"
+              className="object-cover"
+              style={{ objectPosition: main.position ?? "center" }}
+            />
+            {main.caption ? (
+              <span className="absolute left-3 top-3 bg-leaf/92 px-2 py-1 font-mono text-[0.75rem] leading-snug text-ink-soft">{main.caption}</span>
             ) : null}
           </div>
-        ))}
+        ) : null}
+        {inset?.src ? (
+          <div className="absolute -bottom-4 -right-2 aspect-square w-[38%] overflow-hidden rounded-[4px] border-[6px] border-leaf bg-leaf-deep shadow-[0_10px_24px_-14px_rgb(0_0_0/0.65)] sm:-right-3">
+            <Image src={inset.src} alt={inset.alt} fill loading={eager ? "eager" : "lazy"} sizes="(min-width: 1024px) 12rem, 36vw" className="object-cover" />
+          </div>
+        ) : null}
       </div>
-    );
-  }
-
-  // Empowerment: the children and their books, together and then close —
-  // both photographs are wide, so they are stacked, not cropped to strips.
-  // The campaign card uses the same frame: the conservation table, then a
-  // conservator at work on one palm leaf.
-  return (
-    <div className={`${frame} grid-cols-2 lg:grid-cols-1 lg:grid-rows-[3fr_2fr]`}>
-      {[b, a].map((image, i) => (
-        <div key={image?.src ?? i} className={tile}>
-          {img(image, "(min-width: 1024px) 26rem, 50vw")}
-          {/* Side by side on a phone, the captions would cover the children. */}
-          {image?.caption ? (
-            <span className="absolute inset-x-1.5 bottom-1.5 hidden bg-leaf/92 sm:block px-2 py-1 font-mono text-[0.72rem] leading-snug text-ink lg:inset-x-2 lg:bottom-2 lg:text-register">
-              {image.caption}
-            </span>
-          ) : null}
-        </div>
-      ))}
     </div>
   );
 }

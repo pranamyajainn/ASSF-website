@@ -79,6 +79,7 @@ export const ui = {
       show: "Show {name}",
       position: "{n} of {total}",
     },
+    watch: "Watch",
     spreadLabel: "Rural · Community",
     standingHeading: "Standing",
     standingStates: { recognised: "recognised", verify: "to verify", pending: "pending" },
