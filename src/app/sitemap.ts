@@ -15,6 +15,7 @@ const PAGES = [
   "/gallery/videos",
   "/careers",
   "/reports",
+  "/swavalamban-yojana",
   "/donate",
 ];
 

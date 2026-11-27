@@ -187,6 +187,9 @@ export const ui = {
     videos: "Video Gallery",
     careers: "Careers",
     reports: "Reports",
+    swavalamban: "Swavalamban Yojana",
+    guidingLights: "Our Guiding Lights",
+    gallery: "Gallery",
   },
   careers: {
     location: "Location",

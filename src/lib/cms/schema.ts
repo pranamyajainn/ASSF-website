@@ -283,6 +283,7 @@ export const PAGES = [
   { module: "about", title: "About", href: "/about" },
   { module: "conservation", title: "Manuscript Conservation", href: "/manuscript-conservation" },
   { module: "rural", title: "Rural Infrastructure", href: "/rural-infrastructure" },
+  { module: "swavalamban", title: "Swavalamban Yojana", href: "/swavalamban-yojana" },
   { module: "community", title: "Community Services", href: "/community-services" },
   { module: "impact", title: "Impact", href: "/impact" },
   { module: "trustees", title: "Trustees", href: "/trustees" },

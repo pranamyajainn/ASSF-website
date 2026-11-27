@@ -3,7 +3,7 @@ import { locales, type Lang } from "@/i18n/config";
 import { counterpart, getAt, pathKey, type Json, type Op } from "./edits";
 import { ENUM_KEYS, HIDDEN_KEYS, isHidden, isImagePath, isOpenList, ITEM_TEMPLATES, schemaPath } from "./schema";
 
-const MODULES = new Set(["shared", "home", "about", "conservation", "rural", "community", "impact", "trustees", "photos", "videos", "reports", "careers", "donate", "ui"]);
+const MODULES = new Set(["shared", "home", "about", "conservation", "rural", "community", "impact", "trustees", "photos", "videos", "reports", "careers", "donate", "swavalamban", "ui"]);
 const MAX_OPS = 3000;
 const MAX_TEXT = 8000;
 const MAX_LIST = 200;
