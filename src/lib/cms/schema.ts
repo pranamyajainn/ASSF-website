@@ -323,7 +323,7 @@ export const SECTION_ORDER: Partial<Record<ModuleName, string[]>> = {
   photos: ["pageHero", "gallery"],
   videos: ["pageHero", "gallery"],
   donate: ["pageHero", "gift", "goes", "ways"],
-  about: ["pageHero", "guides", "who", "pillars", "journey", "ahead", "scale"],
+  about: ["pageHero", "guides", "who", "pillars", "journey", "ahead"],
   trustees: ["pageHero", "board", "trustees", "advisory", "advisors", "team"],
 };
 

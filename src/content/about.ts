@@ -127,25 +127,3 @@ export const ahead = {
     { label: "Write to us", href: "#contact" },
   ],
 } as const;
-
-/** The survey, state by state: shown on Impact ("Where it began"). */
-export const scale = {
-  label: "The scale ahead",
-  heading: "What remains is far greater than what is conserved",
-  body: "To understand the scale of the need, the Foundation surveyed repositories across Karnataka, Maharashtra and Tamil Nadu — visiting collections in person, photographing representative material, and recording storage conditions with custodians.",
-  table: {
-    columns: ["Karnataka", "Maharashtra", "Tamil Nadu", "All States"],
-    rows: [
-      { label: "Repositories surveyed", values: ["3", "6", "9", "18"] },
-      { label: "Manuscripts documented", values: ["7,118", "4,591", "972", "12,681"] },
-      { label: "Folios documented", values: ["10,75,520", "4,59,708", "1,79,700", "17,14,928"] },
-    ],
-  },
-  /** Folios per state, for the to-scale lines beneath the table. */
-  folios: [
-    { state: "Karnataka", value: 1075520, display: "10,75,520" },
-    { state: "Maharashtra", value: 459708, display: "4,59,708" },
-    { state: "Tamil Nadu", value: 179700, display: "1,79,700" },
-  ],
-  note: "These collections are held by temples, maths and traditional institutions that have safeguarded them for generations. A further 49 copper-plate records (Moodbidri), 28 archival books (Karanja Lad) and 125 printed books (Nandani) were recorded separately, as they are not manuscripts.",
-} as const;
