@@ -593,7 +593,7 @@ export const field = {
   label: "News and events",
   heading: "News and Events",
   lede: "Every season brings a new chapter. Here is the latest from our laboratories, our partners and our community.",
-  link: { label: "See all news and events", href: "/gallery/photos" },
+  link: { label: "See all news and events", href: "/gallery" },
   latestLabel: "Latest",
   journeyLabel: "From our journey",
   items: [

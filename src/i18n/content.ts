@@ -13,7 +13,6 @@ import * as reports from "@/content/reports";
 import * as donate from "@/content/donate";
 import * as swavalamban from "@/content/swavalamban";
 import * as photos from "@/content/photo-gallery";
-import * as videos from "@/content/video-gallery";
 import editsFile from "@/content/edits.json";
 import { applyOps, clone, fillBlanks, fillTokens, type Edits } from "@/lib/cms/edits";
 import { tagTree } from "@/lib/cms/stega";
@@ -40,7 +39,6 @@ const source = {
   impact: { ...impact },
   trustees: { ...trustees },
   photos: { ...photos },
-  videos: { ...videos },
   careers: { ...careers },
   reports: { ...reports },
   donate: { ...donate },

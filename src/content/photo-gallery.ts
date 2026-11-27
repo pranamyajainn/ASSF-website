@@ -1,55 +1,237 @@
 /**
- * The photo gallery: the Foundation's own photographs of its work. It opens
- * with every photograph of the work already on the site — each with the
- * description and caption it has on its own page — and the Foundation adds,
- * removes and reorders photographs in the site editor (Photo Gallery).
- * Portraits (the Acharya, trustees) stay on their own pages.
+ * The Gallery: photos and films in folders, after the Foundation's page
+ * designs (Nov 2026). It opens with the latest event as a slideshow and a
+ * short film beside it; then four folders, each holding sub-folders of
+ * photos and films. Every photo opens full size, and the arrows step
+ * through its sub-folder.
+ *
+ * A film's `url` is one of the site's own clips in /videos (with its
+ * `poster` and length) or a YouTube link the Foundation pastes in the site
+ * editor — a film is too large to upload through the editor. A link that
+ * is neither is left off rather than shown broken.
  */
+const P = "/images/pages/gallery/";
+
+export type Film = { title: string; caption: string; url: string; poster: string; duration: string; captions: string };
+type Photo = { src: string; alt: string };
+export type Folder = { name: string; sub: string; note: string; photos: Photo[]; videos: Film[] };
+
+/** §1, the latest event: its photos as a slideshow, "See all photos" opens the first folder. */
 export const pageHero = {
-  eyebrow: "Photo Gallery",
-  title: "The work in photographs",
-  body: "The Foundation's own photographs of its work: manuscripts in conservation, buildings raised in villages, health camps, help for schools, and relief.",
-} as const;
+  question: "Gallery",
+  label: "Photos and films",
+  tag: "Latest",
+  date: "October 2025 · Shravanabelagola",
+  title: "Folio by Folio, in Our Laboratory",
+  body: "Our conservators at work on palm-leaf granthas at Bahubali Prakrit Bhawan.",
+  button: "See all photos",
+  slides: [
+    { src: `${P}lab-at-work.jpg`, alt: "Conservators at work in our Shravanabelagola laboratory" },
+    { src: `${P}sbg-granthas.jpg`, alt: "Palm-leaf granthas laid out at the start of the programme" },
+    { src: `${P}hero-conservation.jpg`, alt: "Mending a palm leaf with Japanese tissue" },
+    { src: `${P}palm-swab.jpg`, alt: "Cleaning a palm leaf, one line at a time" },
+  ],
+  filmLabel: "Film",
+  film: { title: "The lab at work", caption: "Conservators at their tables, each working on a manuscript.", url: "/videos/gallery/the-lab-at-work.mp4", poster: "/videos/gallery/the-lab-at-work.jpg", duration: "0:41", captions: "" },
+};
 
-export type Photo = { src: string; ratio: string; alt: string; caption: string };
-
+/** §2, the folders. */
 export const gallery = {
-  label: "Photographs",
-  items: [
-    { src: "/images/work/inauguration-bundles.jpg", ratio: "1600 / 1067", alt: "Munis and Foundation members around tables of palm-leaf bundles and cloth-wrapped manuscripts on red cloth.", caption: "The first manuscripts laid out for conservation at Shravanabelagola, July 2025." },
-    { src: "/images/work/bundles-red-cloth.jpg", ratio: "1600 / 1066", alt: "Palm-leaf bundles and cloth-wrapped manuscripts laid out in rows on red cloth.", caption: "Palm-leaf bundles and wrapped manuscripts laid out at the start of the Shravanabelagola programme, July 2025." },
-    { src: "/images/work/mending-palm-leaf.jpg", ratio: "1333 / 1800", alt: "A man in a white shirt working on a palm leaf laid on a padded board.", caption: "Working on a palm leaf, Shravanabelagola workshop." },
-    { src: "/images/work/munis-reading.jpg", ratio: "1429 / 1800", alt: "Three munis bending over an open paper manuscript in a tray.", caption: "Munis reading a paper manuscript at the Shravanabelagola inauguration." },
-    { src: "/images/work/workshop-table.jpg", ratio: "1600 / 1067", alt: "Conservators in white coats and visitors gathered around a table of palm leaves.", caption: "Conservators and visitors at the palm-leaf table, Shravanabelagola workshop." },
-    { src: "/images/sites/shravanabelagola.jpeg", ratio: "768 / 512", alt: "Palm-leaf and paper manuscripts laid out on red cloth at Shravanabelagola, with monks and Foundation members looking on.", caption: "Shravanabelagola, where conservation began on 11 July 2025." },
-    { src: "/images/work/karanja-exhibition.jpg", ratio: "1600 / 1201", alt: "A building entrance under a maroon Foundation banner announcing an exhibition of palm-leaf and paper Jinvani.", caption: "The Foundation's exhibition of palm-leaf and paper Jinvani, Karanja Lad." },
-    { src: "/images/work/karanja-visitors.jpg", ratio: "1200 / 1520", alt: "Three men examining handwritten folios spread on a table beside a camera.", caption: "Visitors examining folios at Karanja Lad." },
-    { src: "/images/work/lab-rolls.jpg", ratio: "1351 / 1800", alt: "Rolls of paper laid on a blue cloth in a bright conservation room.", caption: "The conservation room at the Karanja Lad exhibition." },
-    { src: "/images/work/kumbhoj-munis.jpg", ratio: "1600 / 1201", alt: "A large group of munis gathered close around a conservation table.", caption: "Munis visiting the conservation work at Kumbhoj." },
-    { src: "/images/conservation/palm-leaf-before.jpeg", ratio: "2000 / 1501", alt: "A damaged handwritten manuscript with a loss torn through its lower lines, photographed beside a slip marked BEFORE and an accession label reading KBJ/PM/047.", caption: "Before treatment. Every manuscript is recorded before it is touched — this one as KBJ/PM/047." },
-    { src: "/images/conservation/manuscript-detail.png", ratio: "892 / 576", alt: "An opened volume of handwritten Devanagari paper folios, with ruled margins and red highlighting.", caption: "Handwritten paper folios, ruled and numbered in the margin." },
-    { src: "/images/survey-in-progress.jpeg", ratio: "2560 / 1922", alt: "A handwritten Devanagari folio on blotting paper, beside a pH indicator strip held in tweezers.", caption: "A folio's acidity tested before treatment." },
-    { src: "/images/illuminated/cosmology.jpg", ratio: "1237 / 1800", alt: "A painted diagram on cloth shaped like an hourglass, divided into tiers filled with small figures.", caption: "The Jain cosmos (loka), drawn as an hourglass of tiered worlds." },
-    { src: "/images/illuminated/procession-folio.jpg", ratio: "1408 / 725", alt: "A paper folio with lines of Devanagari text above a yellow painted band of elephants, riders and animals.", caption: "A folio with a procession painted beneath its text." },
-    { src: "/images/illuminated/painted-leaf.jpg", ratio: "1536 / 971", alt: "An orange painted leaf showing an elephant, a white bull, a lion, a crescent moon, fish and vessels.", caption: "Elephant, bull, lion, moon and vessel — emblems of the auspicious dreams in Jain tradition." },
-    { src: "/images/illuminated/painted-panel.jpg", ratio: "1223 / 1800", alt: "A painted panel of a crowned, many-armed figure seated above an elephant, on an orange ground.", caption: "A crowned, many-armed figure above an elephant." },
-    { src: "/images/illuminated/assembly-folio.jpg", ratio: "1456 / 747", alt: "A paper folio with text above a turquoise painted band of standing figures beside a tree.", caption: "A folio with an assembly of figures painted beneath its text." },
-    { src: "/images/illuminated/damage-detail.jpg", ratio: "1200 / 1800", alt: "Close view of painted cloth, the paint cracked and lifting along a fold.", caption: "Paint cracking along a fold — the damage conservation stabilises." },
-    { src: "/images/rural/samudaya-bhavan-1-site.jpeg", ratio: "670 / 502", alt: "Bare, levelled ground beside a village road at Yarnal.", caption: "Yarnal: the site before development." },
-    { src: "/images/rural/samudaya-bhavan-2-construction.jpeg", ratio: "635 / 476", alt: "Brick walls and red shuttering of the hall under construction, a worker on the wall.", caption: "Samudaya Bhavan, Yarnal — under construction" },
-    { src: "/images/rural/samudaya-bhavan-3-completed.jpeg", ratio: "504 / 378", alt: "The completed Samudaya Bhavan at Yarnal: long, whitewashed wings with blue railings around a paved courtyard.", caption: "The completed Samudaya Bhavan." },
-    { src: "/images/rural/samudaya-bhavan-wide.jpg", ratio: "1600 / 1067", alt: "The completed Samudaya Bhavan at Yarnal: long whitewashed wings with blue railings around a paved courtyard.", caption: "The completed Samudaya Bhavan, Yarnal." },
-    { src: "/images/rural/community-hall-complete.jpeg", ratio: "611 / 458", alt: "A long concrete building, its walls still unpainted, during the works.", caption: "Community hall renovation, Yarnal — during the works" },
-    { src: "/images/rural/staff-quarters-1.jpeg", ratio: "502 / 377", alt: "A long, whitewashed single-storey building behind a fence.", caption: "Staff quarters, Hosur" },
-    { src: "/images/rural/sanitation-block-2.jpeg", ratio: "620 / 440", alt: "A whitewashed toilet block with signboards on its wall.", caption: "Public toilet block, Yarnal" },
-    { src: "/images/community/students-rural-health-centre.jpg", ratio: "1685 / 934", alt: "A long line of students and health workers, most in white coats, standing on open ground outside a rural health centre.", caption: "Students at a rural health centre." },
-    { src: "/images/community/health-screening.jpeg", ratio: "611 / 370", alt: "A nurse recording an ECG for a man lying on a camp bed.", caption: "Diagnostic screening at a camp." },
-    { src: "/images/community/health-consultation.jpeg", ratio: "571 / 319", alt: "A doctor consulting patients at a table beneath Kannada camp banners.", caption: "Specialist consultation, free of charge." },
-    { src: "/images/community/education-support-1.jpeg", ratio: "549 / 426", alt: "Children in a school courtyard receiving workbooks from Foundation volunteers seated at a table.", caption: "Workbooks for schoolchildren near Yarnal." },
-    { src: "/images/community/education-support-2.jpeg", ratio: "1152 / 648", alt: "Schoolchildren in uniform holding their new books, with teachers and Foundation members, in front of a school banner.", caption: "Books and stationery, handed over at school." },
-    { src: "/images/community/relief-distribution-3.jpeg", ratio: "1032 / 502", alt: "Masked volunteers handing a food packet to a woman at her doorway.", caption: "The COVID-19 response, Bengaluru, 2020." },
-    { src: "/images/community/health-camp-outreach.jpg", ratio: "1480 / 1063", alt: "Health workers seated at tables checking blood pressure and taking down details for women and children at a community health camp.", caption: "Community health camp outreach." },
-    { src: "/images/conservation/palm-leaf-krj-pl-02.jpg", ratio: "2000 / 1124", alt: "A gloved hand holding a single inscribed palm leaf beside a label reading KRJ/PL/02.", caption: "A single palm leaf, labelled KRJ/PL/02." },
-    { src: "/images/conservation/palm-leaf-bundles-shelf.jpg", ratio: "2000 / 1500", alt: "Palm-leaf manuscript bundles tied with cord on a metal shelf, some wrapped in patterned red cloth.", caption: "Palm-leaf bundles on the shelf, April 2024." },
-  ] as Photo[],
+  question: "Photos",
+  label: "and videos",
+  heading: "Photos and Videos",
+  folders: [
+  {
+    name: "Latest Events",
+    line: "What is happening now, as it happens.",
+    subs: [
+      {
+        name: "Our Shravanabelagola Laboratory at Work",
+        sub: "October 2025 · Shravanabelagola",
+        note: "Conservators at work on palm-leaf granthas at Bahubali Prakrit Bhawan.",
+        photos: [
+          { src: `${P}lab-at-work.jpg`, alt: "Conservators at work in the laboratory" },
+          { src: `${P}sbg-granthas.jpg`, alt: "Palm-leaf granthas laid out at the start of the programme" },
+          { src: `${P}hero-conservation.jpg`, alt: "Mending a palm leaf with Japanese tissue" },
+          { src: `${P}palm-swab.jpg`, alt: "Cleaning a palm leaf, one line at a time" },
+        ],
+        videos: [],
+      },
+    ],
+  },
+  {
+    name: "Manuscript Conservation",
+    line: "Our laboratories, site by site.",
+    subs: [
+      {
+        name: "Shravanabelagola",
+        sub: "Bahubali Prakrit Bhawan · since July 2025",
+        note: "Our laboratory beside one of the largest palm-leaf collections we care for: 2,695 granthas, conserved folio by folio.",
+        photos: [
+          { src: `${P}sbg-granthas.jpg`, alt: "Palm-leaf granthas laid out at the start of the programme" },
+          { src: `${P}lab-at-work.jpg`, alt: "Conservators at work in the laboratory" },
+          { src: `${P}hero-conservation.jpg`, alt: "Mending a palm leaf with Japanese tissue" },
+          { src: `${P}palm-swab.jpg`, alt: "Cleaning a palm leaf, one line at a time" },
+          { src: `${P}lab-shravanabelagola.jpg`, alt: "The laboratory at Bahubali Prakrit Bhawan" },
+          { src: `${P}palm-cleaning.jpg`, alt: "Surface cleaning of a palm-leaf folio" },
+        ],
+        videos: [],
+      },
+      {
+        name: "Karanja Lad",
+        sub: "Gurukul Ashram, Balatkar Gan Mandir, Sengan Temple · since 2024",
+        note: "Two of the town's four historic repositories conserved, and the Sengan Temple collection next.",
+        photos: [
+          { src: `${P}karanja-ashram.jpg`, alt: "Shri Mahaveer Gurukul Brahmacharya Ashram, Karanja Lad" },
+          { src: `${P}team-karanja.jpg`, alt: "Our conservation team at Karanja Lad" },
+          { src: `${P}treatment-bath.jpg`, alt: "A folio in treatment" },
+          { src: `${P}repair-tear.jpg`, alt: "Mending a tear with fine tissue" },
+          { src: `${P}painted-folio.jpg`, alt: "A painted motif within the collection" },
+          { src: `${P}paper-damaged.jpg`, alt: "A paper manuscript before conservation" },
+        ],
+        videos: [
+          { title: "The lab at work", caption: "Conservators at their tables, each working on a manuscript.", url: "/videos/gallery/the-lab-at-work.mp4", poster: "/videos/gallery/the-lab-at-work.jpg", duration: "0:41", captions: "" },
+          { title: "Arriving at the conservation lab", caption: "Visitors walk into the conservation lab reciting the Namokar Mantra.", url: "/videos/gallery/arriving-at-the-lab.mp4", poster: "/videos/gallery/arriving-at-the-lab.jpg", duration: "2:18", captions: "" },
+          { title: "To a visiting group", caption: "Recorded at Karanja Lad, where the Foundation's conservation work is under way.", url: "/videos/voices/karanja-visit.mp4", poster: "/videos/voices/karanja-visit.jpg", duration: "1:46", captions: "/videos/voices/karanja-visit" },
+          { title: "A talk in the lab", caption: "In Hindi: how a manuscript is checked when it reaches the lab, and treated if insects or fungus have reached it.", url: "/videos/gallery/talk-in-the-lab.mp4", poster: "/videos/gallery/talk-in-the-lab.jpg", duration: "1:28", captions: "" },
+        ],
+      },
+      {
+        name: "Kumbhoj",
+        sub: "Kumbhoj Bahubali, Kolhapur · 2022 to 2024",
+        note: "Our first laboratory: 1,399 manuscripts and archival books, all conserved and digitised.",
+        photos: [
+          { src: `${P}kumbhoj-site.jpg`, alt: "Kumbhoj Bahubali" },
+          { src: `${P}conservator-kumbhoj.jpg`, alt: "A conservator at work at Kumbhoj" },
+          { src: `${P}kumbhoj-folios.jpg`, alt: "Paper folios after conservation" },
+          { src: `${P}paper-cleaning.jpg`, alt: "Cleaning a paper folio" },
+          { src: `${P}paper-conserved.jpg`, alt: "A conserved manuscript in its wrapper" },
+          { src: `${P}boxes-shelf.jpg`, alt: "Conserved manuscripts in archival boxes" },
+        ],
+        videos: [],
+      },
+      {
+        name: "Visits and Blessings",
+        sub: "At our laboratories",
+        note: "Revered Munis, Swamijis and visitors who came to bless the work.",
+        photos: [
+          { src: `${P}sbg-inauguration.jpg`, alt: "The inauguration at Shravanabelagola" },
+          { src: `${P}swamiji-lab.jpg`, alt: "A Swamiji visits the laboratory" },
+          { src: `${P}munis-lab.jpg`, alt: "Revered Munis at our laboratory" },
+          { src: `${P}sbg-lab-visit.jpg`, alt: "Visitors look on as a scroll is unrolled" },
+          { src: `${P}visitors-kumbhoj.jpg`, alt: "Visitors at the conservation table, Kumbhoj" },
+          { src: `${P}founder-lab.jpg`, alt: "Shri Ashok Patni at the Shravanabelagola laboratory" },
+        ],
+        videos: [
+          { title: "A blessing from Muni Shri 108 Subrat Sagar Ji Maharaj", caption: "A blessing, recorded at Karanja", url: "/videos/voices/maharaj-ji.mp4", poster: "/videos/voices/maharaj-ji.jpg", duration: "1:24", captions: "/videos/voices/maharaj-ji" },
+          { title: "A puja beside the manuscripts", caption: "A puja around a manuscript bundle in the conservation lab, followed by a short address in Marathi.", url: "/videos/gallery/puja-in-the-lab.mp4", poster: "/videos/gallery/puja-in-the-lab.jpg", duration: "1:18", captions: "" },
+          { title: "Munis visit the lab", caption: "Jain munis watch as a conservator shows them a bundle of palm-leaf manuscripts.", url: "/videos/gallery/munis-visit-the-lab.mp4", poster: "/videos/gallery/munis-visit-the-lab.jpg", duration: "0:28", captions: "" },
+        ],
+      },
+      {
+        name: "How a Manuscript Is Treated",
+        sub: "In our laboratories, step by step",
+        note: "Short films of the work at the conservation table, from damaged pages to finished leaves.",
+        photos: [],
+        videos: [
+          { title: "Damaged pages, before treatment", caption: "Paper manuscript pages with torn and missing edges, laid out before conservation.", url: "/videos/gallery/damaged-pages-before-treatment.mp4", poster: "/videos/gallery/damaged-pages-before-treatment.jpg", duration: "1:09", captions: "" },
+          { title: "Separating the pages of an archival book", caption: "Conservators lift and clean the pages of a printed book in Devanagari, one leaf at a time.", url: "/videos/gallery/book-pages-separated.mp4", poster: "/videos/gallery/book-pages-separated.jpg", duration: "1:07", captions: "" },
+          { title: "Dry-cleaning a page", caption: "A page of archival book AB-017, cleaned with a soft brush and an air blower.", url: "/videos/gallery/dry-cleaning-a-page.mp4", poster: "/videos/gallery/dry-cleaning-a-page.jpg", duration: "0:27", captions: "" },
+          { title: "Brushing a long folio clean", caption: "A soft brush run along a long paper folio with a painted border.", url: "/videos/gallery/brushing-a-long-folio.mp4", poster: "/videos/gallery/brushing-a-long-folio.jpg", duration: "0:16", captions: "" },
+          { title: "Cleaning a stain with a swab", caption: "A cotton swab worked along the water-stained edge of a paper manuscript page.", url: "/videos/gallery/swab-cleaning-a-page.mp4", poster: "/videos/gallery/swab-cleaning-a-page.jpg", duration: "1:08", captions: "" },
+          { title: "Solvent cleaning and cellotape removal", caption: "Old cellotape lifted from palm leaf PL/598 with solvent, cotton swabs, tweezers and a scalpel.", url: "/videos/gallery/cellotape-removal-palm-leaf.mp4", poster: "/videos/gallery/cellotape-removal-palm-leaf.jpg", duration: "3:26", captions: "" },
+          { title: "Washing a paper page", caption: "A paper manuscript page washed in a shallow water bath.", url: "/videos/gallery/washing-a-paper-page.mp4", poster: "/videos/gallery/washing-a-paper-page.jpg", duration: "1:44", captions: "" },
+          { title: "Brushing paste over pages", caption: "Paper pages laid out under a thin sheet and brushed over with paste.", url: "/videos/gallery/brushing-paste-over-pages.mp4", poster: "/videos/gallery/brushing-paste-over-pages.jpg", duration: "0:31", captions: "" },
+          { title: "Cutting board to size", caption: "A strip of board cut to size on a board cutter in the lab.", url: "/videos/gallery/cutting-archival-board.mp4", poster: "/videos/gallery/cutting-archival-board.jpg", duration: "0:17", captions: "" },
+          { title: "An illustrated manuscript, leaf by leaf", caption: "The painted leaves of an illustrated paper manuscript, turned one by one.", url: "/videos/gallery/illustrated-manuscript.mp4", poster: "/videos/gallery/illustrated-manuscript.jpg", duration: "1:44", captions: "" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "Community Services",
+    line: "Health, education and relief, wherever the need arose.",
+    subs: [
+      {
+        name: "Free Health Camps",
+        sub: "Raichur, Bengaluru, Mandya, Belagavi · 2019",
+        note: "Five free camps with specialist doctors, caring for more than 3,500 people.",
+        photos: [
+          { src: `${P}camp-mandya.jpg`, alt: "Children at the camp in Dadagadapura, Mandya" },
+          { src: `${P}camp-children.jpg`, alt: "A doctor checks the youngest" },
+          { src: `${P}camp-mandya-2.jpg`, alt: "The Mandya camp, 30 June 2019" },
+          { src: `${P}camp-banner.jpg`, alt: "Our camp team in Belagavi district" },
+          { src: `${P}camp-consult.jpg`, alt: "A consultation at one of our camps" },
+          { src: `${P}camp-blood.jpg`, alt: "Blood donation, Bengaluru" },
+        ],
+        videos: [],
+      },
+      {
+        name: "Books for Village Schools",
+        sub: "Near Yarnal, Belagavi district",
+        note: "Books and stationery for nearly 500 students in three village schools.",
+        photos: [
+          { src: `${P}books-yarnal.jpg`, alt: "Schoolchildren with their new books" },
+          { src: `${P}books-yarnal-2.jpg`, alt: "Books handed over by our team" },
+          { src: `${P}books-yarnal-3.jpg`, alt: "Distribution at a village school" },
+          { src: `${P}education.jpg`, alt: "Young students and their books" },
+        ],
+        videos: [],
+      },
+      {
+        name: "Food and Relief Distribution",
+        sub: "Belagavi floods 2019 · Bengaluru lockdown 2020",
+        note: "Relief kits for six flood-hit villages, and meals and grain for families across Bengaluru through the lockdown.",
+        photos: [
+          { src: `${P}flood-kit.jpg`, alt: "A relief kit reaches an elder" },
+          { src: `${P}flood-sacks.jpg`, alt: "Kits ready for families" },
+          { src: `${P}flood-village.jpg`, alt: "Relief arrives in a flood-hit village" },
+          { src: `${P}relief-2.jpg`, alt: "A meal at the doorstep" },
+          { src: `${P}relief-1.jpg`, alt: "Food packets for families" },
+          { src: `${P}covid-kits.jpg`, alt: "Grain kits for women and families" },
+          { src: `${P}relief-3.jpg`, alt: "Volunteers in the neighbourhood" },
+          { src: `${P}covid-kitchen.jpg`, alt: "Meals being prepared" },
+        ],
+        videos: [],
+      },
+    ],
+  },
+  {
+    name: "Rural Infrastructure",
+    line: "Spaces built with the villages that asked for them.",
+    subs: [
+      {
+        name: "Samudaya Bhavan, Yarnal",
+        sub: "Yarnal, Belagavi district",
+        note: "A community hall, dining hall, kitchen and dharamshala, on land given by community members.",
+        photos: [
+          { src: `${P}hero-infrastructure.jpg`, alt: "The Samudaya Bhavan, Yarnal" },
+          { src: `${P}yarnal-build.jpg`, alt: "The Bhavan under construction" },
+        ],
+        videos: [],
+      },
+      {
+        name: "Teachers' Resting Space, Hosur",
+        sub: "Hosur, Belagavi district",
+        note: "An old building turned into 14 rooms where teachers can rest.",
+        photos: [
+          { src: `${P}hosur-1.jpg`, alt: "The teachers' resting space, Hosur" },
+          { src: `${P}hosur-2.jpg`, alt: "The Hosur building" },
+          { src: `${P}quarters-room.jpg`, alt: "Rooms being partitioned inside" },
+        ],
+        videos: [],
+      },
+      {
+        name: "Clean Sanitation",
+        sub: "Schools and villages",
+        note: "Toilet blocks for schools and villages, and public blocks at Yarnal.",
+        photos: [
+          { src: `${P}sanitation-1.jpg`, alt: "Public sanitation block, Yarnal" },
+          { src: `${P}toilet-block.jpg`, alt: "A new toilet block" },
+        ],
+        videos: [],
+      },
+    ],
+  },
+  ] as { name: string; line: string; subs: Folder[] }[],
 };

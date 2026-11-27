@@ -199,11 +199,18 @@ export const ui = {
     write: "Write to {email}",
   },
   gallery: {
-    open: "Open the photograph at full size",
     play: "Play",
-    noPhotos: "No photographs yet.",
-    noFilms: "No films yet.",
     youtube: "Plays from YouTube",
+    folder: "folder",
+    folders: "folders",
+    photo: "photo",
+    photos: "photos",
+    video: "video",
+    videos: "videos",
+    back: "Back",
+    close: "Close",
+    previous: "Previous",
+    next: "Next",
   },
   /** The quiet ways into giving: a question at the end of the work's pages, and folio counts in "Adopting a folio". */
   give: {

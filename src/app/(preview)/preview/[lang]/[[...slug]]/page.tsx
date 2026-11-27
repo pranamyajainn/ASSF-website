@@ -9,8 +9,7 @@ import Conservation from "@/views/manuscript-conservation";
 import Rural from "@/views/rural-infrastructure";
 import Trustees from "@/views/trustees";
 import Careers from "@/views/careers";
-import PhotoGallery from "@/views/photo-gallery";
-import VideoGallery from "@/views/video-gallery";
+import Gallery from "@/views/gallery";
 import Reports from "@/views/reports";
 import Donate from "@/views/donate";
 import Swavalamban from "@/views/swavalamban";
@@ -23,8 +22,7 @@ const VIEWS: Record<string, () => Promise<React.ReactNode> | React.ReactNode> = 
   "community-services": Community,
   impact: Impact,
   "our-guiding-lights": Trustees,
-  "gallery/photos": PhotoGallery,
-  "gallery/videos": VideoGallery,
+  gallery: Gallery,
   reports: Reports,
   donate: Donate,
   "swavalamban-yojana": Swavalamban,

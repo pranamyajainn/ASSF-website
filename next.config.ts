@@ -153,6 +153,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       // Trustees became Our Guiding Lights (page designs, Nov 2026).
+      // Photos and films became one Gallery (page designs, Nov 2026).
+      { source: "/gallery/:kind(photos|videos)", destination: "/gallery", permanent: true },
+      { source: "/:lang(hi|kn)/gallery/:kind(photos|videos)", destination: "/:lang/gallery", permanent: true },
       { source: "/trustees", destination: "/our-guiding-lights", permanent: true },
       { source: "/:lang(hi|kn)/trustees", destination: "/:lang/our-guiding-lights", permanent: true },
       { source: "/donation.html", destination: "/donate", permanent: true },
@@ -177,8 +180,8 @@ const nextConfig: NextConfig = {
       { source: "/r/:path*", headers: [noindex] },
       { source: "/vault", headers: vault },
       { source: "/vault/:path*", headers: vault },
-      { source: "/gallery/videos", headers: videoGallery },
-      { source: "/:lang(hi|kn)/gallery/videos", headers: videoGallery },
+      { source: "/gallery", headers: videoGallery },
+      { source: "/:lang(hi|kn)/gallery", headers: videoGallery },
       { source: "/api/:path*", headers: [noindex] },
       { source: "/donate", headers: donating },
       { source: "/:lang(hi|kn)/donate", headers: donating },

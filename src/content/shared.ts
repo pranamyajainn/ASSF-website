@@ -62,8 +62,7 @@ export const nav = [
 
 /** The menu's later pages, after the work and the people. */
 export const navMore = [
-  { label: "Photo Gallery", href: "/gallery/photos", menu: "gallery" },
-  { label: "Video Gallery", href: "/gallery/videos", menu: "gallery" },
+  { label: "Gallery", href: "/gallery" },
   { label: "Reports & Newsletter", href: "/reports" },
   { label: "Careers", href: "/careers", highlight: true },
 ] as const;
