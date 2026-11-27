@@ -119,7 +119,7 @@ export function GalleryBrowser({ folders, labels }: { folders: GalleryFolder[]; 
                     <path fill="currentColor" d="M0 3a3 3 0 0 1 3-3h6l2.5 3H21a3 3 0 0 1 3 3v11a3 3 0 0 1-3 3H3a3 3 0 0 1-3-3z" />
                   </svg>
                 </span>
-                <span className="mt-3 block font-display text-[1.35rem] font-semibold leading-tight text-ink group-hover:text-cinnabar">{f.name}</span>
+                <span className="mt-3 block hyphens-auto font-display text-[clamp(1.1rem,0.9rem+1vw,1.35rem)] font-semibold leading-tight text-ink [overflow-wrap:break-word] group-hover:text-cinnabar">{f.name}</span>
                 <span className="mt-1 block text-[1rem] leading-snug text-ink-soft">{f.line}</span>
                 <span className="mt-2 block font-mono text-[0.75rem] text-cinnabar">
                   {[count(f.subs.length, labels.folder, labels.folders), photos ? count(photos, labels.photo, labels.photos) : "", videos ? count(videos, labels.video, labels.videos) : ""].filter(Boolean).join(" · ")}

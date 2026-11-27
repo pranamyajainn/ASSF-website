@@ -108,7 +108,7 @@ export default async function AboutPage() {
               <div className="relative aspect-[900/762] overflow-hidden rounded-lg bg-leaf-deep">
                 <Image src={who.image.src} alt={who.image.alt} fill sizes="(min-width: 1024px) 30rem, 92vw" className="object-cover" />
               </div>
-              <figcaption className="mt-2 grid grid-cols-3 gap-2 font-mono text-[0.78rem] text-cinnabar">
+              <figcaption className="mt-2 flex flex-wrap justify-between gap-x-3 gap-y-1 font-mono text-[0.78rem] text-cinnabar">
                 {who.captions.map((caption) => (
                   <span key={caption}>{caption}</span>
                 ))}

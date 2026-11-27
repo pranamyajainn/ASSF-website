@@ -101,7 +101,7 @@ export default async function DonatePage() {
         <Leaf id="ways" label={ways.label} question={ways.question}>
           <Heading>{ways.heading}</Heading>
           <div className="bleed-margin mt-10 grid gap-6 lg:grid-cols-2">
-            <div className="flex flex-col items-center rounded-xl bg-board px-6 py-9 text-center text-board-ink">
+            <div className="flex min-w-0 flex-col items-center rounded-xl bg-board px-5 py-9 text-center text-board-ink sm:px-6">
               <p className="font-mono text-register uppercase tracking-[0.12em] text-orpiment">{ways.upi.eyebrow}</p>
               <h3 className="mt-3 font-display text-[1.7rem] font-semibold leading-tight">{ways.upi.title}</h3>
               <p className="mt-2 text-[1.05rem]">{ways.upi.body}</p>
@@ -112,14 +112,14 @@ export default async function DonatePage() {
               <p className="mt-1 break-all font-mono text-[1.2rem] text-orpiment">{qrGiving.upi}</p>
               <p className="mt-3 text-[0.98rem] text-board-soft">{org.displayName}</p>
             </div>
-            <div className="rounded-xl border border-leaf-edge border-t-4 border-t-orpiment bg-leaf-deep/70 px-7 py-8">
+            <div className="min-w-0 rounded-xl border border-leaf-edge border-t-4 border-t-orpiment bg-leaf-deep/70 px-5 py-8 sm:px-7">
               <p className="font-mono text-register uppercase tracking-[0.12em] text-cinnabar">{ways.bank.eyebrow}</p>
               <h3 className="mt-3 font-display text-[1.7rem] font-semibold leading-tight text-ink">{ways.bank.title}</h3>
               <dl className="mt-6 space-y-4">
                 {bankRows.map(([label, value]) => (
-                  <div key={label} className="grid grid-cols-[8rem_minmax(0,1fr)] gap-x-4">
+                  <div key={label} className="grid grid-cols-[6rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-x-4">
                     <dt className="pt-1 font-mono text-[0.75rem] uppercase tracking-[0.08em] text-ink-soft">{label}</dt>
-                    <dd className="font-display text-[1.15rem] font-medium leading-snug text-ink">{value}</dd>
+                    <dd className="font-display text-[1.15rem] font-medium leading-snug text-ink [overflow-wrap:anywhere]">{value}</dd>
                   </div>
                 ))}
               </dl>

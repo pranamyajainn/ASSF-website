@@ -211,9 +211,10 @@ export function GiveBand({
           </h2>
           <p className="mt-5 max-w-[44ch] text-[1.125rem] leading-relaxed text-board-ink/90">{body}</p>
         </div>
-        <dl className="grid grid-cols-3">
+        {/* Stacked on phones: a word like "Partner" (or its Kannada) doesn't fit a third of a phone. */}
+        <dl className="grid gap-y-4 sm:grid-cols-3">
           {tiers.map((tier, i) => (
-            <div key={tier.label} className={`min-w-0 pr-3 ${i > 0 ? "border-l border-board-soft/30 pl-4" : ""}`}>
+            <div key={tier.label} className={`min-w-0 pr-3 ${i > 0 ? "border-t border-board-soft/30 pt-4 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0" : ""}`}>
               <dt className="sr-only">{tier.label}</dt>
               <dd className="font-display text-[clamp(1.35rem,1rem+1.2vw,2.1rem)] font-semibold leading-none text-orpiment">{tier.value}</dd>
               <dd className="mt-2 text-[0.95rem] leading-snug">{tier.label}</dd>
